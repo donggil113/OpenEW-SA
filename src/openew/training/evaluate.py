@@ -8,10 +8,11 @@ from pathlib import Path
 from typing import Any
 
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 
 from openew.models.factory import build_model
 from openew.training.dataset import ArtifactDataset
+from openew.training.splits import build_holdout_split_indices
 from openew.training.train import evaluate_loader
 from openew.utils.config import load_yaml
 
@@ -62,7 +63,14 @@ def main() -> None:
     device = torch.device(config.get("device", "cpu"))
     model.to(device)
     dataset = ArtifactDataset(config["artifact_dir"], config["label_column"])
-    metrics = evaluate_loader(model, DataLoader(dataset, batch_size=config.get("batch_size", 64)), device, config.get("task_head", "occupancy"))
+    split_indices = build_holdout_split_indices(dataset.metadata, config)
+    eval_dataset = dataset if split_indices is None else Subset(dataset, split_indices[1])
+    metrics = evaluate_loader(
+        model,
+        DataLoader(eval_dataset, batch_size=config.get("batch_size", 64)),
+        device,
+        config.get("task_head", "occupancy"),
+    )
     print(metrics)
 
 

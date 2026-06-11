@@ -128,6 +128,25 @@ Evaluate a checkpoint:
 python scripts/evaluate_baseline.py --config configs/train/iq_cnn.yaml
 ```
 
+JamShield supports three evaluation modes:
+
+```powershell
+python scripts\train_baseline.py --config configs\train\tabular_mlp_jamshield.yaml
+python scripts\evaluate_baseline.py --config configs\train\tabular_mlp_jamshield.yaml
+```
+
+```powershell
+python scripts\train_baseline.py --config configs\train\jamshield_domain_holdout.yaml
+python scripts\evaluate_baseline.py --config configs\train\jamshield_domain_holdout.yaml
+```
+
+```powershell
+python scripts\train_baseline.py --config configs\train\jamshield_reactive_holdout.yaml
+python scripts\evaluate_baseline.py --config configs\train\jamshield_reactive_holdout.yaml
+```
+
+The random config writes to `runs/jamshield_random`, the domain holdout config writes to `runs/jamshield_domain_holdout`, and the reactive jammer-type holdout config writes to `runs/jamshield_reactive_holdout`.
+
 For new datasets, update:
 
 - `artifact_dir` to point at converted artifacts.

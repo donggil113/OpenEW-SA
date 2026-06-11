@@ -1,11 +1,14 @@
 artifact_dir: 'D:\openew_sa_data\processed\jamshield'
 label_column: abnormal_event_label
-output_dir: runs/jamshield_random
+output_dir: runs/jamshield_domain_holdout
 batch_size: 64
 epochs: 10
 lr: 0.001
-validation_fraction: 0.2
-split_strategy: random
+split_strategy: domain_holdout
+holdout_domains:
+  - reactive_jammer_square_NLOS
+  - random_jammer_gaussian_NLOS
+  - constant_jammer_gaussian_25db
 model:
   name: tabular_mlp
   kwargs:
