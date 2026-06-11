@@ -147,6 +147,14 @@ python scripts\evaluate_baseline.py --config configs\train\jamshield_reactive_ho
 
 The random config writes to `runs/jamshield_random`, the domain holdout config writes to `runs/jamshield_domain_holdout`, and the reactive jammer-type holdout config writes to `runs/jamshield_reactive_holdout`.
 
+Analyze saved JamShield predictions by `domain_id`:
+
+```powershell
+python scripts\analyze_predictions_by_domain.py runs\jamshield_random\predictions.csv --output D:\openew_sa_data\tables\jamshield_random_by_domain.csv
+python scripts\analyze_predictions_by_domain.py runs\jamshield_domain_holdout\predictions.csv --output D:\openew_sa_data\tables\jamshield_domain_holdout_by_domain.csv
+python scripts\analyze_predictions_by_domain.py runs\jamshield_reactive_holdout\predictions.csv --output D:\openew_sa_data\tables\jamshield_reactive_holdout_by_domain.csv
+```
+
 For new datasets, update:
 
 - `artifact_dir` to point at converted artifacts.

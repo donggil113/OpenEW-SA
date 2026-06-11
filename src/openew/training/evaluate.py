@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import inspect
+import json
 from pathlib import Path
 from typing import Any
 
@@ -13,8 +14,8 @@ from torch.utils.data import DataLoader, Subset
 from openew.models.factory import build_model
 from openew.training.dataset import ArtifactDataset
 from openew.training.splits import build_holdout_split_indices
-from openew.training.train import evaluate_loader
-from openew.utils.config import load_yaml
+from openew.training.train import evaluate_loader, label_names_for_dataset, metadata_for_dataset
+from openew.utils.config import ensure_dir, load_yaml
 
 
 def load_checkpoint_safely(checkpoint_path: str | Path, map_location: str | torch.device) -> dict[str, Any]:
@@ -65,12 +66,18 @@ def main() -> None:
     dataset = ArtifactDataset(config["artifact_dir"], config["label_column"])
     split_indices = build_holdout_split_indices(dataset.metadata, config)
     eval_dataset = dataset if split_indices is None else Subset(dataset, split_indices[1])
+    output_dir = ensure_dir(config.get("output_dir", "runs/default"))
     metrics = evaluate_loader(
         model,
         DataLoader(eval_dataset, batch_size=config.get("batch_size", 64)),
         device,
         config.get("task_head", "occupancy"),
+        label_names=label_names_for_dataset(dataset),
+        metadata=metadata_for_dataset(dataset, eval_dataset),
+        predictions_path=output_dir / "predictions.csv",
     )
+    with (output_dir / "metrics.json").open("w", encoding="utf-8") as handle:
+        json.dump(metrics, handle, indent=2, sort_keys=True)
     print(metrics)
 
 
