@@ -9,6 +9,8 @@ holdout_domains:
   - reactive_jammer_square_NLOS
   - random_jammer_gaussian_NLOS
   - constant_jammer_gaussian_25db
+holdout_benign_domains:
+  - data_benign_4
 preprocessing:
   standardize: true
 loss:
