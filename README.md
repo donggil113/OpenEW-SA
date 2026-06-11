@@ -74,8 +74,8 @@ python scripts\dev\make_tiny_openew_dataset.py --output-dir D:\openew_sa_data\pr
 Generate paper helper tables from the tiny artifacts:
 
 ```powershell
-python scripts\generate_dataset_summary.py D:\openew_sa_data\processed\tiny --output tables\dataset_summary_tiny.csv
-python scripts\generate_task_summary.py --output tables\task_summary.csv
+python scripts\generate_dataset_summary.py D:\openew_sa_data\processed\tiny --output D:\openew_sa_data\tables\dataset_summary_tiny.csv
+python scripts\generate_task_summary.py --output D:\openew_sa_data\tables\task_summary.csv
 ```
 
 Train and evaluate a tiny CPU baseline:
@@ -83,6 +83,12 @@ Train and evaluate a tiny CPU baseline:
 ```powershell
 python scripts\train_baseline.py --config configs\train\tiny_tabular_mlp.yaml
 python scripts\evaluate_baseline.py --config configs\train\tiny_tabular_mlp.yaml
+```
+
+Or run the full tiny smoke test:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\dev\run_tiny_smoke_test.ps1
 ```
 
 The tiny dataset contains mixed `dataset_source` values (`deepsense`, `wisig`, `electrosense`, `jamshield`, and `radioml`), 64-dimensional features, three situation classes (`normal`, `congested`, `abnormal`), and three threat levels (`low`, `medium`, `high`).
