@@ -14,7 +14,10 @@ from openew.utils.config import load_yaml
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate an OpenEW-SA checkpoint.")
+    parser = argparse.ArgumentParser(
+        description="Evaluate an OpenEW-SA checkpoint.",
+        epilog="Example: python scripts\\evaluate_baseline.py --config configs\\train\\tiny_tabular_mlp.yaml",
+    )
     parser.add_argument("--config", required=True, help="YAML evaluation config.")
     args = parser.parse_args()
     config = load_yaml(args.config)
