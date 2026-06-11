@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openew-sa"
+version = "0.1.0"
+description = "Neuro-symbolic dynamic hypergraph-based electromagnetic spectrum situation awareness research codebase."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "OpenEW-SA Contributors"}]
+dependencies = [
+  "torch>=2.0",
+  "pandas>=2.0",
+  "numpy>=1.24",
+  "scikit-learn>=1.3",
+  "PyYAML>=6.0",
+  "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

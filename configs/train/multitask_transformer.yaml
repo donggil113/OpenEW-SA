@@ -1,0 +1,13 @@
+artifact_dir: data/processed/deepsense
+label_column: occupancy_label
+output_dir: runs/multitask_deepsense
+batch_size: 64
+epochs: 10
+lr: 0.0005
+validation_fraction: 0.2
+task_head: occupancy
+model:
+  name: multitask_transformer
+  kwargs:
+    input_dim: 128
+    num_occupancy: 2
