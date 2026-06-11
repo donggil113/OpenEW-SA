@@ -74,7 +74,10 @@ def evaluate_loader(model: nn.Module, loader: DataLoader, device: torch.device, 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Train OpenEW-SA baseline models.")
+    parser = argparse.ArgumentParser(
+        description="Train OpenEW-SA baseline models.",
+        epilog="Example: python scripts\\train_baseline.py --config configs\\train\\tiny_tabular_mlp.yaml",
+    )
     parser.add_argument("--config", required=True, help="YAML training config.")
     args = parser.parse_args()
     metrics = train(load_yaml(args.config))
