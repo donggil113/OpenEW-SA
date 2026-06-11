@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader, Subset
 from openew.models.factory import build_model
 from openew.training.dataset import ArtifactDataset
 from openew.training.splits import build_holdout_split_indices
-from openew.training.train import evaluate_loader, label_names_for_dataset, metadata_for_dataset
+from openew.training.train import apply_saved_preprocessing, evaluate_loader, label_names_for_dataset, metadata_for_dataset
 from openew.utils.config import ensure_dir, load_yaml
 
 
@@ -64,6 +64,7 @@ def main() -> None:
     device = torch.device(config.get("device", "cpu"))
     model.to(device)
     dataset = ArtifactDataset(config["artifact_dir"], config["label_column"])
+    apply_saved_preprocessing(dataset, checkpoint.get("preprocessing"))
     split_indices = build_holdout_split_indices(dataset.metadata, config)
     eval_dataset = dataset if split_indices is None else Subset(dataset, split_indices[1])
     output_dir = ensure_dir(config.get("output_dir", "runs/default"))

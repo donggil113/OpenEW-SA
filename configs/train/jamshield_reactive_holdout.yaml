@@ -7,6 +7,10 @@ lr: 0.001
 split_strategy: jammer_type_holdout
 holdout_jammer_types:
   - reactive
+preprocessing:
+  standardize: true
+loss:
+  class_weight: balanced
 model:
   name: tabular_mlp
   kwargs:

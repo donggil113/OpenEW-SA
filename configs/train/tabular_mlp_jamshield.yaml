@@ -6,6 +6,10 @@ epochs: 10
 lr: 0.001
 validation_fraction: 0.2
 split_strategy: random
+preprocessing:
+  standardize: true
+loss:
+  class_weight: balanced
 model:
   name: tabular_mlp
   kwargs:
