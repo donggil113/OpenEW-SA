@@ -9,6 +9,10 @@ holdout_domains:
   - reactive_jammer_square_NLOS
   - random_jammer_gaussian_NLOS
   - constant_jammer_gaussian_25db
+preprocessing:
+  standardize: true
+loss:
+  class_weight: balanced
 model:
   name: tabular_mlp
   kwargs:

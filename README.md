@@ -146,6 +146,7 @@ python scripts\evaluate_baseline.py --config configs\train\jamshield_reactive_ho
 ```
 
 The random config writes to `runs/jamshield_random`, the domain holdout config writes to `runs/jamshield_domain_holdout`, and the reactive jammer-type holdout config writes to `runs/jamshield_reactive_holdout`.
+These JamShield configs enable training-only feature standardization with `preprocessing.standardize: true` and balanced cross-entropy with `loss.class_weight: balanced`; each run writes `scaler.json`, `class_weights.json`, `metrics.json`, and `predictions.csv`.
 
 Analyze saved JamShield predictions by `domain_id`:
 
