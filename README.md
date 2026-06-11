@@ -156,9 +156,18 @@ Analyze saved JamShield predictions by `domain_id`:
 
 ```powershell
 python scripts\analyze_predictions_by_domain.py runs\jamshield_random\predictions.csv --output D:\openew_sa_data\tables\jamshield_random_by_domain.csv
-python scripts\analyze_predictions_by_domain.py runs\jamshield_domain_holdout\predictions.csv --output D:\openew_sa_data\tables\jamshield_domain_holdout_by_domain.csv
-python scripts\analyze_predictions_by_domain.py runs\jamshield_reactive_holdout\predictions.csv --output D:\openew_sa_data\tables\jamshield_reactive_holdout_by_domain.csv
+python scripts\analyze_predictions_by_domain.py runs\jamshield_domain_holdout\predictions.csv --output D:\openew_sa_data\tables\jamshield_domain_holdout_by_domain_balanced.csv
+python scripts\analyze_predictions_by_domain.py runs\jamshield_reactive_holdout\predictions.csv --output D:\openew_sa_data\tables\jamshield_reactive_holdout_by_domain_balanced.csv
 ```
+
+Generate the JamShield experiment report:
+
+```powershell
+python scripts\generate_dataset_summary.py D:\openew_sa_data\processed\jamshield --output D:\openew_sa_data\tables\jamshield_dataset_summary.csv
+python scripts\report_jamshield_results.py
+```
+
+The report command reads the three JamShield `metrics.json` files plus the balanced holdout by-domain summaries, then writes `D:\openew_sa_data\tables\jamshield_results_summary.md` and `D:\openew_sa_data\tables\jamshield_results_summary.csv`.
 
 For new datasets, update:
 
