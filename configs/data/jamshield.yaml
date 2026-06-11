@@ -1,13 +1,2 @@
-input_dir: data/raw/jamshield
-output_dir: data/processed/jamshield
-feature_format: npy
-patterns:
-  - "**/*.csv"
-feature_columns: null
-label_column: attack_type
-time_column: time
-tx_column: tx_id
-rx_column: rx_id
-frequency_band: null
-domain_id: jamshield_default
-synthetic_mission_context: jamming_detection
+raw_dir: 'D:\openew_sa_data\raw\jamshield'
+output_dir: 'D:\openew_sa_data\processed\jamshield'
