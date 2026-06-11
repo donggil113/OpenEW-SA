@@ -9,11 +9,12 @@ from typing import Any
 import torch
 from sklearn.metrics import accuracy_score, f1_score
 from torch import nn
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, Subset, random_split
 from tqdm import tqdm
 
 from openew.models.factory import build_model
 from openew.training.dataset import ArtifactDataset
+from openew.training.splits import build_holdout_split_indices
 from openew.utils.config import ensure_dir, load_yaml
 
 
@@ -22,10 +23,15 @@ def train(config: dict[str, Any]) -> dict[str, float]:
 
     device = torch.device(config.get("device", "cuda" if torch.cuda.is_available() else "cpu"))
     dataset = ArtifactDataset(config["artifact_dir"], config["label_column"])
-    validation_fraction = float(config.get("validation_fraction", 0.2))
-    val_size = max(1, int(len(dataset) * validation_fraction))
-    train_size = len(dataset) - val_size
-    train_ds, val_ds = random_split(dataset, [train_size, val_size])
+    split_indices = build_holdout_split_indices(dataset.metadata, config)
+    if split_indices is None:
+        validation_fraction = float(config.get("validation_fraction", 0.2))
+        val_size = max(1, int(len(dataset) * validation_fraction))
+        train_size = len(dataset) - val_size
+        train_ds, val_ds = random_split(dataset, [train_size, val_size])
+    else:
+        train_indices, val_indices = split_indices
+        train_ds, val_ds = Subset(dataset, train_indices), Subset(dataset, val_indices)
     train_loader = DataLoader(train_ds, batch_size=config.get("batch_size", 64), shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=config.get("batch_size", 64))
 
