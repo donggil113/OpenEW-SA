@@ -16,7 +16,7 @@ def summarize(artifact_dirs: list[str]) -> pd.DataFrame:
         metadata = pd.read_csv(path / "metadata.csv")
         rows.append(
             {
-                "dataset_source": metadata["dataset_source"].iloc[0],
+                "dataset_source": ", ".join(sorted(metadata["dataset_source"].dropna().astype(str).unique())),
                 "num_samples": len(metadata),
                 "input_types": ", ".join(sorted(metadata["input_type"].dropna().astype(str).unique())),
                 "domains": metadata["domain_id"].nunique(dropna=True),

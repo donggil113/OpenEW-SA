@@ -1,0 +1,13 @@
+output_dir: 'D:\openew_sa_data\processed\tiny'
+feature_format: npy
+num_samples: 240
+feature_dim: 64
+dataset_sources:
+  - deepsense
+  - wisig
+  - electrosense
+  - jamshield
+  - radioml
+label_columns:
+  situation: situation_label
+  threat: threat_level

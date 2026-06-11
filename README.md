@@ -63,6 +63,30 @@ data/processed/<dataset>/features.npy  # or features.pt
 data/processed/<dataset>/labels.json
 ```
 
+## Synthetic smoke test on Windows
+
+For a lightweight end-to-end check from PowerShell, create tiny synthetic artifacts under the Windows path configured in `configs\data\tiny.yaml`:
+
+```powershell
+python scripts\dev\make_tiny_openew_dataset.py --output-dir D:\openew_sa_data\processed\tiny
+```
+
+Generate paper helper tables from the tiny artifacts:
+
+```powershell
+python scripts\generate_dataset_summary.py D:\openew_sa_data\processed\tiny --output tables\dataset_summary_tiny.csv
+python scripts\generate_task_summary.py --output tables\task_summary.csv
+```
+
+Train and evaluate a tiny CPU baseline:
+
+```powershell
+python scripts\train_baseline.py --config configs\train\tiny_tabular_mlp.yaml
+python scripts\evaluate_baseline.py --config configs\train\tiny_tabular_mlp.yaml
+```
+
+The tiny dataset contains mixed `dataset_source` values (`deepsense`, `wisig`, `electrosense`, `jamshield`, and `radioml`), 64-dimensional features, three situation classes (`normal`, `congested`, `abnormal`), and three threat levels (`low`, `medium`, `high`).
+
 ## Baseline models
 
 Implemented PyTorch baselines:
