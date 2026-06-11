@@ -1,0 +1,14 @@
+artifact_dir: 'D:\openew_sa_data\processed\tiny'
+label_column: situation_label
+output_dir: runs/tiny_tabular_mlp
+batch_size: 32
+epochs: 3
+lr: 0.001
+validation_fraction: 0.2
+device: cpu
+model:
+  name: tabular_mlp
+  kwargs:
+    input_dim: 64
+    num_classes: 3
+    hidden: 64
