@@ -130,6 +130,10 @@ python scripts/evaluate_baseline.py --config configs/train/iq_cnn.yaml
 
 JamShield supports three evaluation modes:
 
+- Random split: trains and validates on random rows from all converted JamShield domains.
+- Scenario holdout with benign control: holds out selected jammer source domains plus a benign source domain, so validation includes both `normal` and `abnormal_interference` samples.
+- Jammer-type holdout with benign control: holds out all domains for a jammer family, such as `reactive`, plus a benign source domain for balanced binary metrics.
+
 ```powershell
 python scripts\train_baseline.py --config configs\train\tabular_mlp_jamshield.yaml
 python scripts\evaluate_baseline.py --config configs\train\tabular_mlp_jamshield.yaml
