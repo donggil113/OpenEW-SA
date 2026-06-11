@@ -55,6 +55,14 @@ python scripts/convert_dataset.py jamshield --config configs/data/jamshield.yaml
 python scripts/convert_dataset.py radioml --config configs/data/radioml.yaml
 ```
 
+Inspect raw JamShield CSV files before choosing feature columns:
+
+```powershell
+python scripts\inspect_jamshield_raw.py --raw-dir D:\openew_sa_data\raw\jamshield --output D:\openew_sa_data\tables\jamshield_raw_inspection.txt
+```
+
+The inspector writes the readable text report to `--output` and a sibling `.csv` summary with the same stem.
+
 Each conversion produces:
 
 ```text
