@@ -1,0 +1,12 @@
+artifact_dir: data/processed/radioml_2016_10a
+label_column: modulation_label
+output_dir: runs/iq_cnn_radioml
+batch_size: 64
+epochs: 10
+lr: 0.001
+validation_fraction: 0.2
+model:
+  name: iq_cnn_1d
+  kwargs:
+    in_channels: 2
+    num_classes: 11

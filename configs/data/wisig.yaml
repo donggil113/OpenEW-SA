@@ -1,0 +1,14 @@
+input_dir: data/raw/wisig
+output_dir: data/processed/wisig
+feature_format: npy
+input_type: iq
+patterns:
+  - "**/*.npy"
+  - "**/*.npz"
+frequency_band: null
+tx_id_prefix: tx
+rx_id_prefix: rx
+synthetic_mission_context: rf_fingerprinting
+situation_label: authorized_or_unknown_transmitter
+threat_level: 0
+human_review_required: false

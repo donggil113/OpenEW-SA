@@ -1,0 +1,15 @@
+input_dir: data/raw/electrosense
+output_dir: data/processed/electrosense
+feature_format: npy
+patterns:
+  - "**/*.csv"
+  - "**/*.npy"
+  - "**/*.npz"
+value_columns: null
+frequency_band: null
+sensor_id: null
+default_occupancy_label: null
+synthetic_mission_context: wideband_monitoring
+situation_label: null
+threat_level: 0
+human_review_required: false

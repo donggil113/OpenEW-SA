@@ -1,0 +1,12 @@
+artifact_dir: data/processed/jamshield
+label_column: abnormal_event_label
+output_dir: runs/tabular_mlp_jamshield
+batch_size: 64
+epochs: 10
+lr: 0.001
+validation_fraction: 0.2
+model:
+  name: tabular_mlp
+  kwargs:
+    input_dim: 16
+    num_classes: 2

@@ -1,0 +1,6 @@
+input_path: data/raw/radioml/RML2016.10a_dict.pkl
+output_dir: data/processed/radioml_2016_10a
+feature_format: npy
+frequency_band: null
+synthetic_mission_context: modulation_pretraining
+max_samples: null
