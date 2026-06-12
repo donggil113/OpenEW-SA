@@ -259,6 +259,14 @@ python scripts\make_paper1_tables_and_figures.py
 
 The Paper 1 command reads the combined OpenEW-SA benchmark tables plus JamShield and ElectroSense by-domain holdout summaries. It writes `D:\openew_sa_data\paper1\tables\table1_dataset_summary.csv`, `D:\openew_sa_data\paper1\tables\table2_baseline_results.csv`, `D:\openew_sa_data\paper1\tables\table3_domain_holdout_summary.csv`, `D:\openew_sa_data\paper1\figures\figure_baseline_macro_f1.png`, and `D:\openew_sa_data\paper1\figures\figure_domain_holdout_macro_f1.png`.
 
+Create the Paper 1 pipeline overview figure:
+
+```powershell
+python scripts\make_paper1_pipeline_figure.py
+```
+
+The pipeline figure command writes `D:\openew_sa_data\paper1\figures\figure_pipeline_overview.png`.
+
 ## Repository layout
 
 ```text
