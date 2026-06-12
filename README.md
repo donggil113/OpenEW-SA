@@ -216,6 +216,14 @@ Baseline performance table from metric JSON/CSV files:
 python scripts/generate_baseline_performance_table.py runs/*/metrics.json --output tables/baseline_performance.csv
 ```
 
+OpenEW-SA benchmark paper tables from JamShield and DeepSense reports:
+
+```powershell
+python scripts\report_openew_sa_benchmark.py
+```
+
+The benchmark command reads `D:\openew_sa_data\tables\jamshield_results_summary.csv`, `D:\openew_sa_data\tables\deepsense_results_summary.csv`, and their dataset summaries. It writes `D:\openew_sa_data\tables\openew_sa_dataset_table.csv`, `D:\openew_sa_data\tables\openew_sa_baseline_table.csv`, and `D:\openew_sa_data\tables\openew_sa_benchmark_summary.md`.
+
 ## Repository layout
 
 ```text
