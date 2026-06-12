@@ -266,25 +266,26 @@ def _plot_horizontal_bars(
 
 def _baseline_label(row: pd.Series) -> str:
     dataset = str(row["dataset"])
-    split = str(row["split_protocol"])
-    model = str(row["model"])
+    original_split = str(row["split_protocol"])
+    split = original_split.lower()
+    model = str(row["model"]).lower()
     if dataset == "JamShield":
-        if "reactive" in split.lower():
-            return "JamShield\nreactive holdout"
-        if "hold out" in split.lower():
-            return "JamShield\nscenario holdout"
-        return "JamShield\nrandom"
+        if "reactive" in split:
+            return "JamShield reactive holdout"
+        if "hold out" in split:
+            return "JamShield scenario holdout"
+        return "JamShield random"
     if dataset.startswith("DeepSense"):
-        if "day2" in split.lower() or "day1" in split.lower():
-            return "DeepSense\nDay2 holdout"
-        if "iq cnn" in model.lower() or "unflattened" in split.lower():
-            return "DeepSense\nIQ CNN random"
-        return "DeepSense\nMLP random"
+        if "iq cnn" in model or "unflattened" in split:
+            return "DeepSense IQ-CNN random"
+        if "train on day1" in split or "evaluate on day2" in split:
+            return "DeepSense Day2 holdout"
+        return "DeepSense MLP random"
     if dataset.startswith("ElectroSense"):
-        if "hold out" in split.lower() or "sensor" in split.lower():
-            return "ElectroSense\nsensor holdout"
-        return "ElectroSense\nrandom"
-    return f"{dataset}\n{_shorten(split, 28)}"
+        if "hold out" in split or "sensor" in split:
+            return "ElectroSense sensor holdout"
+        return "ElectroSense random"
+    return f"{dataset}\n{_shorten(original_split, 28)}"
 
 
 def _domain_label(row: pd.Series) -> str:
