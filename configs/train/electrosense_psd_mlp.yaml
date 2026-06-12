@@ -1,0 +1,14 @@
+artifact_dir: 'D:\openew_sa_data\processed\electrosense'
+label_column: situation_label
+output_dir: runs/electrosense_psd_mlp
+batch_size: 128
+epochs: 10
+lr: 0.001
+validation_fraction: 0.2
+preprocessing:
+  standardize: true
+model:
+  name: tabular_mlp
+  kwargs:
+    input_dim: 512
+    num_classes: 6
