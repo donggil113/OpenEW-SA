@@ -17,7 +17,7 @@ class ArtifactDataset(Dataset):
 
     def __init__(self, artifact_dir: str | Path, label_column: str) -> None:
         self.artifact_dir = Path(artifact_dir).expanduser()
-        self.metadata = pd.read_csv(self.artifact_dir / "metadata.csv")
+        self.metadata = pd.read_csv(self.artifact_dir / "metadata.csv", dtype={"occupancy_label": "string"})
         self.features = self._load_features()
         self.label_column = label_column
         self.label_to_index = self._build_label_index()

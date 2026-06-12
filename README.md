@@ -55,6 +55,15 @@ python scripts/convert_dataset.py jamshield --config configs/data/jamshield.yaml
 python scripts/convert_dataset.py radioml --config configs/data/radioml.yaml
 ```
 
+Convert the real DeepSense SDR WiFi 802.11 a/g `.bin` files on Windows:
+
+```powershell
+python scripts\convert_dataset.py deepsense --config configs\data\deepsense.yaml
+python scripts\train_baseline.py --config configs\train\deepsense_occupancy_mlp.yaml
+```
+
+Place the 32 DeepSense SDR WiFi `.bin` files under `D:\openew_sa_data\raw\deepsense\sdr_wifi`. The converter reads complex64 streams, windows them into 1024-sample I/Q segments, and uses the first four filename characters as the 4-channel occupancy label, for example `1101_day2.bin`.
+
 Inspect raw JamShield CSV files before choosing feature columns:
 
 ```powershell
