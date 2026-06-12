@@ -33,7 +33,7 @@ pip install --upgrade pip
 pip install -e .
 ```
 
-Core dependencies are PyTorch, pandas, numpy, scikit-learn, PyYAML, and tqdm. Configuration uses lightweight YAML files and argparse entry points.
+Core dependencies are PyTorch, pandas, numpy, matplotlib, scikit-learn, PyYAML, and tqdm. Configuration uses lightweight YAML files and argparse entry points.
 
 ## Data preparation
 
@@ -243,13 +243,21 @@ Baseline performance table from metric JSON/CSV files:
 python scripts/generate_baseline_performance_table.py runs/*/metrics.json --output tables/baseline_performance.csv
 ```
 
-OpenEW-SA benchmark paper tables from JamShield and DeepSense reports:
+OpenEW-SA benchmark paper tables from JamShield, DeepSense, and ElectroSense reports:
 
 ```powershell
 python scripts\report_openew_sa_benchmark.py
 ```
 
-The benchmark command reads `D:\openew_sa_data\tables\jamshield_results_summary.csv`, `D:\openew_sa_data\tables\deepsense_results_summary.csv`, and their dataset summaries. It writes `D:\openew_sa_data\tables\openew_sa_dataset_table.csv`, `D:\openew_sa_data\tables\openew_sa_baseline_table.csv`, and `D:\openew_sa_data\tables\openew_sa_benchmark_summary.md`.
+The benchmark command reads `D:\openew_sa_data\tables\jamshield_results_summary.csv`, `D:\openew_sa_data\tables\deepsense_results_summary.csv`, `D:\openew_sa_data\tables\electrosense_results_summary.csv`, and their dataset summaries. It writes `D:\openew_sa_data\tables\openew_sa_dataset_table.csv`, `D:\openew_sa_data\tables\openew_sa_baseline_table.csv`, and `D:\openew_sa_data\tables\openew_sa_benchmark_summary.md`.
+
+Create Paper 1-ready CSV tables and compact matplotlib figures:
+
+```powershell
+python scripts\make_paper1_tables_and_figures.py
+```
+
+The Paper 1 command reads the combined OpenEW-SA benchmark tables plus JamShield and ElectroSense by-domain holdout summaries. It writes `D:\openew_sa_data\paper1\tables\table1_dataset_summary.csv`, `D:\openew_sa_data\paper1\tables\table2_baseline_results.csv`, `D:\openew_sa_data\paper1\tables\table3_domain_holdout_summary.csv`, `D:\openew_sa_data\paper1\figures\figure_baseline_macro_f1.png`, and `D:\openew_sa_data\paper1\figures\figure_domain_holdout_macro_f1.png`.
 
 ## Repository layout
 
