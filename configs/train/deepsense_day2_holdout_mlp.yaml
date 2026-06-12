@@ -1,0 +1,16 @@
+artifact_dir: 'D:\openew_sa_data\processed\deepsense'
+label_column: occupancy_label
+output_dir: runs/deepsense_day2_holdout_mlp
+batch_size: 128
+epochs: 10
+lr: 0.001
+split_strategy: domain_holdout
+holdout_domains:
+  - day2
+preprocessing:
+  standardize: true
+model:
+  name: tabular_mlp
+  kwargs:
+    input_dim: 2048
+    num_classes: 16
