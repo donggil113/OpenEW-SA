@@ -1,0 +1,14 @@
+artifact_dir: 'D:\openew_sa_data\processed\deepsense'
+label_column: occupancy_label
+output_dir: runs/deepsense_occupancy_iqcnn
+batch_size: 128
+epochs: 10
+lr: 0.001
+validation_fraction: 0.2
+preprocessing:
+  standardize: true
+model:
+  name: iq_cnn_1d
+  kwargs:
+    in_channels: 2
+    num_classes: 16

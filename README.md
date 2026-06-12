@@ -60,9 +60,21 @@ Convert the real DeepSense SDR WiFi 802.11 a/g `.bin` files on Windows:
 ```powershell
 python scripts\convert_dataset.py deepsense --config configs\data\deepsense.yaml
 python scripts\train_baseline.py --config configs\train\deepsense_occupancy_mlp.yaml
+python scripts\train_baseline.py --config configs\train\deepsense_day2_holdout_mlp.yaml
+python scripts\evaluate_baseline.py --config configs\train\deepsense_day2_holdout_mlp.yaml
+python scripts\train_baseline.py --config configs\train\deepsense_occupancy_iqcnn.yaml
 ```
 
-Place the 32 DeepSense SDR WiFi `.bin` files under `D:\openew_sa_data\raw\deepsense\sdr_wifi`. The converter reads complex64 streams, windows them into 1024-sample I/Q segments, and uses the first four filename characters as the 4-channel occupancy label, for example `1101_day2.bin`.
+Place the 32 DeepSense SDR WiFi `.bin` files under `D:\openew_sa_data\raw\deepsense\sdr_wifi`. The converter reads complex64 streams, windows them into 1024-sample I/Q segments, and uses the first four filename characters as the 4-channel occupancy label, for example `1101_day2.bin`. The default config writes unflattened `[2, 1024]` I/Q windows so both the tabular MLP and IQ CNN baselines can train from the same converted artifacts.
+
+Generate DeepSense summary tables and reports:
+
+```powershell
+python scripts\generate_dataset_summary.py D:\openew_sa_data\processed\deepsense --output D:\openew_sa_data\tables\deepsense_dataset_summary.csv
+python scripts\report_deepsense_results.py
+```
+
+The day-aware MLP config trains on `domain_id=day1` and validates on `domain_id=day2`. The report command reads the random MLP, day2-holdout MLP, and IQ CNN metrics, then writes `D:\openew_sa_data\tables\deepsense_results_summary.md` and `D:\openew_sa_data\tables\deepsense_results_summary.csv`.
 
 Inspect raw JamShield CSV files before choosing feature columns:
 

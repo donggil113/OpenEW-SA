@@ -4,4 +4,4 @@ feature_format: npy
 window_size: 1024
 stride: 1024
 max_windows_per_file: 1000
-flatten: true
+flatten: false
