@@ -3,23 +3,27 @@
 ## 1. Title Candidates
 
 1. OpenEW-SA: A Unified Benchmark for Electromagnetic Spectrum Situation Awareness
-2. Domain-Aware RF Situation Awareness with OpenEW-SA: From Jamming Detection to WiFi Occupancy
+2. Domain-Aware RF Situation Awareness with OpenEW-SA: From Jamming Detection to Spectrum Technology Classification
 3. OpenEW-SA: Dataset Harmonization and Baseline Evaluation for Spectrum Situation Awareness
 4. Toward Neuro-Symbolic Spectrum Situation Awareness: A Unified RF Benchmark with Domain Holdouts
 5. OpenEW-SA: Public RF Dataset Conversion, Metadata Alignment, and Baselines for Spectrum Monitoring
 
 ## 2. Abstract Draft
 
-Electromagnetic spectrum situation awareness requires models that can reason across heterogeneous RF sensing modalities, operational contexts, and distribution shifts. Existing public RF datasets are valuable but fragmented: they differ in raw formats, labels, metadata conventions, and evaluation protocols. This paper introduces OpenEW-SA, a research benchmark scaffold for neuro-symbolic dynamic hypergraph-based spectrum situation awareness. OpenEW-SA defines a unified metadata schema and conversion pipeline for public RF datasets, then evaluates initial baselines on two complementary tasks: JamShield jamming/interference detection from tabular WiFi metrics and DeepSense SDR WiFi 4-channel occupancy classification from complex I/Q captures. Current results show strong JamShield random-split performance with a tabular MLP (accuracy 0.954, macro-F1 0.949, AUROC 0.996), but lower performance under scenario and jammer-type holdouts, indicating meaningful domain shift. On DeepSense, an IQ CNN trained on unflattened I/Q windows outperforms a tabular MLP under random splits (macro-F1 0.768 versus 0.614), while day2 holdout performance remains low (macro-F1 0.115), highlighting cross-day generalization challenges. The benchmark produces paper-ready dataset and baseline tables and establishes a path for extending OpenEW-SA to PSD-based ElectroSense spectrum monitoring.
+Electromagnetic spectrum situation awareness requires models that can reason across heterogeneous RF sensing modalities, operational contexts, and distribution shifts. Existing public RF datasets are valuable but fragmented: they differ in raw formats, labels, metadata conventions, and evaluation protocols. This paper introduces OpenEW-SA, a research benchmark scaffold for neuro-symbolic dynamic hypergraph-based spectrum situation awareness. OpenEW-SA defines a unified metadata schema and conversion pipeline for public RF datasets, then evaluates initial baselines on three complementary completed subsets: JamShield tabular RF/network abnormal interference detection, DeepSense SDR WiFi I/Q occupancy classification, and ElectroSense PSD technology classification. Current results show strong random-split performance across the completed subsets, including JamShield tabular MLP performance of 0.953820 accuracy and 0.948885 macro-F1, DeepSense IQ CNN performance of 0.740781 accuracy and 0.768321 macro-F1, and nearly saturated ElectroSense PSD performance of 0.998885 accuracy and 0.998862 macro-F1. However, domain-aware evaluation exposes substantial generalization gaps: DeepSense day2 holdout falls to 0.114871 macro-F1, and ElectroSense sensor holdout falls to 0.554571 accuracy and 0.536666 macro-F1. These results show that OpenEW-SA can convert heterogeneous RF data into common artifacts, produce paper-ready benchmark tables, and reveal domain shift hidden by random splits.
 
 ## 3. Contribution List
 
 - A unified OpenEW-SA metadata schema for RF samples spanning dataset source, input type, time, band, transmitter/receiver identity, labels, domain, mission context, situation label, threat level, and human-review status.
-- Real-data converters for JamShield tabular WiFi jamming metrics and DeepSense SDR WiFi complex64 I/Q `.bin` captures.
-- Domain-aware evaluation protocols for JamShield scenario and jammer-type holdouts with benign controls, plus DeepSense day2 holdout evaluation.
+- A completed three-subset OpenEW-SA benchmark currently including:
+  - JamShield tabular RF/network abnormal interference detection.
+  - DeepSense SDR WiFi I/Q occupancy classification.
+  - ElectroSense PSD technology classification.
+- Real-data converters for JamShield CSV metrics, DeepSense SDR WiFi complex64 `.bin` captures, and ElectroSense PSD `.npy` arrays.
+- Domain-aware evaluation protocols for JamShield scenario and jammer-type holdouts with benign controls, DeepSense day2 holdout evaluation, and ElectroSense sensor holdout evaluation.
 - Baseline models and training workflows for tabular MLPs and I/Q CNNs with train-only feature standardization and detailed classification metrics.
-- Paper-table generators that summarize dataset properties, split protocols, baseline metrics, and benchmark-level comparisons across JamShield and DeepSense.
-- A planned extension path for ElectroSense PSD spectrum monitoring to broaden OpenEW-SA from packet-level and I/Q tasks toward wide-area spectrum occupancy analysis.
+- Paper-table generators that summarize dataset properties, split protocols, baseline metrics, and benchmark-level comparisons across JamShield, DeepSense, and ElectroSense.
+- A forward path from the current benchmark toward WiSig RF fingerprinting, RadioML modulation baselines, and neuro-symbolic dynamic hypergraph modeling.
 
 ## 4. Section-by-Section Outline
 
@@ -28,12 +32,13 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
 - Motivation: spectrum situation awareness needs more than isolated RF classifiers; it needs consistent metadata, domain-aware evaluation, and extensible benchmark infrastructure.
 - Problem: public RF datasets use incompatible file formats, task labels, and metadata assumptions.
 - Claim: OpenEW-SA provides a practical bridge from heterogeneous RF data to future neuro-symbolic dynamic hypergraph reasoning.
-- Preview of current benchmark: JamShield and DeepSense with random and domain-aware evaluation.
+- Preview of current benchmark: JamShield, DeepSense, and ElectroSense with random and domain-aware evaluation.
 
 ### 2. Related Work
 
 - RF spectrum sensing and modulation/occupancy benchmarks.
 - Jamming and interference detection datasets.
+- PSD-based spectrum monitoring and transmitter/technology identification.
 - RF fingerprinting and domain generalization in wireless sensing.
 - Neuro-symbolic and graph/hypergraph approaches to situation awareness.
 - Benchmark infrastructure and metadata harmonization for ML research.
@@ -57,6 +62,12 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
   - Parses four-bit occupancy labels from filename stems.
   - Parses `day1` and `day2` domains.
   - Segments each stream into `[2, 1024]` I/Q tensors.
+- ElectroSense PSD converter:
+  - Recursively reads PSD `.npy` files and skips too-small artifacts.
+  - Infers sensor and date identifiers from parent folders.
+  - Parses technology labels and frequency ranges from filenames.
+  - Treats each PSD row as one sample and resamples each row to `[512]`.
+  - Uses technology labels as `situation_label` classes and sensor IDs as `domain_id`.
 
 ### 5. Evaluation Protocols
 
@@ -67,6 +78,8 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
   - Holds out reactive jammer domains plus benign control domain `data_benign_4`.
 - DeepSense day-aware holdout:
   - Trains on `day1`, validates/evaluates on `day2`.
+- ElectroSense sensor holdout:
+  - Holds out selected receiver domains, including `alcorcon1`, `bcn-L`, and `Geneva`.
 - Metrics:
   - Accuracy, macro-F1, weighted-F1, per-class precision/recall/F1, support, prediction counts.
   - AUROC and AUPRC for binary JamShield runs.
@@ -76,6 +89,7 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
 - Tabular MLP for JamShield numerical metrics.
 - Tabular MLP for flattened DeepSense I/Q windows.
 - 1D IQ CNN for unflattened DeepSense `[2, 1024]` windows.
+- Tabular MLP for ElectroSense `[512]` PSD vectors.
 - Implementation details:
   - PyTorch training.
   - YAML-configured paths and model parameters.
@@ -91,29 +105,39 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
 - DeepSense findings:
   - IQ CNN substantially improves random-split performance over the MLP.
   - Day2 holdout performance is low, indicating cross-day shift and a need for domain adaptation or richer context.
+- ElectroSense findings:
+  - Random split performance is almost saturated, reaching 0.998885 accuracy and 0.998862 macro-F1.
+  - Sensor holdout reveals strong sensor-domain shift, dropping to 0.554571 accuracy and 0.536666 macro-F1.
+  - DAB collapses under sensor holdout, while LTE and FM remain relatively strong compared with the other held-out classes.
 
 ### 8. Discussion
 
-- What the current results imply about domain shift in RF situation awareness.
+- Across JamShield, DeepSense, and ElectroSense, domain-aware splits consistently expose generalization gaps hidden by random splits.
+- Unified metadata enables comparable analysis across tabular metrics, raw I/Q windows, and PSD feature vectors.
+- The ElectroSense sensor holdout suggests that receiver/site effects can dominate PSD technology classification unless models explicitly handle domain shift.
 - Why unified metadata matters for future graph/hypergraph construction.
 - Limitations:
-  - Current paper covers two converted datasets.
+  - Current paper covers three converted datasets, while WiSig and RadioML are not yet integrated into the benchmark tables.
   - Baselines are intentionally lightweight.
   - No full neuro-symbolic hypergraph model is evaluated yet.
 - Reproducibility and local-data constraints.
 
-### 9. Planned ElectroSense Extension
+### 9. Completed ElectroSense Extension
 
-- Add PSD spectrum data conversion and metadata mapping.
-- Expand tasks from jamming and WiFi occupancy to wide-area spectrum occupancy or anomaly detection.
-- Introduce split protocols by sensor, geography, frequency band, and time period.
-- Use ElectroSense PSD traces as candidate nodes/events for future dynamic hypergraph construction.
+- ElectroSense is now included as the third completed OpenEW-SA subset.
+- The converter ingests PSD `.npy` arrays, maps each PSD row into a fixed `[512]` feature vector, and records sensor domains in unified metadata.
+- The benchmark supports a random PSD classification split and a sensor-domain holdout split.
+- The random split is nearly saturated, but sensor holdout exposes major domain shift and class-specific failure modes.
+- Remaining future work:
+  - Add WiSig RF fingerprinting as a device/domain generalization task.
+  - Add RadioML as an optional modulation baseline or pretraining source.
+  - Build neuro-symbolic dynamic hypergraph models over samples, sensors, frequency bands, time windows, situations, and threat labels.
 
 ### 10. Conclusion
 
 - Summarize OpenEW-SA as a benchmark scaffold and evidence-generation pipeline.
-- Emphasize the current two-dataset baseline as a foundation, not an endpoint.
-- State next steps: ElectroSense extension, WiSig/RadioML expansion, and neuro-symbolic hypergraph models.
+- Emphasize the current three-dataset baseline as a foundation, not an endpoint.
+- State next steps: WiSig/RadioML expansion and neuro-symbolic hypergraph models.
 
 ## 5. Table List
 
@@ -128,9 +152,9 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
 4. Dataset Converter Mapping Table
    - Maps raw dataset fields and filenames to OpenEW-SA metadata fields.
 5. Domain Holdout Protocol Table
-   - Details JamShield and DeepSense holdout definitions.
-6. ElectroSense Planned Extension Table
-   - Proposed PSD fields, labels, domains, and split protocols.
+   - Details JamShield, DeepSense, and ElectroSense holdout definitions.
+6. ElectroSense PSD Conversion and Sensor Holdout Table
+   - Summarizes PSD row conversion, sensor-domain splits, per-class F1, and domain shift behavior.
 
 ## 6. Figure List
 
@@ -142,12 +166,12 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
    - Training domains versus held-out jammer and benign-control domains.
 4. DeepSense Day-Aware Split Diagram
    - Day1 training and day2 validation/evaluation.
-5. Baseline Model Sketch
-   - Tabular MLP and IQ CNN paths.
-6. Result Summary Bar Chart
-   - Macro-F1 comparison across JamShield and DeepSense split protocols.
-7. ElectroSense Extension Concept Figure
-   - PSD traces over sensors, frequencies, and time windows.
+5. ElectroSense Sensor Holdout Diagram
+   - Training sensors versus held-out receiver domains.
+6. Baseline Model Sketch
+   - Tabular MLP, PSD MLP, and IQ CNN paths.
+7. Result Summary Bar Chart
+   - Macro-F1 comparison across JamShield, DeepSense, and ElectroSense split protocols.
 
 ## 7. Current Result Summary
 
@@ -157,6 +181,7 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
 | --- | --- | ---: | --- | --- | ---: | ---: | ---: | --- |
 | JamShield | Jamming/interference detection | 92,486 | tabular_metrics | [37] | 37 | 2 | 20 | Random row split; scenario holdout with benign control; reactive jammer-type holdout with benign control |
 | DeepSense SDR WiFi | 4-channel WiFi occupancy classification | 32,000 | iq_features | [2, 1024] | 2,048 | 16 | 2 | Random row split; day2 holdout; random IQ CNN split |
+| ElectroSense PSD | Technology classification | 45,750 | psd_features | [512] | 512 | 6 | 40 | Random row split; sensor holdout |
 
 ### Baseline Table
 
@@ -168,6 +193,15 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
 | DeepSense SDR WiFi | 4-channel WiFi occupancy classification | Tabular MLP | Random row split across day1/day2 windows | 0.577562 | 0.614465 | N/A | N/A |
 | DeepSense SDR WiFi | 4-channel WiFi occupancy classification | Tabular MLP | Train on day1, evaluate on day2 | 0.151812 | 0.114871 | N/A | N/A |
 | DeepSense SDR WiFi | 4-channel WiFi occupancy classification | IQ CNN 1D | Random row split using unflattened `[2, 1024]` I/Q windows | 0.740781 | 0.768321 | N/A | N/A |
+| ElectroSense PSD | Technology classification | Tabular MLP | Random row split across ElectroSense PSD rows | 0.998885 | 0.998862 | N/A | N/A |
+| ElectroSense PSD | Technology classification | Tabular MLP | Hold out selected sensor domains | 0.554571 | 0.536666 | N/A | N/A |
+
+### ElectroSense Per-Class F1 Snapshot
+
+| Split Protocol | DAB | DVBT | FM | GSM | LTE | TETRA |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Random row split | 0.998985 | 0.997877 | 0.999695 | 0.998380 | 0.999750 | 0.998487 |
+| Sensor holdout | 0.002639 | 0.575540 | 0.828479 | 0.487056 | 0.800641 | 0.525641 |
 
 ### Main Observations
 
@@ -175,48 +209,47 @@ Electromagnetic spectrum situation awareness requires models that can reason acr
 - JamShield AUROC and AUPRC remain high under holdout evaluation, suggesting useful separability even when class-threshold behavior changes.
 - DeepSense IQ CNN performance is substantially stronger than the tabular MLP under random splits, improving macro-F1 from 0.614465 to 0.768321.
 - DeepSense day2 holdout is difficult for the current MLP baseline, with macro-F1 0.114871 despite balanced 1,000-sample support for each occupancy class.
-- The contrast between random splits and domain-aware splits motivates future domain adaptation and neuro-symbolic context modeling.
+- ElectroSense random split is almost saturated, with all six technology classes near perfect per-class F1.
+- ElectroSense sensor holdout reveals strong receiver-domain shift: DAB collapses to 0.002639 F1, while FM and LTE remain comparatively strong at 0.828479 and 0.800641 F1.
+- Across all three completed subsets, the contrast between random splits and domain-aware splits motivates future domain adaptation and neuro-symbolic context modeling.
 
-## 8. Planned ElectroSense Extension Section
+## 8. Completed ElectroSense Extension Section
 
 ### Motivation
 
-ElectroSense adds a PSD-centric perspective to OpenEW-SA. JamShield covers jamming/interference from tabular WiFi metrics, and DeepSense covers 802.11 occupancy from raw I/Q windows. ElectroSense can extend the benchmark toward long-duration, sensor-distributed, frequency-domain spectrum monitoring.
+ElectroSense adds a PSD-centric perspective to OpenEW-SA. JamShield covers abnormal interference from tabular RF/network metrics, DeepSense covers 802.11 occupancy from raw I/Q windows, and ElectroSense extends the benchmark toward sensor-distributed, frequency-domain spectrum monitoring.
 
-### Proposed Converter
+### Completed Converter
 
-- Recursively ingest ElectroSense PSD files from a configured raw directory.
-- Convert PSD traces into fixed-length frequency or time-frequency windows.
-- Save `features.npy` as float32 PSD feature tensors.
-- Populate OpenEW-SA metadata:
+- Recursively ingests ElectroSense PSD `.npy` files from the configured raw directory.
+- Skips too-small files and records skipped inputs in conversion metadata.
+- Converts PSD rows into fixed-length `[512]` float32 feature vectors.
+- Populates OpenEW-SA metadata:
   - `dataset_source = electrosense`
   - `input_type = psd_features`
-  - `frequency_band` from available band metadata or file grouping
-  - `rx_id` from sensor identity when available
-  - `domain_id` from sensor, location, time period, or frequency-band grouping
-  - `occupancy_label` or `abnormal_event_label` depending on label availability
+  - `frequency_band` from parsed filename ranges
+  - `rx_id` from sensor identity
+  - `domain_id` from sensor identity
+  - `situation_label` from technology labels: `dab`, `dvbt`, `fm`, `gsm`, `lte`, `tetra`
   - `synthetic_mission_context = spectrum_monitoring`
 
-### Proposed Tasks
+### Completed Tasks
 
-- Binary or multi-class spectrum occupancy classification.
-- Abnormal PSD event detection.
-- Domain generalization across sensors, geography, time periods, or frequency bands.
-
-### Proposed Split Protocols
-
-- Random PSD window split for a basic baseline.
+- Six-class PSD technology classification.
+- Random row split for within-distribution PSD recognition.
 - Sensor holdout for receiver-domain generalization.
-- Time-period holdout for temporal robustness.
-- Frequency-band holdout for cross-band transfer.
 
-### Planned Baselines
+### Completed Baselines
 
-- PSD MLP for flattened PSD windows.
-- PSD CNN for 1D frequency traces.
-- Spectrogram CNN if time-frequency PSD windows are constructed.
-- Multi-task transformer if occupancy, anomaly, and situation labels can be aligned.
+- Tabular MLP over standardized `[512]` PSD vectors.
+- Detailed metrics and per-domain prediction analysis through the shared OpenEW-SA reporting pipeline.
 
-### Expected Paper Role
+### Result Role
 
-ElectroSense should serve as the third evidence point in the paper: it would demonstrate that the OpenEW-SA schema and reporting tools cover tabular metrics, raw I/Q windows, and PSD spectrum traces. It also gives the strongest natural bridge to dynamic hypergraph modeling because sensors, frequency bins, time windows, occupancy states, and events can be represented as typed nodes and hyperedges.
+ElectroSense now serves as the third evidence point in the paper. It demonstrates that the OpenEW-SA schema and reporting tools cover tabular metrics, raw I/Q windows, and PSD spectrum traces. It also gives the strongest natural bridge to dynamic hypergraph modeling because sensors, frequency bands, time windows, technology states, and situations can be represented as typed nodes and hyperedges.
+
+### Remaining Future Work
+
+- Integrate WiSig for RF fingerprinting and device/domain generalization.
+- Integrate RadioML 2016.10A as an optional modulation baseline and pretraining source.
+- Develop neuro-symbolic dynamic hypergraph models that use OpenEW-SA metadata as structured context rather than only as reporting fields.
