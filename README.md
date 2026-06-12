@@ -92,6 +92,25 @@ python scripts\inspect_electrosense_raw.py --raw-dir D:\openew_sa_data\raw\elect
 
 The ElectroSense inspector writes `D:\openew_sa_data\tables\electrosense_raw_inspection.txt` and `D:\openew_sa_data\tables\electrosense_raw_inspection.csv`.
 
+Convert ElectroSense PSD arrays and train PSD baselines:
+
+```powershell
+python scripts\convert_dataset.py electrosense --config configs\data\electrosense.yaml
+python scripts\train_baseline.py --config configs\train\electrosense_psd_mlp.yaml
+python scripts\train_baseline.py --config configs\train\electrosense_sensor_holdout_mlp.yaml
+python scripts\evaluate_baseline.py --config configs\train\electrosense_sensor_holdout_mlp.yaml
+```
+
+Generate ElectroSense report tables and refresh the combined OpenEW-SA benchmark:
+
+```powershell
+python scripts\generate_dataset_summary.py D:\openew_sa_data\processed\electrosense --output D:\openew_sa_data\tables\electrosense_dataset_summary.csv
+python scripts\report_electrosense_results.py
+python scripts\report_openew_sa_benchmark.py
+```
+
+The ElectroSense converter treats each PSD time frame as one sample, resamples frequency bins to 512 features, and labels samples by filename technology (`dab`, `dvbt`, `fm`, `gsm`, `lte`, or `tetra`).
+
 Each conversion produces:
 
 ```text

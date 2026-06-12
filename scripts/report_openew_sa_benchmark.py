@@ -12,8 +12,10 @@ import pandas as pd
 
 DEFAULT_JAMSHIELD_RESULTS = Path(r"D:\openew_sa_data\tables\jamshield_results_summary.csv")
 DEFAULT_DEEPSENSE_RESULTS = Path(r"D:\openew_sa_data\tables\deepsense_results_summary.csv")
+DEFAULT_ELECTROSENSE_RESULTS = Path(r"D:\openew_sa_data\tables\electrosense_results_summary.csv")
 DEFAULT_JAMSHIELD_DATASET = Path(r"D:\openew_sa_data\tables\jamshield_dataset_summary.csv")
 DEFAULT_DEEPSENSE_DATASET = Path(r"D:\openew_sa_data\tables\deepsense_dataset_summary.csv")
+DEFAULT_ELECTROSENSE_DATASET = Path(r"D:\openew_sa_data\tables\electrosense_dataset_summary.csv")
 DEFAULT_DATASET_OUTPUT = Path(r"D:\openew_sa_data\tables\openew_sa_dataset_table.csv")
 DEFAULT_BASELINE_OUTPUT = Path(r"D:\openew_sa_data\tables\openew_sa_baseline_table.csv")
 DEFAULT_MARKDOWN_OUTPUT = Path(r"D:\openew_sa_data\tables\openew_sa_benchmark_summary.md")
@@ -29,6 +31,11 @@ DATASET_SPECS = {
         "task": "4-channel WiFi occupancy classification",
         "default_model": "",
     },
+    "electrosense": {
+        "dataset": "ElectroSense PSD",
+        "task": "PSD technology classification",
+        "default_model": "",
+    },
 }
 
 
@@ -39,8 +46,10 @@ def main() -> None:
     )
     parser.add_argument("--jamshield-results", default=DEFAULT_JAMSHIELD_RESULTS, type=Path)
     parser.add_argument("--deepsense-results", default=DEFAULT_DEEPSENSE_RESULTS, type=Path)
+    parser.add_argument("--electrosense-results", default=DEFAULT_ELECTROSENSE_RESULTS, type=Path)
     parser.add_argument("--jamshield-dataset", default=DEFAULT_JAMSHIELD_DATASET, type=Path)
     parser.add_argument("--deepsense-dataset", default=DEFAULT_DEEPSENSE_DATASET, type=Path)
+    parser.add_argument("--electrosense-dataset", default=DEFAULT_ELECTROSENSE_DATASET, type=Path)
     parser.add_argument("--dataset-output", default=DEFAULT_DATASET_OUTPUT, type=Path)
     parser.add_argument("--baseline-output", default=DEFAULT_BASELINE_OUTPUT, type=Path)
     parser.add_argument("--markdown-output", default=DEFAULT_MARKDOWN_OUTPUT, type=Path)
@@ -56,6 +65,13 @@ def main() -> None:
             "dataset": _read_csv(args.deepsense_dataset, "DeepSense dataset summary"),
         },
     }
+    optional_electrosense = _optional_dataset_inputs(
+        args.electrosense_results,
+        args.electrosense_dataset,
+        "ElectroSense",
+    )
+    if optional_electrosense is not None:
+        inputs["electrosense"] = optional_electrosense
 
     dataset_table = _build_dataset_table(inputs)
     baseline_table = _build_baseline_table(inputs)
@@ -71,6 +87,18 @@ def _read_csv(path: Path, description: str) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"{description} not found: {path}")
     return pd.read_csv(path)
+
+
+def _optional_dataset_inputs(results_path: Path, dataset_path: Path, name: str) -> dict[str, pd.DataFrame] | None:
+    if not results_path.exists() and not dataset_path.exists():
+        return None
+    if not results_path.exists() or not dataset_path.exists():
+        missing = results_path if not results_path.exists() else dataset_path
+        raise FileNotFoundError(f"{name} benchmark inclusion requires both summary files; missing: {missing}")
+    return {
+        "results": _read_csv(results_path, f"{name} results summary"),
+        "dataset": _read_csv(dataset_path, f"{name} dataset summary"),
+    }
 
 
 def _build_dataset_table(inputs: dict[str, dict[str, pd.DataFrame]]) -> pd.DataFrame:
