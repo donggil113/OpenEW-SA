@@ -84,6 +84,14 @@ python scripts\inspect_jamshield_raw.py --raw-dir D:\openew_sa_data\raw\jamshiel
 
 The inspector writes the readable text report to `--output` and a sibling `.csv` summary with the same stem.
 
+Inspect raw ElectroSense PSD `.npy` files before conversion:
+
+```powershell
+python scripts\inspect_electrosense_raw.py --raw-dir D:\openew_sa_data\raw\electrosense --output D:\openew_sa_data\tables\electrosense_raw_inspection.txt
+```
+
+The ElectroSense inspector writes `D:\openew_sa_data\tables\electrosense_raw_inspection.txt` and `D:\openew_sa_data\tables\electrosense_raw_inspection.csv`.
+
 Each conversion produces:
 
 ```text
