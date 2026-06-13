@@ -59,7 +59,7 @@ The benchmark design follows four principles. First, large public datasets are n
 
 ## 4. Dataset Conversion
 
-Table 1 summarizes the three completed OpenEW-SA subsets, including task definitions, feature shapes, class counts, domain counts, and split protocols. The table is intended to make the benchmark scope explicit before comparing model performance in Table 2 and domain-level behavior in Table 3.
+Table 1 summarizes the three completed OpenEW-SA subsets, including task definitions, feature shapes, class counts, domain counts, and split protocols. The table is intended to make the benchmark scope explicit before comparing model performance in Table 2 and domain-aware behavior in Table 3, Figure 3, and Supplementary Table S1.
 
 ### 4.1 JamShield
 
@@ -97,7 +97,7 @@ For DeepSense, the random split samples I/Q windows across `day1` and `day2`. Th
 
 For ElectroSense, the random split samples PSD rows across sensors. The sensor holdout evaluates held-out receiver domains, including `alcorcon1`, `bcn-L`, and `Geneva`, testing whether PSD technology recognition transfers across sensing sites.
 
-All runs report accuracy and macro-F1. Binary JamShield runs additionally report AUROC and AUPRC. The training and evaluation pipeline also writes per-class precision, recall, F1, support, prediction counts, confusion matrices, and prediction CSVs for by-domain analysis. Table 2 reports aggregate baseline metrics, while Table 3 and Figure 3 report per-domain holdout behavior.
+All runs report accuracy and macro-F1. Binary JamShield runs additionally report AUROC and AUPRC. The training and evaluation pipeline also writes per-class precision, recall, F1, support, prediction counts, confusion matrices, and prediction CSVs for by-domain analysis. Table 2 reports aggregate baseline metrics, Table 3 summarizes the domain-aware holdout findings, and Figure 3 and Supplementary Table S1 report the detailed per-domain behavior.
 
 ## 6. Baseline Models
 
@@ -109,7 +109,7 @@ All training configurations use YAML-controlled paths and model parameters. Feat
 
 ## 7. Results
 
-Table 2 presents the aggregate baseline results, and Figure 2 provides the corresponding macro-F1 comparison. The purpose of Figure 2 is to make the random-versus-holdout contrast visible across datasets and models. Table 3 and Figure 3 then break out domain-aware behavior across the JamShield and ElectroSense holdout domains.
+Table 2 presents the aggregate baseline results, and Figure 2 provides the corresponding macro-F1 comparison. The purpose of Figure 2 is to make the random-versus-holdout contrast visible across datasets and models. Table 3 then condenses the domain-aware failure modes across JamShield and ElectroSense, while Figure 3 and Supplementary Table S1 preserve the detailed per-domain behavior.
 
 **Table 2. Baseline results.**
 
@@ -128,35 +128,25 @@ Table 2 presents the aggregate baseline results, and Figure 2 provides the corre
 
 The random row-level results in Table 2 are strong across the completed benchmark, and the relative pattern is visible in Figure 2. JamShield reaches 0.948885 macro-F1 with AUROC 0.996014 and AUPRC 0.998183. ElectroSense is nearly saturated under random splitting, with 0.998862 macro-F1. DeepSense shows that representation matters: the IQ CNN reaches 0.768321 macro-F1 under random splitting, improving over the flattened MLP result of 0.614465.
 
-The domain-aware results substantially change the interpretation. JamShield scenario holdout reduces macro-F1 to 0.828574, and reactive jammer-type holdout reduces macro-F1 to 0.792954. DeepSense day2 holdout falls to 0.114871 macro-F1. ElectroSense sensor holdout falls from 0.998862 macro-F1 under random splitting to 0.536666. Thus, the same benchmark that appears strong under random splits reveals clear generalization gaps under scenario, day, and sensor holdouts. Figure 2 summarizes this aggregate pattern, while Figure 3 shows that the holdout degradation also varies by individual domain.
+The domain-aware results substantially change the interpretation. JamShield scenario holdout reduces macro-F1 to 0.828574, and reactive jammer-type holdout reduces macro-F1 to 0.792954. DeepSense day2 holdout falls to 0.114871 macro-F1. ElectroSense sensor holdout falls from 0.998862 macro-F1 under random splitting to 0.536666. Thus, the same benchmark that appears strong under random splits reveals clear generalization gaps under scenario, day, and sensor holdouts. Figure 2 summarizes this aggregate pattern, while Table 3, Figure 3, and Supplementary Table S1 show that the holdout degradation also varies by protocol and individual domain.
 
-**Table 3. Domain-holdout summary.**
+**Table 3. Concise domain-aware holdout summary.**
 
-| dataset | split_protocol | domain_id | n_samples | true_label_distribution | predicted_label_distribution | accuracy | macro_f1 |
-| --- | --- | --- | ---: | --- | --- | ---: | ---: |
-| JamShield | Scenario holdout with benign control | constant_jammer_gaussian_25db | 3,918 | {"abnormal_interference": 3918} | {"abnormal_interference": 3918} | 1.000000 | 1.000000 |
-| JamShield | Scenario holdout with benign control | data_benign_4 | 7,884 | {"normal": 7884} | {"abnormal_interference": 3037, "normal": 4847} | 0.614789 | 0.380724 |
-| JamShield | Scenario holdout with benign control | random_jammer_gaussian_NLOS | 3,290 | {"abnormal_interference": 3290} | {"abnormal_interference": 3205, "normal": 85} | 0.974164 | 0.493457 |
-| JamShield | Scenario holdout with benign control | reactive_jammer_square_NLOS | 4,725 | {"abnormal_interference": 4725} | {"abnormal_interference": 4540, "normal": 185} | 0.960847 | 0.490016 |
-| JamShield | Reactive jammer-type holdout with benign control | data_benign_4 | 7,884 | {"normal": 7884} | {"abnormal_interference": 2937, "normal": 4947} | 0.627473 | 0.385551 |
-| JamShield | Reactive jammer-type holdout with benign control | reactive_jammer_cos_NLOS | 3,195 | {"abnormal_interference": 3195} | {"abnormal_interference": 3040, "normal": 155} | 0.951487 | 0.487570 |
-| JamShield | Reactive jammer-type holdout with benign control | reactive_jammer_gaussian_LOS | 7,232 | {"abnormal_interference": 7232} | {"abnormal_interference": 6333, "normal": 899} | 0.875691 | 0.466863 |
-| JamShield | Reactive jammer-type holdout with benign control | reactive_jammer_gaussian_additional_end_devices | 3,375 | {"abnormal_interference": 3375} | {"abnormal_interference": 2949, "normal": 426} | 0.873778 | 0.466319 |
-| JamShield | Reactive jammer-type holdout with benign control | reactive_jammer_square_NLOS | 4,725 | {"abnormal_interference": 4725} | {"abnormal_interference": 4474, "normal": 251} | 0.946878 | 0.486357 |
-| JamShield | Reactive jammer-type holdout with benign control | reactive_jammer_triangle_NLOS | 3,335 | {"abnormal_interference": 3335} | {"abnormal_interference": 3011, "normal": 324} | 0.902849 | 0.474472 |
-| ElectroSense PSD | Sensor holdout | Geneva | 1,000 | {"dab": 200, "dvbt": 200, "fm": 200, "lte": 200, "tetra": 200} | {"dab": 215, "dvbt": 366, "gsm": 180, "lte": 200, "tetra": 39} | 0.239000 | 0.221060 |
-| ElectroSense PSD | Sensor holdout | alcorcon1 | 4,800 | {"dab": 600, "dvbt": 600, "fm": 600, "gsm": 1800, "lte": 600, "tetra": 600} | {"dab": 299, "dvbt": 885, "fm": 686, "gsm": 1522, "lte": 1043, "tetra": 365} | 0.635833 | 0.618975 |
-| ElectroSense PSD | Sensor holdout | bcn-L | 1,200 | {"dab": 200, "dvbt": 200, "fm": 200, "gsm": 200, "lte": 200, "tetra": 200} | {"dab": 2, "dvbt": 112, "fm": 168, "gsm": 663, "lte": 255} | 0.492500 | 0.439398 |
+| dataset | domain-aware protocol | held-out domains | macro-F1 range | main failure mode |
+| --- | --- | --- | --- | --- |
+| JamShield | Scenario holdout with benign control | `constant_jammer_gaussian_25db`, `data_benign_4`, `random_jammer_gaussian_NLOS`, `reactive_jammer_square_NLOS` | 0.380724 to 1.000000 | The benign control domain drives the lowest macro-F1 through false abnormal predictions; abnormal-only jammer domains are easier. |
+| JamShield | Reactive jammer-type holdout with benign control | `data_benign_4`, `reactive_jammer_cos_NLOS`, `reactive_jammer_gaussian_LOS`, `reactive_jammer_gaussian_additional_end_devices`, `reactive_jammer_square_NLOS`, `reactive_jammer_triangle_NLOS` | 0.385551 to 0.487570 | Reactive-family transfer remains difficult across jammer domains, with benign-control false abnormal predictions still limiting macro-F1. |
+| ElectroSense PSD | Sensor holdout | `Geneva`, `alcorcon1`, `bcn-L` | 0.221060 to 0.618975 | Sensor-domain shift is strongest for Geneva, with DAB collapse and comparatively stronger FM/LTE transfer. |
 
-> **Figure 3. Domain-aware macro-F1 comparison.** Placeholder for `D:\openew_sa_data\paper1\figures\figure_domain_holdout_macro_f1.png`, which visualizes the per-domain macro-F1 values reported in Table 3.
+> **Figure 3. Domain-aware macro-F1 comparison.** Placeholder for `D:\openew_sa_data\paper1\figures\figure_domain_holdout_macro_f1.png`, which visualizes the per-domain macro-F1 values summarized in Table 3 and reported in full in Supplementary Table S1.
 
-Table 3 shows that holdout performance varies strongly by domain, and Figure 3 provides a compact view of that variation. For JamShield, abnormal-only held-out jammer domains can retain high accuracy, but the benign control domain reveals false abnormal predictions that would be hidden in abnormal-only evaluation. The `data_benign_4` domain reaches only 0.380724 macro-F1 in the scenario holdout and 0.385551 macro-F1 in the reactive holdout, emphasizing why benign controls are needed for binary interference evaluation.
+Table 3 shows that holdout performance varies strongly by protocol, and Figure 3 provides a compact view of the underlying domain-level variation. Supplementary Table S1 gives the full domain table, including sample counts, true and predicted label distributions, accuracy, and macro-F1. For JamShield, abnormal-only held-out jammer domains can retain high accuracy, but the benign control domain reveals false abnormal predictions that would be hidden in abnormal-only evaluation. The `data_benign_4` domain reaches only 0.380724 macro-F1 in the scenario holdout and 0.385551 macro-F1 in the reactive holdout, emphasizing why benign controls are needed for binary interference evaluation.
 
 ElectroSense sensor holdout exposes even stronger receiver-domain variation. Geneva reaches 0.221060 macro-F1, `alcorcon1` reaches 0.618975, and `bcn-L` reaches 0.439398. The benchmark's per-class summary further shows that DAB nearly collapses under sensor holdout, while FM and LTE remain comparatively stronger. Figure 3 is intended to make these domain-level differences visible at a glance.
 
 ## 8. Discussion
 
-The principal lesson from OpenEW-SA is methodological: RF situation-awareness benchmarks should not rely only on random row-level splits. Random splits can confirm that a converter, model, and training loop are functioning, but they can also mix samples from the same sensor, day, or scenario across train and validation sets. In that case, strong performance may reflect within-domain interpolation rather than operational robustness. The contrast between Table 2 and Table 3, together with Figures 2 and 3, makes this issue visible at both aggregate and domain-specific levels.
+The principal lesson from OpenEW-SA is methodological: RF situation-awareness benchmarks should not rely only on random row-level splits. Random splits can confirm that a converter, model, and training loop are functioning, but they can also mix samples from the same sensor, day, or scenario across train and validation sets. In that case, strong performance may reflect within-domain interpolation rather than operational robustness. The contrast between Table 2 and Table 3, together with Figures 2 and 3 and Supplementary Table S1, makes this issue visible at both aggregate and domain-specific levels.
 
 The three completed subsets expose this issue through complementary modalities. JamShield shows that abnormal interference detection changes under scenario and jammer-family holdouts. DeepSense shows that WiFi occupancy classification changes under collection-day holdout. ElectroSense shows that PSD technology classification changes under sensor holdout. Across all three, the random split gives a more optimistic picture than the domain-aware protocol.
 
@@ -187,7 +177,8 @@ The main empirical finding is that random row-level splits overestimate performa
 - **Figure 3. Domain holdout macro-F1 comparison.** Per-domain macro-F1 values for JamShield scenario/reactive holdouts and ElectroSense sensor holdout, showing heterogeneous generalization behavior across held-out domains.
 - **Table 1. Dataset summary.** Converted OpenEW-SA subsets, tasks, sample counts, input types, feature shapes, class counts, domain counts, and split protocols.
 - **Table 2. Baseline results.** Aggregate baseline accuracy, macro-F1, and binary AUROC/AUPRC where applicable for random and domain-aware evaluation protocols.
-- **Table 3. Domain holdout summary.** Domain-level sample counts, true and predicted label distributions, accuracy, and macro-F1 for JamShield and ElectroSense holdout analyses.
+- **Table 3. Concise domain-aware holdout summary.** Protocol-level summary of held-out domains, macro-F1 ranges, and main observed failure modes for JamShield and ElectroSense holdout analyses.
+- **Supplementary Table S1. Detailed domain-holdout results.** Domain-level sample counts, true and predicted label distributions, accuracy, and macro-F1 values corresponding to Table 3 and Figure 3.
 
 ## Reference TODO List
 
