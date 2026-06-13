@@ -130,6 +130,8 @@ The random row-level results in Table 2 are strong across the completed benchmar
 
 The domain-aware results substantially change the interpretation. JamShield scenario holdout reduces macro-F1 to 0.828574, and reactive jammer-type holdout reduces macro-F1 to 0.792954. DeepSense day2 holdout falls to 0.114871 macro-F1. ElectroSense sensor holdout falls from 0.998862 macro-F1 under random splitting to 0.536666. Thus, the same benchmark that appears strong under random splits reveals clear generalization gaps under scenario, day, and sensor holdouts. Figure 2 summarizes this aggregate pattern, while Table 3, Figure 3, and Supplementary Table S1 show that the holdout degradation also varies by protocol and individual domain.
 
+Multi-seed robustness results will be summarized after running the Paper 1 configurations with seeds 0, 1, and 2; the planned robustness table will report mean and dispersion from `D:\openew_sa_data\paper1\tables\table_multiseed_summary.csv`.
+
 **Table 3. Concise domain-aware holdout summary.**
 
 | dataset | domain-aware protocol | held-out domains | macro-F1 range | main failure mode |
