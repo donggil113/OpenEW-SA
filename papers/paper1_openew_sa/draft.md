@@ -1,4 +1,4 @@
-﻿# OpenEW-SA: A Unified Benchmark for Electromagnetic Spectrum Situation Awareness
+# OpenEW-SA: A Unified Benchmark for Electromagnetic Spectrum Situation Awareness
 
 ## Abstract
 
