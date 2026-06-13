@@ -22,6 +22,7 @@ DEFAULT_CONFIGS = (
     Path("configs/train/deepsense_occupancy_mlp.yaml"),
     Path("configs/train/deepsense_day2_holdout_mlp.yaml"),
     Path("configs/train/deepsense_occupancy_iqcnn.yaml"),
+    Path("configs/train/deepsense_day2_holdout_iqcnn.yaml"),
     Path("configs/train/electrosense_psd_mlp.yaml"),
     Path("configs/train/electrosense_sensor_holdout_mlp.yaml"),
 )
