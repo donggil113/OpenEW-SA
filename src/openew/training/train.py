@@ -223,7 +223,14 @@ def evaluate_loader(
     resolved_label_names = label_names or _labels_from_indices(targets, predictions)
     metrics = _classification_metrics(targets, predictions, resolved_label_names, probability_rows)
     if predictions_path is not None:
-        _write_predictions(predictions_path, metadata, targets, predictions, resolved_label_names)
+        _write_predictions(
+            predictions_path,
+            metadata,
+            targets,
+            predictions,
+            resolved_label_names,
+            probability_rows,
+        )
     return metrics
 
 
@@ -278,6 +285,7 @@ def _write_predictions(
     targets: list[int],
     predictions: list[int],
     label_names: list[str],
+    probability_rows: list[list[float]] | None = None,
 ) -> None:
     if metadata is None:
         metadata = pd.DataFrame(index=range(len(targets)))
@@ -285,17 +293,30 @@ def _write_predictions(
         raise ValueError(f"Prediction metadata length {len(metadata)} does not match predictions length {len(targets)}")
     output = Path(predictions_path)
     output.parent.mkdir(parents=True, exist_ok=True)
-    rows = pd.DataFrame(
-        {
-            "sample_id": metadata.get("sample_id", pd.Series([""] * len(targets))).fillna("").astype(str).tolist(),
-            "domain_id": metadata.get("domain_id", pd.Series([""] * len(targets))).fillna("").astype(str).tolist(),
-            "true_label": [_label_name(index, label_names) for index in targets],
-            "predicted_label": [_label_name(index, label_names) for index in predictions],
-            "true_label_index": targets,
-            "predicted_label_index": predictions,
-        }
-    )
+    data: dict[str, Any] = {
+        "sample_id": metadata.get("sample_id", pd.Series([""] * len(targets))).fillna("").astype(str).tolist(),
+        "domain_id": metadata.get("domain_id", pd.Series([""] * len(targets))).fillna("").astype(str).tolist(),
+        "true_label": [_label_name(index, label_names) for index in targets],
+        "predicted_label": [_label_name(index, label_names) for index in predictions],
+        "true_label_index": targets,
+        "predicted_label_index": predictions,
+    }
+    if len(label_names) == 2 and probability_rows is not None and len(probability_rows) == len(targets):
+        positive_index = _binary_positive_index(label_names)
+        positive_label = label_names[positive_index]
+        data["positive_label"] = [positive_label] * len(targets)
+        data["positive_label_probability"] = [float(row[positive_index]) for row in probability_rows]
+        for class_index, label_name in enumerate(label_names):
+            data[f"probability_{_probability_column_suffix(label_name)}"] = [
+                float(row[class_index]) for row in probability_rows
+            ]
+    rows = pd.DataFrame(data)
     rows.to_csv(output, index=False)
+
+
+def _probability_column_suffix(label_name: str) -> str:
+    suffix = "".join(character.lower() if character.isalnum() else "_" for character in label_name)
+    return "_".join(part for part in suffix.split("_") if part)
 
 
 def metadata_for_dataset(base_dataset: ArtifactDataset, dataset: Any) -> pd.DataFrame:
