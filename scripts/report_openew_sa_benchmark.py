@@ -128,6 +128,7 @@ def _build_baseline_table(inputs: dict[str, dict[str, pd.DataFrame]]) -> pd.Data
     for key, tables in inputs.items():
         spec = DATASET_SPECS[key]
         results = tables["results"]
+        # Include every dataset-report row, including optional experiments whose metrics exist.
         for _, row in results.iterrows():
             rows.append(
                 {

@@ -36,6 +36,13 @@ EXPERIMENTS = (
         "split_protocol": "Random row split using unflattened [2, 1024] I/Q windows.",
         "metrics_arg": "iqcnn_metrics",
     },
+    {
+        "name": "deepsense_day2_holdout_iqcnn",
+        "model": "IQ CNN 1D",
+        "split_protocol": "Train on day1 domains and validate/evaluate on day2 domains.",
+        "metrics_arg": "day2_holdout_iqcnn_metrics",
+        "optional": True,
+    },
 )
 
 
@@ -58,6 +65,11 @@ def main() -> None:
     parser.add_argument(
         "--iqcnn-metrics",
         default=Path("runs") / "deepsense_occupancy_iqcnn" / "metrics.json",
+        type=Path,
+    )
+    parser.add_argument(
+        "--day2-holdout-iqcnn-metrics",
+        default=Path("runs") / "deepsense_day2_holdout_iqcnn" / "metrics.json",
         type=Path,
     )
     parser.add_argument("--markdown-output", default=DEFAULT_MARKDOWN_OUTPUT, type=Path)
@@ -131,6 +143,8 @@ def _build_experiment_table(args: argparse.Namespace, dataset_info: dict[str, An
     rows = []
     for experiment in EXPERIMENTS:
         metrics_path = getattr(args, experiment["metrics_arg"])
+        if experiment.get("optional") and not metrics_path.exists():
+            continue
         metrics = _read_json(metrics_path, f"{experiment['name']} metrics")
         per_class_f1 = _string_key_dict(metrics.get("per_class_f1", {}))
         support_per_class = _string_key_dict(metrics.get("support_per_class", {}))
