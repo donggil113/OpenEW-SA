@@ -6,8 +6,11 @@
 \usepackage{hyperref}
 \usepackage{natbib}
 \usepackage{array}
+\usepackage{tabularx}
 
 \newcommand{\artifact}[1]{\texttt{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcommand{\figplaceholder}[2]{%
   \IfFileExists{#1}{%
     \includegraphics[width=0.92\linewidth]{#1}%
@@ -98,10 +101,11 @@ The ElectroSense converter recursively scans PSD \artifact{.npy} files, skips to
 \begin{table}[t]
   \centering
   \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.18}
   \caption{Dataset summary. Converted OpenEW-SA subsets, tasks, sample counts, input types, feature shapes, class counts, domain counts, and split protocols.}
   \label{tab:dataset-summary}
-  \resizebox{\textwidth}{!}{%
-  \begin{tabular}{llrllrrrl}
+  \begin{tabularx}{\textwidth}{L{0.12\textwidth} L{0.18\textwidth} r L{0.10\textwidth} L{0.09\textwidth} r r r Y}
     \toprule
     Dataset & Task & Samples & Input type & Feature shape & Feature dim. & Classes & Domains & Split protocols \\
     \midrule
@@ -109,7 +113,7 @@ The ElectroSense converter recursively scans PSD \artifact{.npy} files, skips to
     DeepSense SDR WiFi & 4-channel WiFi occupancy classification & 32,000 & iq\_features & [2, 1024] & 2,048 & 16 & 2 & Random row split; day2 holdout; random IQ-CNN split using unflattened I/Q windows. \\
     ElectroSense PSD & PSD technology classification & 45,750 & psd\_features & [512] & 512 & 6 & 40 & Random row split; sensor holdout over \artifact{alcorcon1}, \artifact{bcn-L}, and \artifact{Geneva}. \\
     \bottomrule
-  \end{tabular}}
+  \end{tabularx}
 \end{table}
 
 \section{Evaluation Protocols}
@@ -137,10 +141,11 @@ Table~\ref{tab:baseline-results} presents the aggregate baseline results, and Fi
 \begin{table}[t]
   \centering
   \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.18}
   \caption{Baseline results. Aggregate baseline accuracy, macro-F1, and binary AUROC/AUPRC where applicable for random and domain-aware evaluation protocols.}
   \label{tab:baseline-results}
-  \resizebox{\textwidth}{!}{%
-  \begin{tabular}{llllrrrr}
+  \begin{tabularx}{\textwidth}{L{0.13\textwidth} L{0.19\textwidth} L{0.10\textwidth} Y r r r r}
     \toprule
     Dataset & Task & Model & Split protocol & Accuracy & Macro-F1 & AUROC & AUPRC \\
     \midrule
@@ -154,7 +159,7 @@ Table~\ref{tab:baseline-results} presents the aggregate baseline results, and Fi
     ElectroSense PSD & PSD technology classification & Tabular MLP & Random row split across ElectroSense PSD samples. & 0.998885 & 0.998862 & -- & -- \\
     ElectroSense PSD & PSD technology classification & Tabular MLP & Hold out sensors \artifact{alcorcon1}, \artifact{bcn-L}, and \artifact{Geneva}. & 0.554571 & 0.536666 & -- & -- \\
     \bottomrule
-  \end{tabular}}
+  \end{tabularx}
 \end{table}
 
 \begin{figure}[t]
@@ -173,18 +178,41 @@ Multi-seed robustness results over seeds 0, 1, and 2 show that the random-versus
 \begin{table}[t]
   \centering
   \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.18}
   \caption{Concise domain-aware holdout summary. Protocol-level summary of held-out domains, macro-F1 ranges, and main observed failure modes for JamShield and ElectroSense holdout analyses.}
   \label{tab:domain-summary}
-  \resizebox{\textwidth}{!}{%
-  \begin{tabular}{lllll}
+  \begin{tabularx}{\textwidth}{L{0.12\textwidth} L{0.17\textwidth} L{0.34\textwidth} L{0.11\textwidth} Y}
     \toprule
     Dataset & Domain-aware protocol & Held-out domains & Macro-F1 range & Main failure mode \\
     \midrule
-    JamShield & Scenario holdout with benign control & \artifact{constant\_jammer\_gaussian\_25db}, \artifact{data\_benign\_4}, \artifact{random\_jammer\_gaussian\_NLOS}, \artifact{reactive\_jammer\_square\_NLOS} & 0.380724 to 1.000000 & Benign control drives the lowest macro-F1 through false abnormal predictions; abnormal-only jammer domains are easier. \\
-    JamShield & Reactive jammer-type holdout with benign control & \artifact{data\_benign\_4}, \artifact{reactive\_jammer\_cos\_NLOS}, \artifact{reactive\_jammer\_gaussian\_LOS}, \artifact{reactive\_jammer\_gaussian\_additional\_end\_devices}, \artifact{reactive\_jammer\_square\_NLOS}, \artifact{reactive\_jammer\_triangle\_NLOS} & 0.385551 to 0.487570 & Reactive-family transfer remains difficult across jammer domains, with benign-control false abnormal predictions still limiting macro-F1. \\
-    ElectroSense PSD & Sensor holdout & \artifact{Geneva}, \artifact{alcorcon1}, \artifact{bcn-L} & 0.221060 to 0.618975 & Sensor-domain shift is strongest for Geneva, with DAB collapse and comparatively stronger FM/LTE transfer. \\
+    JamShield & Scenario holdout with benign control &
+    \begin{tabular}[t]{@{}l@{}}
+      \artifact{constant\_jammer\_gaussian\_25db}\\
+      \artifact{data\_benign\_4}\\
+      \artifact{random\_jammer\_gaussian\_NLOS}\\
+      \artifact{reactive\_jammer\_square\_NLOS}
+    \end{tabular}
+    & 0.380724 to 1.000000 & Benign control drives the lowest macro-F1 through false abnormal predictions; abnormal-only jammer domains are easier. \\
+    JamShield & Reactive jammer-type holdout with benign control &
+    \begin{tabular}[t]{@{}l@{}}
+      \artifact{data\_benign\_4}\\
+      \artifact{reactive\_jammer\_cos\_NLOS}\\
+      \artifact{reactive\_jammer\_gaussian\_LOS}\\
+      \artifact{reactive\_jammer\_gaussian\_additional\_end\_devices}\\
+      \artifact{reactive\_jammer\_square\_NLOS}\\
+      \artifact{reactive\_jammer\_triangle\_NLOS}
+    \end{tabular}
+    & 0.385551 to 0.487570 & Reactive-family transfer remains difficult across jammer domains, with benign-control false abnormal predictions still limiting macro-F1. \\
+    ElectroSense PSD & Sensor holdout &
+    \begin{tabular}[t]{@{}l@{}}
+      \artifact{Geneva}\\
+      \artifact{alcorcon1}\\
+      \artifact{bcn-L}
+    \end{tabular}
+    & 0.221060 to 0.618975 & Sensor-domain shift is strongest for Geneva, with DAB collapse and comparatively stronger FM/LTE transfer. \\
     \bottomrule
-  \end{tabular}}
+  \end{tabularx}
 \end{table}
 
 \begin{figure}[t]
