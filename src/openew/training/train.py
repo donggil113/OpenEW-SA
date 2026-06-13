@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +24,9 @@ from openew.utils.config import ensure_dir, load_yaml
 def train(config: dict[str, Any]) -> dict[str, Any]:
     """Train a single-task classifier from converted artifacts."""
 
+    seed = _config_seed(config)
+    if seed is not None:
+        set_seed(seed)
     device = torch.device(config.get("device", "cuda" if torch.cuda.is_available() else "cpu"))
     dataset = ArtifactDataset(config["artifact_dir"], config["label_column"])
     split_indices = build_holdout_split_indices(dataset.metadata, config)
@@ -30,11 +34,16 @@ def train(config: dict[str, Any]) -> dict[str, Any]:
         validation_fraction = float(config.get("validation_fraction", 0.2))
         val_size = max(1, int(len(dataset) * validation_fraction))
         train_size = len(dataset) - val_size
-        train_ds, val_ds = random_split(dataset, [train_size, val_size])
+        train_ds, val_ds = random_split(dataset, [train_size, val_size], generator=_torch_generator(seed))
     else:
         train_indices, val_indices = split_indices
         train_ds, val_ds = Subset(dataset, train_indices), Subset(dataset, val_indices)
-    train_loader = DataLoader(train_ds, batch_size=config.get("batch_size", 64), shuffle=True)
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=config.get("batch_size", 64),
+        shuffle=True,
+        generator=_torch_generator(seed + 1 if seed is not None else None),
+    )
     val_loader = DataLoader(val_ds, batch_size=config.get("batch_size", 64))
     output_dir = ensure_dir(config.get("output_dir", "runs/default"))
     preprocessing_state = apply_training_preprocessing(dataset, train_ds, config, output_dir)
@@ -77,6 +86,30 @@ def train(config: dict[str, Any]) -> dict[str, Any]:
     with (output_dir / "metrics.json").open("w", encoding="utf-8") as handle:
         json.dump(metrics, handle, indent=2, sort_keys=True)
     return metrics
+
+
+def set_seed(seed: int) -> None:
+    """Set common random seeds for repeatable baseline runs."""
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    if hasattr(torch.backends, "cudnn"):
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
+
+
+def _config_seed(config: dict[str, Any]) -> int | None:
+    seed = config.get("seed")
+    return None if seed is None else int(seed)
+
+
+def _torch_generator(seed: int | None) -> torch.Generator | None:
+    if seed is None:
+        return None
+    return torch.Generator().manual_seed(seed)
 
 
 def apply_training_preprocessing(
