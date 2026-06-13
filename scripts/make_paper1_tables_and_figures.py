@@ -276,10 +276,14 @@ def _baseline_label(row: pd.Series) -> str:
             return "JamShield scenario holdout"
         return "JamShield random"
     if dataset.startswith("DeepSense"):
-        if "iq cnn" in model or "unflattened" in split:
+        is_day2_holdout = "train on day1" in split or "evaluate on day2" in split
+        is_iq_cnn = "iq cnn" in model or "unflattened" in split
+        if is_iq_cnn and is_day2_holdout:
+            return "DeepSense IQ-CNN Day2 holdout"
+        if is_iq_cnn:
             return "DeepSense IQ-CNN random"
-        if "train on day1" in split or "evaluate on day2" in split:
-            return "DeepSense Day2 holdout"
+        if is_day2_holdout:
+            return "DeepSense MLP Day2 holdout"
         return "DeepSense MLP random"
     if dataset.startswith("ElectroSense"):
         if "hold out" in split or "sensor" in split:
