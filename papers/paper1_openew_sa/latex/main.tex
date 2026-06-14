@@ -59,7 +59,7 @@ The contributions of this paper are:
   \item Real-data conversion pipelines for JamShield, DeepSense SDR WiFi, and ElectroSense PSD.
   \item Baseline training and evaluation workflows with detailed classification metrics.
   \item Domain-aware split protocols covering jammer scenario, jammer family, collection day, and sensor holdout settings.
-  \item Paper-ready dataset, baseline, and domain-holdout summaries for the first OpenEW-SA benchmark draft.
+  \item Paper-ready dataset, baseline, and domain-holdout summaries for the first OpenEW-SA benchmark release.
   \item A documented future-work path toward WiSig RF fingerprinting, RadioML modulation baselines, and neuro-symbolic or hypergraph-based reasoning models.
 \end{itemize}
 
@@ -261,7 +261,7 @@ The current benchmark includes three completed subsets: JamShield, DeepSense SDR
 
 The baselines are intentionally lightweight. JamShield and ElectroSense use tabular MLPs, while DeepSense uses a tabular MLP and an IQ CNN. These models are appropriate reference points, but they do not represent the full range of possible RF architectures, domain adaptation methods, calibration strategies, or neuro-symbolic models.
 
-The paper uses existing OpenEW-SA artifacts, generated benchmark summaries, and paper-ready tables. It does not introduce new experiments, raw data, or additional preprocessing beyond the current repository workflow. Raw datasets are not stored in the repository.
+The paper reports experiments generated through the current OpenEW-SA repository workflow and does not redistribute raw datasets. Additional RF tasks, stronger architectures, and new preprocessing variants are left for future benchmark releases. Raw datasets are not stored in the repository.
 
 Finally, neuro-symbolic and hypergraph-based reasoning remain future work. OpenEW-SA provides the schema and evaluation scaffold for that direction, but this manuscript does not evaluate a hypergraph model.
 
