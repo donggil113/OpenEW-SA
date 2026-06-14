@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+﻿\documentclass[11pt]{article}
 
 \usepackage[margin=1in]{geometry}
 \usepackage{booktabs}
@@ -168,9 +168,9 @@ Table~\ref{tab:baseline-results} presents the single-seed reference baseline res
     JamShield & Jamming/interference detection & Tabular MLP & Hold out selected jammer source domains plus \artifact{data\_benign\_4}. & 0.846 & 0.829 & 0.970 & 0.984 \\
     JamShield & Jamming/interference detection & Tabular MLP & Hold out reactive jammer domains plus \artifact{data\_benign\_4}. & 0.846 & 0.793 & 0.928 & 0.977 \\
     DeepSense SDR WiFi & 4-channel WiFi occupancy classification & Tabular MLP & Random row split across DeepSense day1/day2 windows. & 0.578 & 0.614 & -- & -- \\
-    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & Tabular MLP & Train on day1 domains and validate/evaluate on day2 domains. & 0.152 & 0.115 & -- & -- \\
+    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & Tabular MLP & Day1 train / day2 holdout report. & 0.152 & 0.115 & -- & -- \\
     DeepSense SDR WiFi & 4-channel WiFi occupancy classification & IQ CNN 1D & Random row split using unflattened [2, 1024] I/Q windows. & 0.741 & 0.768 & -- & -- \\
-    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & IQ CNN 1D & Train on day1 domains and validate/evaluate on day2 domains. & 0.281 & 0.218 & -- & -- \\
+    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & IQ CNN 1D & Day1 train / day2 holdout report. & 0.281 & 0.218 & -- & -- \\
     ElectroSense PSD & PSD technology classification & Tabular MLP & Random row split across ElectroSense PSD samples. & 0.999 & 0.999 & -- & -- \\
     ElectroSense PSD & PSD technology classification & Tabular MLP & Hold out sensors \artifact{alcorcon1}, \artifact{bcn-L}, and \artifact{Geneva}. & 0.555 & 0.537 & -- & -- \\
     \bottomrule
@@ -271,9 +271,11 @@ The main empirical finding is that random row-level splits overestimate performa
 
 \section{Code and Data Availability}
 
-The OpenEW-SA code is maintained in a public GitHub repository. Raw datasets are not redistributed with the repository and must be downloaded from their original public sources. Local raw-data, processed-data, run-output, and table paths are configured through YAML files. No DOI or archival repository link is claimed for the current manuscript draft.
+The OpenEW-SA code is maintained at \url{https://github.com/donggil113/OpenEW-SA}. The repository contains conversion, training, evaluation, reporting, and LaTeX-generation scripts. Raw datasets are not redistributed with the repository and must be downloaded from their original public sources. Local raw-data, processed-data, run-output, and table paths are configured through YAML files. No DOI or archival repository link is claimed for the current manuscript draft.
 
 \bibliographystyle{plainnat}
 \bibliography{../references}
 
 \end{document}
+
+
