@@ -84,6 +84,27 @@ The unified metadata schema is:
 
 The schema is intentionally broader than any individual dataset. JamShield primarily uses \artifact{abnormal\_event\_label}, DeepSense primarily uses \artifact{occupancy\_label}, and ElectroSense primarily uses \artifact{situation\_label}. Shared fields such as \artifact{dataset\_source}, \artifact{input\_type}, \artifact{frequency\_band}, \artifact{rx\_id}, and \artifact{domain\_id} make cross-dataset analysis possible. The \artifact{domain\_id} field is especially important because it supports scenario, day, and sensor holdouts without requiring dataset-specific training code.
 
+The following compact summary distinguishes fields actively used in the current Paper 1 experiments from fields reserved for future extensions:
+\begin{center}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.14}
+\begin{tabularx}{0.96\textwidth}{L{0.25\textwidth} L{0.18\textwidth} Y}
+  \toprule
+  Metadata field(s) & Current status & Paper 1 use \\
+  \midrule
+  \artifact{sample\_id}, \artifact{dataset\_source}, \artifact{input\_type}, \artifact{domain\_id} & Active for all datasets & Provide sample identity, source provenance, feature modality, and the domain variable used for random and domain-aware split protocols. \\
+  \artifact{frequency\_band}, \artifact{rx\_id} & Active where available & Record spectrum band and receiver, station, sensor, or domain identifiers when these are present in the source data or can be inferred by the converter. \\
+  \artifact{abnormal\_event\_label} & JamShield label & Predictive label for tabular RF/network abnormal interference detection. \\
+  \artifact{occupancy\_label} & DeepSense label & Predictive label for 4-channel SDR WiFi occupancy classification. \\
+  \artifact{situation\_label} & ElectroSense label & Predictive label for PSD technology classification. \\
+  \artifact{tx\_id} & Reserved when unavailable & Included for transmitter-aware datasets, but not available for the current Paper 1 subsets. \\
+  \artifact{modulation\_label} & Reserved & Included for future modulation-recognition extensions such as RadioML, but not used as a predictive label in the current Paper 1 experiments. \\
+  \artifact{synthetic\_mission\_context}, \artifact{threat\_level}, \artifact{human\_review\_required} & Reserved/contextual & Included for future RF situation-awareness and neuro-symbolic extensions. These fields are not used as predictive labels in the current Paper 1 experiments. \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
 The benchmark design follows four principles. First, large public datasets are not downloaded automatically; users provide raw files locally and configure paths explicitly. Second, dataset-specific converters preserve source semantics while mapping samples into common metadata. Third, baseline models are intentionally lightweight so that split-protocol effects remain interpretable. Fourth, evaluation reports random row-level splits alongside domain-aware splits, separating in-domain interpolation from deployment-relevant generalization.
 
 \begin{figure}[t]
