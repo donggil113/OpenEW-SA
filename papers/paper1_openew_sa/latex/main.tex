@@ -82,7 +82,7 @@ The unified metadata schema is:
 \artifact{sample\_id}, \artifact{dataset\_source}, \artifact{input\_type}, \artifact{time\_index}, \artifact{frequency\_band}, \artifact{tx\_id}, \artifact{rx\_id}, \artifact{modulation\_label}, \artifact{occupancy\_label}, \artifact{abnormal\_event\_label}, \artifact{domain\_id}, \artifact{synthetic\_mission\_context}, \artifact{situation\_label}, \artifact{threat\_level}, \artifact{human\_review\_required}
 \end{quote}
 
-The schema is intentionally broader than any individual dataset. JamShield primarily uses \artifact{abnormal\_event\_label}, DeepSense primarily uses \artifact{occupancy\_label}, and ElectroSense primarily uses \artifact{situation\_label}. Shared fields such as \artifact{dataset\_source}, \artifact{input\_type}, \artifact{frequency\_band}, \artifact{rx\_id}, and \artifact{domain\_id} make cross-dataset analysis possible. The \artifact{domain\_id} field is especially important because it supports scenario, day, and sensor holdouts without requiring dataset-specific training code.
+The schema is intentionally broader than any individual dataset. In the current Paper 1 benchmark, \artifact{sample\_id}, \artifact{dataset\_source}, \artifact{input\_type}, \artifact{domain\_id}, and task-specific labels are actively populated by the converters. JamShield primarily uses \artifact{abnormal\_event\_label}, DeepSense primarily uses \artifact{occupancy\_label}, and ElectroSense primarily uses \artifact{situation\_label}. Shared fields such as \artifact{frequency\_band}, \artifact{rx\_id}, and \artifact{domain\_id} make cross-dataset analysis possible when they are available or inferable from the source data. The \artifact{domain\_id} field is especially important because it supports scenario, day, and sensor holdouts without requiring dataset-specific training code. Fields such as \artifact{synthetic\_mission\_context}, \artifact{threat\_level}, and \artifact{human\_review\_required} are reserved for future situation-awareness extensions and are not used as predictive labels in the Paper 1 experiments.
 
 The following compact summary distinguishes fields actively used in the current Paper 1 experiments from fields reserved for future extensions:
 \begin{center}
@@ -154,7 +154,7 @@ OpenEW-SA evaluates each task with random row-level splits and, where supported 
 
 For JamShield, the random split samples rows across all domains. The scenario holdout reports on selected jammer source domains plus the benign control domain \artifact{data\_benign\_4}. The reactive jammer-type holdout reports on reactive jammer domains plus the same benign control domain. Including benign samples in the holdout is necessary for meaningful binary reporting because abnormal-only held-out sets can make AUROC, AUPRC, and normal-class support difficult to interpret.
 
-For DeepSense, the random split samples I/Q windows across \artifact{day1} and \artifact{day2}. The day-aware holdout trains on \artifact{day1} and reports final out-of-domain performance on held-out \artifact{day2}, testing temporal and collection-condition transfer. For ElectroSense, the random split samples PSD rows across sensors. The sensor holdout reports on held-out receiver domains, including \artifact{alcorcon1}, \artifact{bcn-L}, and \artifact{Geneva}, testing whether PSD technology recognition transfers across sensing sites.
+For DeepSense, the random split samples I/Q windows across \artifact{day1} and \artifact{day2}. The day-aware holdout trains on \artifact{day1} domains and reports final holdout performance on \artifact{day2} domains, testing temporal and collection-condition transfer. For ElectroSense, the random split samples PSD rows across sensors. The sensor holdout reports on held-out receiver domains, including \artifact{alcorcon1}, \artifact{bcn-L}, and \artifact{Geneva}, testing whether PSD technology recognition transfers across sensing sites.
 
 All runs report accuracy and macro-F1. Binary JamShield runs additionally report AUROC and AUPRC. The training and evaluation pipeline also writes per-class precision, recall, F1, support, prediction counts, confusion matrices, and prediction CSVs for by-domain analysis. Table~\ref{tab:baseline-results} reports aggregate baseline metrics, Table~\ref{tab:domain-summary} summarizes the domain-aware holdout findings, and Figure~\ref{fig:domain-macro-f1} and Supplementary Table S1 report the detailed per-domain behavior.
 
@@ -168,7 +168,7 @@ All training configurations use YAML-controlled paths and model parameters. Feat
 
 \subsection{Reproducibility Details}
 
-OpenEW-SA uses YAML-controlled configuration files for dataset paths, model settings, preprocessing options, split protocols, and output directories. Feature standardization is fit only on training features and then applied to non-training features; held-out-domain features do not contribute to standardization statistics. Class-balanced cross entropy is used where configured to reduce class-imbalance effects. The evaluation scripts support both random row-level splits and domain-aware holdouts, including scenario, jammer-type, collection-day, and sensor holdout protocols. The single-seed reference runs reported in Table~\ref{tab:baseline-results} and the three-seed robustness summaries are generated by repository scripts.
+OpenEW-SA uses YAML-controlled configuration files for dataset paths, model settings, preprocessing options, split protocols, and output directories. The Paper 1 reference configurations use AdamW optimization with learning rate 0.001 and 10 training epochs. Batch size is 64 for JamShield runs and 128 for DeepSense and ElectroSense runs. Random-split configurations use a 0.2 row-level reporting fraction, while domain-aware configurations specify \artifact{domain\_holdout} or \artifact{jammer\_type\_holdout} split strategies and their held-out domains in YAML. Feature standardization is fit only on training features and then applied to non-training features; held-out-domain features do not contribute to standardization statistics. The JamShield configurations use class-balanced cross entropy, and other Paper 1 configurations use standard cross entropy unless otherwise specified in their YAML files. The single-seed reference runs reported in Table~\ref{tab:baseline-results} and the three-seed robustness summaries are generated by repository scripts.
 
 \section{Results}
 
@@ -189,9 +189,9 @@ Table~\ref{tab:baseline-results} presents the single-seed reference baseline res
     JamShield & Jamming/interference detection & Tabular MLP & Hold out selected jammer source domains plus \artifact{data\_benign\_4}. & 0.846 & 0.829 & 0.970 & 0.984 \\
     JamShield & Jamming/interference detection & Tabular MLP & Hold out reactive jammer domains plus \artifact{data\_benign\_4}. & 0.846 & 0.793 & 0.928 & 0.977 \\
     DeepSense SDR WiFi & 4-channel WiFi occupancy classification & Tabular MLP & Random row split across DeepSense day1/day2 windows. & 0.578 & 0.614 & -- & -- \\
-    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & Tabular MLP & Train on day1 domains; report on held-out day2 domains. & 0.152 & 0.115 & -- & -- \\
+    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & Tabular MLP & Day1 train / day2 holdout report. & 0.152 & 0.115 & -- & -- \\
     DeepSense SDR WiFi & 4-channel WiFi occupancy classification & IQ CNN 1D & Random row split using unflattened [2, 1024] I/Q windows. & 0.741 & 0.768 & -- & -- \\
-    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & IQ CNN 1D & Train on day1 domains; report on held-out day2 domains. & 0.281 & 0.218 & -- & -- \\
+    DeepSense SDR WiFi & 4-channel WiFi occupancy classification & IQ CNN 1D & Day1 train / day2 holdout report. & 0.281 & 0.218 & -- & -- \\
     ElectroSense PSD & PSD technology classification & Tabular MLP & Random row split across ElectroSense PSD samples. & 0.999 & 0.999 & -- & -- \\
     ElectroSense PSD & PSD technology classification & Tabular MLP & Hold out sensors \artifact{alcorcon1}, \artifact{bcn-L}, and \artifact{Geneva}. & 0.555 & 0.537 & -- & -- \\
     \bottomrule
@@ -294,7 +294,7 @@ The main empirical finding is that random row-level splits overestimate performa
 
 \section{Code and Data Availability}
 
-The OpenEW-SA code is maintained in a public GitHub repository. Raw datasets are not redistributed with the repository and must be downloaded from their original public sources. Local raw-data, processed-data, run-output, and table paths are configured through YAML files. No DOI or archival repository link is claimed for the current manuscript draft.
+The OpenEW-SA code is maintained in a public GitHub repository at \url{https://github.com/donggil113/OpenEW-SA}. The repository contains conversion, training, evaluation, reporting, and LaTeX-generation scripts for the benchmark workflow. Raw datasets are not redistributed with the repository and must be downloaded from their original public sources. Local raw-data, processed-data, run-output, and table paths are configured through YAML files. No Zenodo DOI is claimed for the current manuscript draft.
 
 \bibliographystyle{plainnat}
 \bibliography{../references}
