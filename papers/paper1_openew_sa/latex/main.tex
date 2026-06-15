@@ -59,7 +59,7 @@ The contributions of this paper are:
   \item Real-data conversion pipelines for JamShield, DeepSense SDR WiFi, and ElectroSense PSD.
   \item Baseline training and evaluation workflows with detailed classification metrics.
   \item Domain-aware split protocols covering jammer scenario, jammer family, collection day, and sensor holdout settings.
-  \item Paper-ready dataset, baseline, and domain-holdout summaries for the first OpenEW-SA benchmark draft.
+  \item Paper-ready dataset, baseline, and domain-holdout summaries for the first OpenEW-SA benchmark release.
   \item A documented future-work path toward WiSig RF fingerprinting, RadioML modulation baselines, and neuro-symbolic or hypergraph-based reasoning models.
 \end{itemize}
 
@@ -69,7 +69,7 @@ RF machine learning benchmarks commonly focus on specific tasks such as modulati
 
 Spectrum sensing and occupancy datasets provide natural domain shifts because sensors, days, and locations often correspond to different propagation and hardware conditions \cite{uvaydov2021deepsense,rajendran2017electrosenseOpenBig}. DeepSense-style SDR captures expose raw I/Q windows and collection-day variation \cite{uvaydov2021deepsense,wiotlab2021deepsenseGithub}. ElectroSense-style PSD measurements expose receiver and location effects across frequency-domain observations \cite{scalingi2023wirelessTechnologyClassification,scalingi2023electrosensePsdDataset,rajendran2017electrosenseOpenBig}. Jamming and interference datasets such as JamShield add scenario and jammer-family shifts, which are especially relevant to abnormal-event detection \cite{panitsas2025jamshield,panitsas2024jamshieldDatasetGithub,panitsas2024jamshieldDatasetDataport}.
 
-Domain generalization is a recurring challenge in RF learning \cite{zhang2025domainGeneralizationRff,zhang2024domainGeneralizationRffArxiv}. Models can exploit receiver artifacts, collection conditions, or scenario-specific signatures that do not transfer to new domains. Random sample splits may therefore conflate within-domain interpolation with out-of-domain generalization. OpenEW-SA is designed to make that distinction explicit by reporting both random row-level baselines and domain-aware holdouts.
+Domain generalization is a recurring challenge in RF learning \cite{zhang2025domainGeneralizationRff}. Models can exploit receiver artifacts, collection conditions, or scenario-specific signatures that do not transfer to new domains. Random sample splits may therefore conflate within-domain interpolation with out-of-domain generalization. OpenEW-SA is designed to make that distinction explicit by reporting both random row-level baselines and domain-aware holdouts.
 
 Future extensions of the benchmark may also connect to neuro-symbolic reasoning \cite{cheng2024neuralSymbolicKgSurvey,liu2025neuralSymbolicQuerySurvey,delong2023neurosymbolicAiKgSurvey} and graph/hypergraph situation awareness \cite{gao2024hypergraphSituationAwareness,alavizadeh2022cyberSituationAwarenessSurvey}. Receivers, domains, bands, time windows, labels, and threat states could be treated as typed entities in a graph or hypergraph. The present paper does not implement those models; it establishes the conversion and evaluation layer needed before such structured methods can be evaluated fairly.
 
@@ -209,7 +209,7 @@ The random row-level results in Table~\ref{tab:baseline-results} are strong acro
 
 The domain-aware results substantially change the interpretation. JamShield scenario holdout reduces macro-F1 to 0.829, and reactive jammer-type holdout reduces macro-F1 to 0.793. DeepSense day2 holdout falls to 0.115 macro-F1 for the MLP. The day2 holdout IQ-CNN improves accuracy to 0.281 and macro-F1 to 0.218, showing that an architecture matched to unflattened I/Q windows helps cross-day transfer, but still leaves a large day-level domain gap relative to the 0.768 random-split IQ-CNN macro-F1. ElectroSense sensor holdout falls from 0.999 macro-F1 under random splitting to 0.537. Thus, the same benchmark that appears strong under random splits reveals clear generalization gaps under scenario, day, and sensor holdouts. Figure~\ref{fig:baseline-macro-f1} summarizes this aggregate pattern, while Table~\ref{tab:domain-summary}, Figure~\ref{fig:domain-macro-f1}, and Supplementary Table S1 show that the holdout degradation also varies by protocol and individual domain.
 
-In contrast to the single-seed reference runs in Table~\ref{tab:baseline-results}, multi-seed robustness results report the mean +/- standard deviation over seeds 0, 1, and 2. These results show that the random-versus-holdout contrast is stable: JamShield random splitting reaches 0.956 +/- 0.001 macro-F1, while JamShield domain holdout reaches 0.825 +/- 0.013. DeepSense day2 MLP holdout remains low at 0.102 +/- 0.011 macro-F1, and the day2 IQ-CNN improves to 0.217 +/- 0.002 while still remaining far below the random IQ-CNN setting. ElectroSense random splitting remains near saturation at 0.993 +/- 0.000 macro-F1, whereas ElectroSense sensor holdout drops to 0.463 +/- 0.041.
+In contrast to the single-seed reference runs in Table~\ref{tab:baseline-results}, multi-seed robustness results report the mean $\pm$ standard deviation over seeds 0, 1, and 2. These results show that the random-versus-holdout contrast is stable: JamShield random splitting reaches 0.956 $\pm$ 0.001 macro-F1, while JamShield domain holdout reaches 0.825 $\pm$ 0.013. DeepSense day2 MLP holdout remains low at 0.102 $\pm$ 0.011 macro-F1, and the day2 IQ-CNN improves to 0.217 $\pm$ 0.002 while still remaining far below the random IQ-CNN setting. ElectroSense random splitting remains near saturation at 0.993 $\pm$ 0.000 macro-F1, whereas ElectroSense sensor holdout drops to 0.463 $\pm$ 0.041.
 
 \begin{table}[t]
   \centering
@@ -280,7 +280,7 @@ The current benchmark includes three completed subsets: JamShield, DeepSense SDR
 
 The baselines are intentionally lightweight. JamShield and ElectroSense use tabular MLPs, while DeepSense uses a tabular MLP and an IQ CNN. These models are appropriate reference points, but they do not represent the full range of possible RF architectures, domain adaptation methods, calibration strategies, or neuro-symbolic models.
 
-The paper uses existing OpenEW-SA artifacts, generated benchmark summaries, and paper-ready tables. It does not introduce new experiments, raw data, or additional preprocessing beyond the current repository workflow. Raw datasets are not stored in the repository.
+The paper reports experiments generated through the current OpenEW-SA repository workflow and does not redistribute raw datasets. It uses existing OpenEW-SA artifacts, generated benchmark summaries, and paper-ready tables produced by that workflow.
 
 The current reference implementation reports fixed-configuration holdout performance rather than extensive hyperparameter tuning on separate domain-level validation sets.
 
@@ -294,7 +294,7 @@ The main empirical finding is that random row-level splits overestimate performa
 
 \section{Code and Data Availability}
 
-The OpenEW-SA code is maintained in a public GitHub repository at \url{https://github.com/donggil113/OpenEW-SA}. The repository contains conversion, training, evaluation, reporting, and LaTeX-generation scripts for the benchmark workflow. Raw datasets are not redistributed with the repository and must be downloaded from their original public sources. Local raw-data, processed-data, run-output, and table paths are configured through YAML files. No Zenodo DOI is claimed for the current manuscript draft.
+The OpenEW-SA code is maintained in a public GitHub repository at \url{https://github.com/donggil113/OpenEW-SA}. The repository contains conversion, training, evaluation, reporting, and LaTeX-generation scripts for the benchmark workflow. Raw datasets are not redistributed with the repository and must be downloaded from their original public sources. Local raw-data, processed-data, run-output, and table paths are configured through YAML files. No Zenodo DOI is claimed for the current version.
 
 \bibliographystyle{plainnat}
 \bibliography{../references}
