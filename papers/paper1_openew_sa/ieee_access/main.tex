@@ -68,7 +68,6 @@ The contributions of this paper are:
   \item Baseline training and evaluation workflows with detailed classification metrics.
   \item Domain-aware split protocols covering jammer scenario, jammer family, collection day, and sensor holdout settings.
   \item Paper-ready dataset, baseline, and domain-holdout summaries for the first OpenEW-SA benchmark release.
-  \item A documented future-work path toward WiSig RF fingerprinting, RadioML modulation baselines, and neuro-symbolic or hypergraph-based reasoning models.
 \end{itemize}
 
 \section{Related Work}
@@ -77,7 +76,9 @@ RF machine learning benchmarks commonly focus on specific tasks such as modulati
 
 Spectrum sensing and occupancy datasets provide natural domain shifts because sensors, days, and locations often correspond to different propagation and hardware conditions \cite{uvaydov2021deepsense,rajendran2017electrosenseOpenBig}. DeepSense-style SDR captures expose raw I/Q windows and collection-day variation \cite{uvaydov2021deepsense,wiotlab2021deepsenseGithub}. ElectroSense-style PSD measurements expose receiver and location effects across frequency-domain observations \cite{scalingi2023wirelessTechnologyClassification,scalingi2023electrosensePsdDataset,rajendran2017electrosenseOpenBig}. Jamming and interference datasets such as JamShield add scenario and jammer-family shifts, which are especially relevant to abnormal-event detection \cite{panitsas2025jamshield,panitsas2024jamshieldDatasetGithub,panitsas2024jamshieldDatasetDataport}.
 
-Domain generalization is a recurring challenge in RF learning \cite{zhang2025domainGeneralizationRff,zhang2024domainGeneralizationRffArxiv}. Models can exploit receiver artifacts, collection conditions, or scenario-specific signatures that do not transfer to new domains. Random sample splits may therefore conflate within-domain interpolation with out-of-domain generalization. OpenEW-SA is designed to make that distinction explicit by reporting both random row-level baselines and domain-aware holdouts.
+Domain generalization is a recurring challenge in RF learning \cite{zhang2025domainGeneralizationRff}. Models can exploit receiver artifacts, collection conditions, or scenario-specific signatures that do not transfer to new domains. Random sample splits may therefore conflate within-domain interpolation with out-of-domain generalization. OpenEW-SA is designed to make that distinction explicit by reporting both random row-level baselines and domain-aware holdouts.
+
+This design follows the broader concern emphasized by domain generalization and distribution-shift benchmarks such as WILDS and DomainBed \cite{koh2021wilds,gulrajani2021domainbed}. Those benchmarks show that in-domain or randomly mixed evaluation can overestimate deployment robustness when the reporting environment differs from the training environment. OpenEW-SA adopts the same evaluation concern for public RF spectrum situation-awareness datasets by treating jammer scenario, collection day, and sensor identity as explicit holdout domains.
 
 Future extensions of the benchmark may also connect to neuro-symbolic reasoning \cite{cheng2024neuralSymbolicKgSurvey,liu2025neuralSymbolicQuerySurvey,delong2023neurosymbolicAiKgSurvey} and graph/hypergraph situation awareness \cite{gao2024hypergraphSituationAwareness,alavizadeh2022cyberSituationAwarenessSurvey}. Receivers, domains, bands, time windows, labels, and threat states could be treated as typed entities in a graph or hypergraph. The present paper does not implement those models; it establishes the conversion and evaluation layer needed before such structured methods can be evaluated fairly.
 
@@ -283,7 +284,7 @@ Table~\ref{tab:domain-summary} shows that holdout performance varies strongly by
 
 JamShield threshold analysis shows that calibration and decision thresholds matter under holdout evaluation. For the scenario/domain holdout, the default 0.50 threshold gives F1 0.876, while the best evaluated threshold is 0.95 with F1 0.938. For the reactive holdout, the default 0.50 threshold gives F1 0.888, while the best evaluated threshold is 0.40 with F1 0.894. The larger gain in the scenario holdout indicates that part of the binary holdout error is threshold-sensitive rather than purely ranking-sensitive.
 
-ElectroSense sensor holdout exposes even stronger receiver-domain variation. Geneva reaches 0.221 macro-F1, \artifact{alcorcon1} reaches 0.619, and \artifact{bcn-L} reaches 0.439. The per-class ElectroSense error analysis shows that DAB collapses across the held-out sensors, while LTE remains stable. FM is strong for \artifact{alcorcon1} and \artifact{bcn-L}, reaching 0.933 and 0.913 F1, but fails on Geneva with 0.000 F1. Figure~\ref{fig:domain-macro-f1} and Supplementary Table S1 are intended to make these domain-level differences visible at a glance.
+ElectroSense sensor holdout exposes even stronger receiver-domain variation. Geneva reaches 0.221 macro-F1, \artifact{alcorcon1} reaches 0.619, and \artifact{bcn-L} reaches 0.439. The per-class ElectroSense error analysis shows that DAB collapses across the held-out sensors, while LTE remains stable. FM is strong for \artifact{alcorcon1} and \artifact{bcn-L}, reaching 0.933 and 0.913 F1, but fails on Geneva with 0.000 F1. A plausible interpretation is that the Geneva failure reflects sensor-domain effects rather than a universal technology-classification failure, including receiver gain or calibration differences, antenna and location differences, frequency-grid alignment effects, or local interference and occupancy conditions. The present benchmark does not establish these factors causally, but it exposes them as domain-shift hypotheses that would be hidden by random row-level evaluation. Figure~\ref{fig:domain-macro-f1} and Supplementary Table S1 are intended to make these domain-level differences visible at a glance.
 
 \section{Discussion}
 
@@ -311,7 +312,7 @@ Finally, neuro-symbolic and hypergraph-based reasoning remain future work. OpenE
 
 OpenEW-SA provides a reproducible public RF benchmark scaffold for electromagnetic spectrum situation awareness. By converting JamShield, DeepSense SDR WiFi, and ElectroSense PSD into unified artifacts and metadata, it enables consistent baseline training, domain-aware evaluation, and paper-ready reporting across heterogeneous RF modalities.
 
-The main empirical finding is that random row-level splits overestimate performance. JamShield, DeepSense, and ElectroSense all show stronger random-split results than domain-aware results. Scenario, jammer-type, day, and sensor holdouts reveal generalization gaps that better approximate deployment challenges. Future work will extend the benchmark to WiSig and RadioML and explore whether the unified metadata schema can support neuro-symbolic or hypergraph-based reasoning models.
+The main empirical finding is that random row-level splits overestimate performance. JamShield, DeepSense, and ElectroSense all show stronger random-split results than domain-aware results. Scenario, jammer-type, day, and sensor holdouts reveal generalization gaps that better approximate deployment challenges. Future work will extend the benchmark to WiSig and RadioML.
 
 \section{Code and Data Availability}
 
