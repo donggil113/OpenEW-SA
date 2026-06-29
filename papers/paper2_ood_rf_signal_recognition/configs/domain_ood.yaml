@@ -1,0 +1,51 @@
+paper:
+  title: Uncertainty-Calibrated Multi-View RF Signal Recognition for Open-Set Electromagnetic Spectrum Monitoring
+  short_name: paper2_domain_ood
+
+protocol:
+  name: domain_ood
+  description: Hold out deployment domains while preserving known RF labels where possible.
+
+artifacts:
+  # Replace with the converted OpenEW-SA artifact directory for the selected dataset.
+  artifact_dir: 'D:\openew_sa_data\processed\deepsense'
+  metadata_file: metadata.csv
+  feature_file: features.npy
+  labels_file: labels.json
+
+views:
+  enabled:
+    - iq
+    - psd
+  fusion: reliability_weighted_late_fusion
+  missing_view_policy: mask_missing
+
+target:
+  label_column: occupancy_label
+  domain_column: domain_id
+
+split:
+  protocol: domain_ood
+  train_domains: []
+  id_domains: []
+  ood_domains: []
+  validation_fraction: 0.15
+  test_fraction: 0.20
+  seed: 42
+
+model:
+  name: multi_view_rf_encoder
+  uncertainty:
+    - temperature_scaling
+    - deep_ensemble
+    - mahalanobis_distance
+
+outputs:
+  split_dir: 'D:\openew_sa_data\paper2\splits\domain_ood'
+  run_dir: runs/paper2_domain_ood
+  table_dir: 'D:\openew_sa_data\paper2\tables'
+  figure_dir: 'D:\openew_sa_data\paper2\figures'
+
+notes:
+  - Fill train_domains and ood_domains after inspecting metadata.csv domain_id values.
+  - Model-specific multi-view artifact loading is a future integration point.
