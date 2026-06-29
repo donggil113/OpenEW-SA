@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-"""Generate Paper 2 OOD split manifests from OpenEW-SA metadata.
+"""Generate Paper 2 OOD split manifests from OpenEW-SA metadata or manifests.
 
-The script reads a converted OpenEW-SA ``metadata.csv`` file and writes train, validation-ID,
-test-ID, and OOD CSV manifests. It does not load feature tensors; model-specific feature loading is
-left to the future Paper 2 training pipeline.
+The script reads either a converted OpenEW-SA ``metadata.csv`` file or the unified Paper 2 manifest
+CSV and writes train, validation-ID, test-ID, and OOD CSV manifests. It does not load feature
+tensors; model-specific feature loading is left to the future Paper 2 training pipeline.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ class SplitOptions:
 
     metadata_path: Path
     output_dir: Path
+    output_prefix: str
     protocol: str
     label_column: str
     domain_column: str
@@ -42,16 +43,19 @@ class SplitOptions:
     validation_fraction: float
     test_fraction: float
     seed: int
+    limit: int | None
+    dry_run: bool
 
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
 
     parser = argparse.ArgumentParser(
-        description="Generate class, domain, or hybrid OOD split manifests from OpenEW-SA metadata.",
+        description="Generate class, domain, or hybrid OOD splits from OpenEW-SA metadata or Paper 2 manifests.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--config", type=Path, help="Optional Paper 2 YAML config.")
+    parser.add_argument("--manifest", type=Path, help="Path to a unified Paper 2 manifest CSV.")
     parser.add_argument("--metadata", type=Path, help="Path to an OpenEW-SA metadata.csv file.")
     parser.add_argument(
         "--artifact-dir",
@@ -59,6 +63,10 @@ def parse_args() -> argparse.Namespace:
         help="Converted OpenEW-SA artifact directory containing metadata.csv.",
     )
     parser.add_argument("--output-dir", type=Path, help="Directory for generated split CSV files.")
+    parser.add_argument(
+        "--output-prefix",
+        help="Prefix for split CSV names. Defaults to the protocol, such as class_ood.",
+    )
     parser.add_argument("--protocol", choices=SUPPORTED_PROTOCOLS, help="OOD split protocol.")
     parser.add_argument("--label-column", help="Metadata label column used for recognition.")
     parser.add_argument("--domain-column", help="Metadata domain column used for domain OOD.")
@@ -91,6 +99,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--validation-fraction", type=float, help="Fraction of ID rows for val-ID.")
     parser.add_argument("--test-fraction", type=float, help="Fraction of ID rows for test-ID.")
     parser.add_argument("--seed", type=int, help="Random seed for deterministic shuffling.")
+    parser.add_argument("--limit", type=int, help="Maximum input rows to read for smoke tests.")
+    parser.add_argument("--dry-run", action="store_true", help="Build split summary without writing CSV files.")
     return parser.parse_args()
 
 
@@ -101,6 +111,10 @@ def main() -> None:
     config = _load_config(args.config)
     options = _resolve_options(args, config)
     metadata = _read_metadata(options.metadata_path)
+    if options.limit is not None:
+        if options.limit <= 0:
+            raise ValueError("--limit must be a positive integer when provided.")
+        metadata = metadata.head(options.limit).copy()
     splits, summary = build_splits(metadata, options)
     _write_splits(splits, summary, options)
 
@@ -128,6 +142,8 @@ def build_splits(metadata: pd.DataFrame, options: SplitOptions) -> tuple[dict[st
         "domain_column": options.domain_column,
         "sample_id_column": options.sample_id_column,
         "seed": options.seed,
+        "limit": options.limit,
+        "dry_run": options.dry_run,
         "counts": {name: int(len(frame)) for name, frame in splits.items()},
         **details,
     }
@@ -292,10 +308,13 @@ def _resolve_options(args: argparse.Namespace, config: dict[str, Any]) -> SplitO
     return SplitOptions(
         metadata_path=metadata_path,
         output_dir=Path(output_dir),
+        output_prefix=args.output_prefix
+        or _config_value(config, ("outputs", "output_prefix"), ("split", "output_prefix"))
+        or protocol,
         protocol=protocol,
         label_column=args.label_column
         or _config_value(config, ("target", "label_column"), ("split", "label_column"))
-        or "modulation_label",
+        or "label",
         domain_column=args.domain_column
         or _config_value(config, ("target", "domain_column"), ("split", "domain_column"))
         or "domain_id",
@@ -318,18 +337,29 @@ def _resolve_options(args: argparse.Namespace, config: dict[str, Any]) -> SplitO
             else _config_value(config, ("split", "test_fraction"), default=0.20)
         ),
         seed=int(args.seed if args.seed is not None else _config_value(config, ("split", "seed"), default=42)),
+        limit=args.limit
+        if args.limit is not None
+        else _optional_int(_config_value(config, ("split", "limit"), ("limit",))),
+        dry_run=bool(args.dry_run or _config_value(config, ("split", "dry_run"), ("dry_run",), default=False)),
     )
 
 
 def _resolve_metadata_path(args: argparse.Namespace, config: dict[str, Any]) -> Path:
+    if args.manifest is not None:
+        return args.manifest
     if args.metadata is not None:
         return args.metadata
+    config_manifest = _path_config(config, ("manifest",), ("inputs", "manifest"), ("artifacts", "manifest"))
+    if config_manifest is not None:
+        return config_manifest
     config_metadata = _path_config(config, ("artifacts", "metadata"), ("metadata",))
     if config_metadata is not None:
         return config_metadata
     artifact_dir = args.artifact_dir or _path_config(config, ("artifacts", "artifact_dir"), ("artifact_dir",))
     if artifact_dir is None:
-        raise ValueError("Provide --metadata, --artifact-dir, or an artifacts.artifact_dir config value.")
+        raise ValueError(
+            "Provide --manifest, --metadata, --artifact-dir, or an artifacts.artifact_dir config value."
+        )
     metadata_file = _config_value(config, ("artifacts", "metadata_file"), default="metadata.csv")
     return Path(artifact_dir) / str(metadata_file)
 
@@ -349,7 +379,7 @@ def _load_config(path: Path | None) -> dict[str, Any]:
 def _read_metadata(path: Path) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"Metadata CSV not found: {path}")
-    metadata = pd.read_csv(path)
+    metadata = pd.read_csv(path, dtype=str, keep_default_na=False)
     if metadata.empty:
         raise ValueError(f"Metadata CSV is empty: {path}")
     return metadata
@@ -495,15 +525,39 @@ def _text_series(series: pd.Series) -> pd.Series:
 
 
 def _write_splits(splits: dict[str, pd.DataFrame], summary: dict[str, Any], options: SplitOptions) -> None:
+    output_paths = _split_output_paths(options)
+    summary["output_files"] = {name: str(path) for name, path in output_paths.items()}
+    if options.dry_run:
+        print(json.dumps(summary, indent=2, sort_keys=True))
+        return
+
     options.output_dir.mkdir(parents=True, exist_ok=True)
     for name, frame in splits.items():
-        frame.to_csv(options.output_dir / f"{name}.csv", index=False)
+        frame.to_csv(output_paths[name], index=False)
     combined = pd.concat(splits.values(), ignore_index=True)
-    combined.to_csv(options.output_dir / "all_splits.csv", index=False)
-    with (options.output_dir / "summary.json").open("w", encoding="utf-8") as handle:
+    combined.to_csv(output_paths["all_splits"], index=False)
+    with output_paths["summary"].open("w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2, sort_keys=True)
         handle.write("\n")
     print(json.dumps(summary, indent=2, sort_keys=True))
+
+
+def _split_output_paths(options: SplitOptions) -> dict[str, Path]:
+    suffixes = {
+        "train": "train",
+        "val_id": "val",
+        "test_id": "test_id",
+        "ood": "test_ood",
+        "all_splits": "all_splits",
+        "summary": "summary.json",
+    }
+    paths: dict[str, Path] = {}
+    for name, suffix in suffixes.items():
+        if suffix.endswith(".json"):
+            paths[name] = options.output_dir / f"{options.output_prefix}_{suffix}"
+        else:
+            paths[name] = options.output_dir / f"{options.output_prefix}_{suffix}.csv"
+    return paths
 
 
 def _list_option(cli_values: list[str] | None, config_value: Any) -> list[str]:
@@ -523,6 +577,12 @@ def _list_option(cli_values: list[str] | None, config_value: Any) -> list[str]:
 def _path_config(config: dict[str, Any], *paths: tuple[str, ...]) -> Path | None:
     value = _config_value(config, *paths)
     return Path(value) if value else None
+
+
+def _optional_int(value: Any) -> int | None:
+    if value in (None, ""):
+        return None
+    return int(value)
 
 
 def _config_value(
