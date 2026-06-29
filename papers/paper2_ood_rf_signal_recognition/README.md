@@ -12,10 +12,12 @@ papers/paper2_ood_rf_signal_recognition/
   README.md
   outline.md
   configs/
+    manifest_build.yaml
     class_ood.yaml
     domain_ood.yaml
     hybrid_ood.yaml
   scripts/
+    build_paper2_manifest.py
     generate_ood_splits.py
     calibration_metrics.py
     ood_detection_metrics.py
@@ -33,10 +35,68 @@ data/processed/<dataset>/
   labels.json
 ```
 
-The OOD split script operates on `metadata.csv` and preserves all metadata columns in its output
-split manifests. It expects OpenEW-SA schema fields such as `sample_id`, `dataset_source`,
-`input_type`, `modulation_label`, `occupancy_label`, `abnormal_event_label`, `domain_id`,
-`situation_label`, and `threat_level`.
+The manifest builder reads each artifact directory and emits a unified Paper 2 CSV with:
+
+```text
+sample_id,dataset_source,task,label,domain_id,input_type,feature_path,feature_index,
+split_hint,source_artifact_dir
+```
+
+The OOD split script can consume either the unified Paper 2 manifest or a raw OpenEW-SA
+`metadata.csv`. It preserves all input columns in its output split manifests.
+
+## Manifest Generation
+
+Build the full manifest from the configured JamShield, DeepSense, and ElectroSense artifacts:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py `
+  --config papers\paper2_ood_rf_signal_recognition\configs\manifest_build.yaml
+```
+
+Smoke-test the manifest build without writing outputs:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py `
+  --config papers\paper2_ood_rf_signal_recognition\configs\manifest_build.yaml `
+  --limit 500 `
+  --dry-run
+```
+
+## Class-OOD Split Generation
+
+Generate class-OOD splits from the unified manifest:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py `
+  --manifest D:\openew_sa_data\paper2\manifests\paper2_manifest.csv `
+  --output-dir D:\openew_sa_data\paper2\splits\class_ood `
+  --protocol class_ood `
+  --label-column label `
+  --known-classes "normal,0000,dab,fm" `
+  --ood-classes "abnormal_interference,1111,gsm,lte"
+```
+
+This writes `class_ood_train.csv`, `class_ood_val.csv`, `class_ood_test_id.csv`, and
+`class_ood_test_ood.csv`.
+
+## Domain-OOD Split Generation
+
+Generate domain-OOD splits from the unified manifest:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py `
+  --manifest D:\openew_sa_data\paper2\manifests\paper2_manifest.csv `
+  --output-dir D:\openew_sa_data\paper2\splits\domain_ood `
+  --protocol domain_ood `
+  --label-column label `
+  --domain-column domain_id `
+  --train-domains "day1,alcorcon1" `
+  --ood-domains "day2,barcelona1"
+```
+
+This writes `domain_ood_train.csv`, `domain_ood_val.csv`, `domain_ood_test_id.csv`, and
+`domain_ood_test_ood.csv`.
 
 ## Quick Checks
 
@@ -44,6 +104,7 @@ Each script is a standalone argparse CLI and supports `--help`:
 
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py --help
