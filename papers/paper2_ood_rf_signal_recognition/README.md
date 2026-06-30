@@ -19,6 +19,7 @@ papers/paper2_ood_rf_signal_recognition/
   scripts/
     build_paper2_manifest.py
     generate_ood_splits.py
+    train_baseline_classifier.py
     baseline_ood_scores.py
     calibration_metrics.py
     ood_detection_metrics.py
@@ -99,6 +100,26 @@ python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py `
 This writes `domain_ood_train.csv`, `domain_ood_val.csv`, `domain_ood_test_id.csv`, and
 `domain_ood_test_ood.csv`.
 
+## Baseline Classifier Training
+
+Train a nearest-centroid ID classifier from split manifests and write test-ID/test-OOD predictions:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier.py `
+  --train-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_train.csv `
+  --val-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_val.csv `
+  --test-id-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_test_id.csv `
+  --test-ood-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_test_ood.csv `
+  --output-dir D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid `
+  --model nearest_centroid `
+  --label-column label `
+  --seed 42
+```
+
+This writes `predictions_test_id.csv`, `predictions_test_ood.csv`, and `predictions_all.csv`.
+The `logistic_regression` and `mlp` options are available when scikit-learn is installed; otherwise
+use the pure NumPy `nearest_centroid` baseline.
+
 ## Baseline Score Generation
 
 Generate smoke-test OOD scores directly from a split manifest:
@@ -116,15 +137,26 @@ Generate maximum-softmax OOD scores when prediction probabilities are available:
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
   --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_all_splits.csv `
-  --predictions D:\openew_sa_data\paper2\predictions\class_ood_predictions.csv `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_all.csv `
   --method max_softmax_probability `
   --probability-prefix prob_ `
   --true-label-column label `
   --output D:\openew_sa_data\paper2\scores\class_ood_msp_scores.csv
 ```
 
-The same script also supports `entropy` for probability columns and `energy_score` for logit columns
-with `--logit-prefix`.
+Generate entropy OOD scores from the same probability columns:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_all_splits.csv `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_all.csv `
+  --method entropy `
+  --probability-prefix prob_ `
+  --true-label-column label `
+  --output D:\openew_sa_data\paper2\scores\class_ood_entropy_scores.csv
+```
+
+The same script also supports `energy_score` for logit columns with `--logit-prefix`.
 
 ## Metric Generation
 
@@ -140,8 +172,8 @@ Compute calibration metrics from prediction probabilities:
 
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py `
-  --predictions D:\openew_sa_data\paper2\predictions\class_ood_predictions.csv `
-  --true-label-column label `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_test_id.csv `
+  --true-label-column true_label `
   --probability-columns "prob_normal,prob_0000,prob_dab,prob_fm" `
   --output D:\openew_sa_data\paper2\metrics\class_ood_calibration.json
 ```
@@ -150,8 +182,8 @@ Generate risk-coverage curves from predictions with confidence:
 
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py `
-  --predictions D:\openew_sa_data\paper2\predictions\class_ood_predictions.csv `
-  --true-label-column label `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_test_id.csv `
+  --true-label-column true_label `
   --output D:\openew_sa_data\paper2\curves\class_ood_risk_coverage.csv `
   --summary-output D:\openew_sa_data\paper2\curves\class_ood_risk_coverage.json
 ```
@@ -163,6 +195,7 @@ Each script is a standalone argparse CLI and supports `--help`:
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
