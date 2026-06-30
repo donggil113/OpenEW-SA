@@ -63,6 +63,20 @@ LABEL_COLUMN_PRIORITY = [
     "threat_level",
 ]
 SPLIT_HINT_COLUMNS = ["split_hint", "split", "paper2_split", "split_name", "fold"]
+SYMBOLIC_STRING_COLUMNS = [
+    "sample_id",
+    "dataset_source",
+    "task",
+    "label",
+    "domain_id",
+    "input_type",
+    "split",
+    "paper2_split",
+    "split_hint",
+    "feature_path",
+    "source_artifact_dir",
+    *LABEL_COLUMN_PRIORITY,
+]
 
 
 @dataclass(frozen=True)
@@ -149,7 +163,7 @@ def build_manifest(
     if not frames:
         raise ValueError("No manifest rows were built from the provided artifact directories.")
 
-    manifest = pd.concat(frames, ignore_index=True).loc[:, MANIFEST_COLUMNS]
+    manifest = _preserve_string_columns(pd.concat(frames, ignore_index=True).loc[:, MANIFEST_COLUMNS])
     summary = {
         "num_rows": int(len(manifest)),
         "num_artifacts": int(len([artifact for artifact in artifacts if not artifact.get("skipped")])),
@@ -189,7 +203,7 @@ def _manifest_from_artifact(
         raise FileNotFoundError(f"metadata.csv not found: {metadata_path}")
 
     labels = _read_json(labels_path)
-    metadata = pd.read_csv(metadata_path, dtype=str, keep_default_na=False)
+    metadata = _read_csv_preserve_strings(metadata_path)
     if metadata.empty:
         raise ValueError(f"metadata.csv is empty: {metadata_path}")
     metadata_row_count = len(metadata)
@@ -232,6 +246,7 @@ def _manifest_from_artifact(
             "source_artifact_dir": str(artifact_dir),
         }
     )
+    manifest = _preserve_string_columns(manifest)
     summary.update(
         {
             "dataset_source": dataset_source,
@@ -303,9 +318,25 @@ def _load_config(path: Path | None) -> dict[str, Any]:
 def _read_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
-    with path.open("r", encoding="utf-8") as handle:
+    with path.open("r", encoding="utf-8-sig") as handle:
         loaded = json.load(handle)
     return loaded if isinstance(loaded, dict) else {}
+
+
+def _read_csv_preserve_strings(path: Path) -> pd.DataFrame:
+    """Read a CSV while preserving symbolic identifiers such as ``0001`` labels."""
+
+    return _preserve_string_columns(pd.read_csv(path, dtype=str, keep_default_na=False))
+
+
+def _preserve_string_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy with known symbolic identifier columns stored as strings."""
+
+    preserved = frame.copy()
+    for column in SYMBOLIC_STRING_COLUMNS:
+        if column in preserved.columns:
+            preserved[column] = preserved[column].fillna("").astype(str)
+    return preserved
 
 
 def _resolve_dataset_source(

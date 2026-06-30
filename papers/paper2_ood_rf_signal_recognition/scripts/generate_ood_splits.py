@@ -22,6 +22,24 @@ except ImportError:  # pragma: no cover - PyYAML is a project dependency.
     yaml = None
 
 SUPPORTED_PROTOCOLS = ("class_ood", "domain_ood", "hybrid_ood")
+SYMBOLIC_STRING_COLUMNS = [
+    "sample_id",
+    "dataset_source",
+    "task",
+    "label",
+    "domain_id",
+    "input_type",
+    "split",
+    "paper2_split",
+    "split_hint",
+    "feature_path",
+    "source_artifact_dir",
+    "modulation_label",
+    "occupancy_label",
+    "abnormal_event_label",
+    "situation_label",
+    "threat_level",
+]
 
 
 @dataclass(frozen=True)
@@ -115,6 +133,10 @@ def main() -> None:
         if options.limit <= 0:
             raise ValueError("--limit must be a positive integer when provided.")
         metadata = metadata.head(options.limit).copy()
+    metadata = _preserve_string_columns(
+        metadata,
+        [options.sample_id_column, options.label_column, options.domain_column],
+    )
     splits, summary = build_splits(metadata, options)
     _write_splits(splits, summary, options)
 
@@ -379,7 +401,7 @@ def _load_config(path: Path | None) -> dict[str, Any]:
 def _read_metadata(path: Path) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"Metadata CSV not found: {path}")
-    metadata = pd.read_csv(path, dtype=str, keep_default_na=False)
+    metadata = _preserve_string_columns(pd.read_csv(path, dtype=str, keep_default_na=False))
     if metadata.empty:
         raise ValueError(f"Metadata CSV is empty: {path}")
     return metadata
@@ -399,6 +421,8 @@ def _resolve_label_sets(
     available = sorted(value for value in labels.dropna().unique().tolist() if value)
     if not known_classes and not ood_classes:
         raise ValueError("Class OOD protocols require --known-classes, --ood-classes, or config values.")
+    known_classes = _normalize_symbol_values(known_classes, available)
+    ood_classes = _normalize_symbol_values(ood_classes, available)
     if known_classes and not ood_classes:
         ood_classes = [label for label in available if label not in set(known_classes)]
     if ood_classes and not known_classes:
@@ -422,6 +446,9 @@ def _resolve_domain_sets(
     available = sorted(value for value in domains.dropna().unique().tolist() if value)
     if not train_domains and not ood_domains:
         raise ValueError("Domain OOD protocols require --train-domains, --ood-domains, or config values.")
+    train_domains = _normalize_symbol_values(train_domains, available)
+    id_domains = _normalize_symbol_values(id_domains, available)
+    ood_domains = _normalize_symbol_values(ood_domains, available)
     if train_domains and not ood_domains:
         ood_domains = [domain for domain in available if domain not in set(train_domains)]
     if ood_domains and not train_domains:
@@ -443,6 +470,25 @@ def _validate_members(name: str, values: list[str], available: list[str]) -> Non
     missing = sorted(set(values) - set(available))
     if missing:
         raise ValueError(f"{name} values not found in metadata: {missing}. Available values: {available}")
+
+
+def _normalize_symbol_values(values: list[str], available: list[str]) -> list[str]:
+    """Map numeric-looking values back to unique zero-padded symbols when possible."""
+
+    return [_normalize_symbol_value(value, available) for value in values]
+
+
+def _normalize_symbol_value(value: str, available: list[str]) -> str:
+    text = str(value)
+    if text in available or not text.isdigit():
+        return text
+    value_int = int(text)
+    matches = [
+        candidate
+        for candidate in available
+        if candidate.isdigit() and len(candidate) > len(text) and int(candidate) == value_int
+    ]
+    return matches[0] if len(matches) == 1 else text
 
 
 def _split_id_pool(
@@ -524,6 +570,16 @@ def _text_series(series: pd.Series) -> pd.Series:
     return series.fillna("").astype(str)
 
 
+def _preserve_string_columns(frame: pd.DataFrame, extra_columns: list[str] | None = None) -> pd.DataFrame:
+    """Return a copy with symbolic identifier columns stored as strings."""
+
+    preserved = frame.copy()
+    for column in [*SYMBOLIC_STRING_COLUMNS, *(extra_columns or [])]:
+        if column in preserved.columns:
+            preserved[column] = preserved[column].fillna("").astype(str)
+    return preserved
+
+
 def _write_splits(splits: dict[str, pd.DataFrame], summary: dict[str, Any], options: SplitOptions) -> None:
     output_paths = _split_output_paths(options)
     summary["output_files"] = {name: str(path) for name, path in output_paths.items()}
@@ -533,10 +589,10 @@ def _write_splits(splits: dict[str, pd.DataFrame], summary: dict[str, Any], opti
 
     options.output_dir.mkdir(parents=True, exist_ok=True)
     for name, frame in splits.items():
-        frame.to_csv(output_paths[name], index=False)
-    combined = pd.concat(splits.values(), ignore_index=True)
+        _preserve_string_columns(frame).to_csv(output_paths[name], index=False)
+    combined = _preserve_string_columns(pd.concat(splits.values(), ignore_index=True))
     combined.to_csv(output_paths["all_splits"], index=False)
-    eval_splits = pd.concat([splits["test_id"], splits["ood"]], ignore_index=True)
+    eval_splits = _preserve_string_columns(pd.concat([splits["test_id"], splits["ood"]], ignore_index=True))
     eval_splits.to_csv(output_paths["eval"], index=False)
     with output_paths["summary"].open("w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2, sort_keys=True)
