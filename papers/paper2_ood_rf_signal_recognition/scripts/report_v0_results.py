@@ -38,6 +38,7 @@ METRIC_COLUMNS = [
     "n_ood",
     "n_samples",
 ]
+SYMBOLIC_STRING_COLUMNS = ["dataset", "protocol", "model", "score_method"]
 
 SCORE_PATTERNS = {
     ("max", "softmax", "probability"): "max_softmax_probability",
@@ -152,6 +153,7 @@ def _row_from_metrics(path: Path, metrics: dict[str, Any]) -> dict[str, Any]:
         "model": inferred["model"],
         "score_method": inferred["score_method"],
     }
+    _preserve_string_fields(row)
     for column in METRIC_COLUMNS:
         row[column] = _coerce_metric(metrics[column], column)
     return row
@@ -235,6 +237,14 @@ def _coerce_metric(value: Any, column: str) -> float | int:
     if column.startswith("n_"):
         return int(value)
     return float(value)
+
+
+def _preserve_string_fields(row: dict[str, Any]) -> None:
+    """Store symbolic report metadata fields as strings in-place."""
+
+    for column in SYMBOLIC_STRING_COLUMNS:
+        if column in row:
+            row[column] = "" if row[column] is None else str(row[column])
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:

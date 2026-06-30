@@ -13,6 +13,25 @@ import numpy as np
 import pandas as pd
 
 SUPPORTED_MODELS = ("logistic_regression", "mlp", "nearest_centroid")
+SYMBOLIC_STRING_COLUMNS = [
+    "sample_id",
+    "dataset_source",
+    "task",
+    "label",
+    "domain_id",
+    "input_type",
+    "split",
+    "paper2_split",
+    "split_hint",
+    "true_label",
+    "predicted_label",
+    "feature_path",
+    "modulation_label",
+    "occupancy_label",
+    "abnormal_event_label",
+    "situation_label",
+    "threat_level",
+]
 
 
 class ProbabilityClassifier(Protocol):
@@ -66,7 +85,15 @@ def main() -> None:
     val = _read_split(args.val_csv, "val") if args.val_csv else None
     test_id = _read_split(args.test_id_csv, "test_id")
     test_ood = _read_split(args.test_ood_csv, "test_ood")
-    split_frames = [split for split in [train, val, test_id, test_ood] if split is not None]
+    split_frames = [
+        _preserve_split_strings(split, [args.sample_id_column, args.label_column])
+        for split in [train, val, test_id, test_ood]
+        if split is not None
+    ]
+    train = split_frames[0]
+    val = split_frames[1] if args.val_csv else None
+    test_id = split_frames[2 if args.val_csv else 1]
+    test_ood = split_frames[3 if args.val_csv else 2]
     _validate_manifest_columns(
         split_frames,
         label_column=args.label_column,
@@ -216,10 +243,26 @@ def _read_split(path: Path | None, name: str) -> SplitFrame:
         raise ValueError(f"{name} split path is required.")
     if not path.exists():
         raise FileNotFoundError(f"{name} split CSV not found: {path}")
-    frame = pd.read_csv(path, dtype=str, keep_default_na=False)
+    frame = _preserve_string_columns(pd.read_csv(path, dtype=str, keep_default_na=False))
     if frame.empty:
         raise ValueError(f"{name} split CSV is empty: {path}")
     return SplitFrame(name=name, frame=frame)
+
+
+def _preserve_split_strings(split: SplitFrame, extra_columns: list[str] | None = None) -> SplitFrame:
+    """Return a split frame with symbolic identifier columns stored as strings."""
+
+    return SplitFrame(name=split.name, frame=_preserve_string_columns(split.frame, extra_columns))
+
+
+def _preserve_string_columns(frame: pd.DataFrame, extra_columns: list[str] | None = None) -> pd.DataFrame:
+    """Return a copy with symbolic identifier columns stored as strings."""
+
+    preserved = frame.copy()
+    for column in [*SYMBOLIC_STRING_COLUMNS, *(extra_columns or [])]:
+        if column in preserved.columns:
+            preserved[column] = preserved[column].fillna("").astype(str)
+    return preserved
 
 
 def _validate_manifest_columns(
@@ -325,7 +368,7 @@ def _predict_split(
     )
     for class_index, class_name in enumerate(classifier.classes_):
         output[f"prob_{class_name}"] = probabilities[:, class_index]
-    return output
+    return _preserve_string_columns(output)
 
 
 def _ood_labels(frame: pd.DataFrame) -> np.ndarray:
