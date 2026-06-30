@@ -183,6 +183,7 @@ def _infer_metadata(path: Path, metrics: dict[str, Any]) -> dict[str, str]:
         dataset = tokens.pop(0)
     if not protocol and tokens:
         protocol = "_".join(tokens)
+    protocol = _normalize_protocol_name(protocol)
     if not model:
         model = "none" if score_method == "random_baseline" else "unknown"
     return {
@@ -201,6 +202,12 @@ def _metric_stem(path: Path) -> str:
         if stem.endswith(suffix):
             return stem[: -len(suffix)]
     return stem
+
+
+def _normalize_protocol_name(protocol: str) -> str:
+    """Return display protocol names with split-file suffixes removed."""
+
+    return protocol[: -len("_eval")] if protocol.endswith("_eval") else protocol
 
 
 def _consume_suffix(tokens: list[str], patterns: dict[tuple[str, ...], str]) -> tuple[str, list[str]]:
