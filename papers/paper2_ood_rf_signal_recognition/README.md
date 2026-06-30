@@ -19,6 +19,7 @@ papers/paper2_ood_rf_signal_recognition/
   scripts/
     build_paper2_manifest.py
     generate_ood_splits.py
+    baseline_ood_scores.py
     calibration_metrics.py
     ood_detection_metrics.py
     risk_coverage_curves.py
@@ -98,6 +99,63 @@ python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py `
 This writes `domain_ood_train.csv`, `domain_ood_val.csv`, `domain_ood_test_id.csv`, and
 `domain_ood_test_ood.csv`.
 
+## Baseline Score Generation
+
+Generate smoke-test OOD scores directly from a split manifest:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_all_splits.csv `
+  --method random_baseline `
+  --output D:\openew_sa_data\paper2\scores\class_ood_random_scores.csv `
+  --seed 42
+```
+
+Generate maximum-softmax OOD scores when prediction probabilities are available:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_all_splits.csv `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_predictions.csv `
+  --method max_softmax_probability `
+  --probability-prefix prob_ `
+  --true-label-column label `
+  --output D:\openew_sa_data\paper2\scores\class_ood_msp_scores.csv
+```
+
+The same script also supports `entropy` for probability columns and `energy_score` for logit columns
+with `--logit-prefix`.
+
+## Metric Generation
+
+Compute OOD detection metrics from a baseline score CSV:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py `
+  --scores D:\openew_sa_data\paper2\scores\class_ood_msp_scores.csv `
+  --output D:\openew_sa_data\paper2\metrics\class_ood_msp_ood_metrics.json
+```
+
+Compute calibration metrics from prediction probabilities:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_predictions.csv `
+  --true-label-column label `
+  --probability-columns "prob_normal,prob_0000,prob_dab,prob_fm" `
+  --output D:\openew_sa_data\paper2\metrics\class_ood_calibration.json
+```
+
+Generate risk-coverage curves from predictions with confidence:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_predictions.csv `
+  --true-label-column label `
+  --output D:\openew_sa_data\paper2\curves\class_ood_risk_coverage.csv `
+  --summary-output D:\openew_sa_data\paper2\curves\class_ood_risk_coverage.json
+```
+
 ## Quick Checks
 
 Each script is a standalone argparse CLI and supports `--help`:
@@ -105,6 +163,7 @@ Each script is a standalone argparse CLI and supports `--help`:
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py --help
