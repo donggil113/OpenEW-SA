@@ -15,6 +15,20 @@ SUPPORTED_METHODS = (
     "entropy",
     "energy_score",
 )
+SYMBOLIC_STRING_COLUMNS = [
+    "sample_id",
+    "dataset_source",
+    "task",
+    "label",
+    "domain_id",
+    "input_type",
+    "split",
+    "paper2_split",
+    "split_hint",
+    "true_label",
+    "predicted_label",
+    "score_method",
+]
 
 
 def parse_args() -> argparse.Namespace:
@@ -55,6 +69,7 @@ def main() -> None:
         sample_id_column=args.sample_id_column,
         seed=args.seed,
     )
+    scores = _preserve_string_columns(scores)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     scores.to_csv(args.output, index=False)
     print(f"Wrote {args.output} ({len(scores)} rows, method={args.method})")
@@ -183,10 +198,20 @@ def _value_counts(series: pd.Series) -> dict[str, int]:
 def _read_csv(path: Path) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"CSV not found: {path}")
-    frame = pd.read_csv(path, dtype=str, keep_default_na=False)
+    frame = _preserve_string_columns(pd.read_csv(path, dtype=str, keep_default_na=False))
     if frame.empty:
         raise ValueError(f"CSV is empty: {path}")
     return frame
+
+
+def _preserve_string_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy with symbolic identifier columns stored as strings."""
+
+    preserved = frame.copy()
+    for column in SYMBOLIC_STRING_COLUMNS:
+        if column in preserved.columns:
+            preserved[column] = preserved[column].fillna("").astype(str)
+    return preserved
 
 
 def _resolve_true_labels(frame: pd.DataFrame, true_label_column: str) -> pd.Series:
