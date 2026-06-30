@@ -24,6 +24,7 @@ papers/paper2_ood_rf_signal_recognition/
     calibration_metrics.py
     ood_detection_metrics.py
     risk_coverage_curves.py
+    report_v0_results.py
 ```
 
 ## OpenEW-SA Artifact Assumptions
@@ -188,6 +189,17 @@ python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py `
   --summary-output D:\openew_sa_data\paper2\curves\class_ood_risk_coverage.json
 ```
 
+## Result Table Generation
+
+Summarize v0 OOD metric JSON files into CSV and Markdown tables:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\report_v0_results.py `
+  --metrics-dir D:\openew_sa_data\paper2\metrics `
+  --output-csv D:\openew_sa_data\paper2\tables\paper2_v0_ood_results.csv `
+  --output-md D:\openew_sa_data\paper2\tables\paper2_v0_ood_results.md
+```
+
 ## Quick Checks
 
 Each script is a standalone argparse CLI and supports `--help`:
@@ -200,6 +212,7 @@ python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py --
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\report_v0_results.py --help
 ```
 
 ## Example Split Generation
