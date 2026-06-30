@@ -151,9 +151,33 @@ def _merge_predictions(split: pd.DataFrame, predictions_path: Path | None, sampl
     )
     missing = merged[marker_column].ne("1")
     if missing.any():
-        raise ValueError(f"Predictions are missing for {int(missing.sum())} split rows.")
+        raise ValueError(_missing_prediction_message(merged, missing))
     merged = merged.drop(columns=[marker_column])
     return merged
+
+
+def _missing_prediction_message(frame: pd.DataFrame, missing: pd.Series) -> str:
+    """Return a detailed error message for split rows with no prediction match."""
+
+    missing_frame = frame.loc[missing].copy()
+    lines = [f"Predictions are missing for {len(missing_frame)} split rows."]
+    for column in ("split", "paper2_split"):
+        if column in missing_frame.columns:
+            lines.append(f"Missing rows by {column}: {_value_counts(missing_frame[column])}")
+    if "ood_label" in missing_frame.columns:
+        lines.append(f"Missing rows by ood_label: {_value_counts(missing_frame['ood_label'])}")
+    lines.append(
+        "If predictions only cover test_id + test_ood rows, pass "
+        "<output_prefix>_eval.csv instead of <output_prefix>_all_splits.csv."
+    )
+    return "\n".join(lines)
+
+
+def _value_counts(series: pd.Series) -> dict[str, int]:
+    """Return stable string-keyed counts for diagnostic messages."""
+
+    counts = series.fillna("").astype(str).value_counts(dropna=False).sort_index()
+    return {str(key): int(value) for key, value in counts.items()}
 
 
 def _read_csv(path: Path) -> pd.DataFrame:
