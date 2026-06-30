@@ -1,0 +1,19 @@
+artifacts:
+  - path: 'D:\openew_sa_data\processed\jamshield'
+    dataset_source: jamshield
+    task: jamming_interference_detection
+    label_column: abnormal_event_label
+  - path: 'D:\openew_sa_data\processed\deepsense'
+    dataset_source: deepsense
+    task: wifi_occupancy_classification
+    label_column: occupancy_label
+  - path: 'D:\openew_sa_data\processed\electrosense'
+    dataset_source: electrosense
+    task: psd_technology_recognition
+    label_column: situation_label
+
+outputs:
+  manifest_csv: 'D:\openew_sa_data\paper2\manifests\paper2_manifest.csv'
+
+limit:
+skip_missing: false
