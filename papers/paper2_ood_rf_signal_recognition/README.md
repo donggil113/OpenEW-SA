@@ -126,7 +126,7 @@ Generate smoke-test OOD scores directly from a split manifest:
 
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
-  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_all_splits.csv `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_eval.csv `
   --method random_baseline `
   --output D:\openew_sa_data\paper2\scores\class_ood_random_scores.csv `
   --seed 42
@@ -136,7 +136,7 @@ Generate maximum-softmax OOD scores when prediction probabilities are available:
 
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
-  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_all_splits.csv `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_eval.csv `
   --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_all.csv `
   --method max_softmax_probability `
   --probability-prefix prob_ `
@@ -148,7 +148,7 @@ Generate entropy OOD scores from the same probability columns:
 
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
-  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_all_splits.csv `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_eval.csv `
   --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_all.csv `
   --method entropy `
   --probability-prefix prob_ `

@@ -536,6 +536,8 @@ def _write_splits(splits: dict[str, pd.DataFrame], summary: dict[str, Any], opti
         frame.to_csv(output_paths[name], index=False)
     combined = pd.concat(splits.values(), ignore_index=True)
     combined.to_csv(output_paths["all_splits"], index=False)
+    eval_splits = pd.concat([splits["test_id"], splits["ood"]], ignore_index=True)
+    eval_splits.to_csv(output_paths["eval"], index=False)
     with output_paths["summary"].open("w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2, sort_keys=True)
         handle.write("\n")
@@ -548,6 +550,7 @@ def _split_output_paths(options: SplitOptions) -> dict[str, Path]:
         "val_id": "val",
         "test_id": "test_id",
         "ood": "test_ood",
+        "eval": "eval",
         "all_splits": "all_splits",
         "summary": "summary.json",
     }
