@@ -175,7 +175,6 @@ Compute calibration metrics from prediction probabilities:
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py `
   --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_test_id.csv `
   --true-label-column true_label `
-  --probability-columns "prob_normal,prob_0000,prob_dab,prob_fm" `
   --output D:\openew_sa_data\paper2\metrics\class_ood_calibration.json
 ```
 
@@ -235,11 +234,17 @@ Calibration and risk-coverage scripts expect one row per evaluated sample with a
 sample_id,true_label,predicted_label,confidence
 ```
 
-For NLL and Brier score, `calibration_metrics.py` can also consume class probability columns:
+For NLL and Brier score, `calibration_metrics.py` auto-detects class probability columns
+with `prob_`, `probability_`, or `p_` prefixes:
 
 ```text
 prob_BPSK,prob_QPSK,prob_8PSK
+prob_0000,prob_0001,prob_0100
 ```
+
+The suffix after the prefix is treated as the class label. Symbolic labels such as DeepSense
+`0000` and `0100` should be kept as strings; if a digit label is missing leading zeros in memory,
+the calibration script maps it back to a unique fixed-width probability suffix when possible.
 
 OOD detection can consume either one labeled score CSV or separate ID/OOD score CSV files. Scores
 are interpreted as higher-is-OOD by default, with `--lower-is-ood` available for energy-like or
