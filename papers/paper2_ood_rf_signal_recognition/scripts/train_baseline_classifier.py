@@ -116,6 +116,23 @@ def main() -> None:
     y_train = train.frame[args.label_column].astype(str).to_numpy()
     classifier = _fit_classifier(args.model, train_features, y_train, args.seed)
 
+    predictions_val = None
+    if val is not None:
+        val_features = _load_features(
+            val,
+            target_dim=target_dim,
+            feature_path_column=args.feature_path_column,
+            feature_index_column=args.feature_index_column,
+            feature_cache=args.feature_cache,
+        )
+        predictions_val = _predict_split(
+            val,
+            classifier,
+            val_features,
+            label_column=args.label_column,
+            sample_id_column=args.sample_id_column,
+        )
+
     test_id_features = _load_features(
         test_id,
         target_dim=target_dim,
@@ -146,6 +163,8 @@ def main() -> None:
     )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    if predictions_val is not None:
+        predictions_val.to_csv(args.output_dir / "predictions_val.csv", index=False)
     predictions_id.to_csv(args.output_dir / "predictions_test_id.csv", index=False)
     predictions_ood.to_csv(args.output_dir / "predictions_test_ood.csv", index=False)
     predictions_all = pd.concat([predictions_id, predictions_ood], ignore_index=True)

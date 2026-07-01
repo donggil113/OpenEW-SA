@@ -20,6 +20,7 @@ papers/paper2_ood_rf_signal_recognition/
     build_paper2_manifest.py
     generate_ood_splits.py
     train_baseline_classifier.py
+    temperature_scaling.py
     baseline_ood_scores.py
     calibration_metrics.py
     ood_detection_metrics.py
@@ -103,7 +104,7 @@ This writes `domain_ood_train.csv`, `domain_ood_val.csv`, `domain_ood_test_id.cs
 
 ## Baseline Classifier Training
 
-Train a nearest-centroid ID classifier from split manifests and write test-ID/test-OOD predictions:
+Train a nearest-centroid ID classifier from split manifests and write validation/test predictions:
 
 ```powershell
 python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier.py `
@@ -117,9 +118,72 @@ python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier
   --seed 42
 ```
 
-This writes `predictions_test_id.csv`, `predictions_test_ood.csv`, and `predictions_all.csv`.
-The `logistic_regression` and `mlp` options are available when scikit-learn is installed; otherwise
-use the pure NumPy `nearest_centroid` baseline.
+This writes `predictions_val.csv` when `--val-csv` is provided, plus `predictions_test_id.csv`,
+`predictions_test_ood.csv`, and `predictions_all.csv`. The `logistic_regression` and `mlp` options
+are available when scikit-learn is installed; otherwise use the pure NumPy `nearest_centroid`
+baseline.
+
+## Temperature Scaling Calibration
+
+Fit a scalar temperature on validation predictions and write calibrated prediction CSVs:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\temperature_scaling.py `
+  --val-predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_val.csv `
+  --test-id-predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_test_id.csv `
+  --test-ood-predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid\predictions_test_ood.csv `
+  --output-dir D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid_temperature_scaled `
+  --probability-prefix prob_ `
+  --true-label-column true_label
+```
+
+The script calibrates log-probabilities when logits are unavailable. It preserves symbolic labels
+such as DeepSense `0000` and writes `predictions_val_calibrated.csv`,
+`predictions_test_id_calibrated.csv`, `predictions_test_ood_calibrated.csv`,
+`predictions_all_calibrated.csv`, and `temperature_scaling_summary.json`.
+
+Generate calibrated maximum-softmax OOD scores:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_eval.csv `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid_temperature_scaled\predictions_all_calibrated.csv `
+  --method max_softmax_probability `
+  --probability-prefix prob_ `
+  --true-label-column label `
+  --output D:\openew_sa_data\paper2\scores\class_ood_temperature_scaled_msp_scores.csv
+```
+
+Generate calibrated entropy OOD scores:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
+  --split-csv D:\openew_sa_data\paper2\splits\class_ood\class_ood_eval.csv `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid_temperature_scaled\predictions_all_calibrated.csv `
+  --method entropy `
+  --probability-prefix prob_ `
+  --true-label-column label `
+  --output D:\openew_sa_data\paper2\scores\class_ood_temperature_scaled_entropy_scores.csv
+```
+
+Recompute calibration metrics on calibrated ID predictions:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid_temperature_scaled\predictions_test_id_calibrated.csv `
+  --true-label-column true_label `
+  --output D:\openew_sa_data\paper2\calibration\class_ood_nearest_centroid_temperature_scaled_calibration.json
+```
+
+Recompute risk-coverage summaries on calibrated ID predictions:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py `
+  --predictions D:\openew_sa_data\paper2\predictions\class_ood_nearest_centroid_temperature_scaled\predictions_test_id_calibrated.csv `
+  --true-label-column true_label `
+  --output D:\openew_sa_data\paper2\risk_coverage\class_ood_nearest_centroid_temperature_scaled_risk_coverage.csv `
+  --summary-output D:\openew_sa_data\paper2\risk_coverage\class_ood_nearest_centroid_temperature_scaled_risk_coverage.json
+```
 
 ## Baseline Score Generation
 
@@ -207,6 +271,7 @@ Each script is a standalone argparse CLI and supports `--help`:
 python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\temperature_scaling.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
