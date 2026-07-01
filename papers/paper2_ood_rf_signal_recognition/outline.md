@@ -87,6 +87,39 @@ column where `0` is ID and `1` is OOD.
 - Robustness slices: metrics by dataset source, domain, class, SNR or frequency band where metadata
   is available.
 
+## Current v0 Experimental Findings
+
+The current v0 baseline results use lightweight closed-set classifiers and score functions over the
+OpenEW-SA processed artifacts. The generated result tables are:
+
+- Table A: OOD detection results from `paper2_v0_ood_results.md`.
+- Table B: Calibration results from `paper2_v0_calibration_results.md`.
+- Table C: Risk-coverage summary from `paper2_v0_risk_coverage_summary.md`.
+
+Key findings:
+
+- ElectroSense class-OOD: logistic regression improves OOD detection over nearest centroid. MSP and
+  entropy AUROC are about 0.796 for logistic regression versus about 0.734 for nearest centroid MSP,
+  with substantially stronger ID calibration and risk-coverage behavior.
+- DeepSense day2-OOD: logistic regression has poor ID calibration and weak OOD detection. It reaches
+  only about 0.484 AUROC for MSP/entropy and has high calibration error, while nearest centroid MSP
+  is stronger for OOD detection at about 0.653 AUROC.
+- JamShield scenario-OOD: logistic regression has strong ID calibration, with low ECE and high
+  closed-set accuracy, but scenario-OOD detection remains weak at about 0.591 AUROC. This indicates
+  that the model can be well calibrated on retained ID samples while still failing to separate
+  scenario-shifted OOD samples.
+- Main lesson: closed-set ID calibration does not guarantee robust OOD detection. Calibration and
+  OOD separability must be evaluated as related but distinct properties.
+
+Next experimental gaps:
+
+- Temperature scaling for post-hoc calibration.
+- Energy score from logits rather than probability-only scores.
+- Mahalanobis or feature-distance OOD scoring.
+- Multi-view fusion across I/Q, PSD, spectrogram, and tabular views where available.
+- Per-domain and per-class error analysis to identify which emitters, days, sensors, or scenarios
+  drive failures.
+
 ## Planned Tables And Figures
 
 - Table 1: OpenEW-SA datasets, RF views, labels, domains, and OOD protocol mapping.
@@ -94,6 +127,9 @@ column where `0` is ID and `1` is OOD.
 - Table 3: Domain-OOD detection and calibration results.
 - Table 4: Hybrid-OOD detection and selective prediction results.
 - Table 5: Per-domain and per-class failure analysis.
+- Table A: v0 OOD detection results.
+- Table B: v0 calibration results.
+- Table C: v0 risk-coverage summary.
 - Figure 1: Multi-view RF uncertainty-calibrated recognition pipeline.
 - Figure 2: Reliability diagrams across protocols.
 - Figure 3: OOD score distributions for ID and OOD samples.
