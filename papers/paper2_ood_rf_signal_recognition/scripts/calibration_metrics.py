@@ -11,6 +11,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+SYMBOLIC_STRING_COLUMNS = ["sample_id", "true_label", "predicted_label", "ood_label"]
+PROBABILITY_PREFIXES = ("prob_", "probability_", "p_")
+
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
@@ -33,7 +36,11 @@ def parse_args() -> argparse.Namespace:
         action="append",
         help="Class labels matching probability columns. Defaults to probability column names.",
     )
-    parser.add_argument("--probability-prefix", default="prob_", help="Prefix stripped from probability columns.")
+    parser.add_argument(
+        "--probability-prefix",
+        default="prob_",
+        help="Preferred prefix stripped from probability columns; auto-detection also supports probability_ and p_.",
+    )
     parser.add_argument("--n-bins", type=int, default=15, help="Number of confidence bins.")
     parser.add_argument("--output", type=Path, help="Optional JSON or CSV output path.")
     return parser.parse_args()
@@ -43,7 +50,7 @@ def main() -> None:
     """Run calibration metric computation."""
 
     args = parse_args()
-    predictions = pd.read_csv(args.predictions)
+    predictions = _read_predictions(args.predictions)
     metrics = compute_calibration_metrics(
         predictions=predictions,
         true_label_column=args.true_label_column,
@@ -70,7 +77,8 @@ def compute_calibration_metrics(
 ) -> dict[str, Any]:
     """Return calibration metrics from prediction labels, confidence, and optional probabilities."""
 
-    probability_columns = probability_columns or []
+    predictions = _preserve_string_columns(predictions, [true_label_column, predicted_label_column])
+    probability_columns = probability_columns or _detect_probability_columns(predictions)
     class_labels = class_labels or []
     _require_columns(predictions, [true_label_column])
 
@@ -80,6 +88,8 @@ def compute_calibration_metrics(
         probabilities = _normalized_probabilities(predictions, probability_columns)
         if not class_labels:
             class_labels = [_probability_label(column, probability_prefix) for column in probability_columns]
+        if len(class_labels) != len(probability_columns):
+            raise ValueError("--class-labels must match the number of probability columns.")
 
     if confidence_column in predictions.columns:
         confidence = predictions[confidence_column].astype(float).to_numpy()
@@ -181,7 +191,10 @@ def _probability_metrics(
     class_labels: list[str],
 ) -> tuple[float | None, float | None, int]:
     label_to_index = {str(label): index for index, label in enumerate(class_labels)}
-    true_indices = np.asarray([label_to_index.get(str(label), -1) for label in true_labels], dtype=int)
+    true_indices = np.asarray(
+        [_label_index(str(label), label_to_index, class_labels) for label in true_labels],
+        dtype=int,
+    )
     valid = true_indices >= 0
     if not valid.any():
         return None, None, 0
@@ -204,8 +217,64 @@ def _normalized_probabilities(predictions: pd.DataFrame, probability_columns: li
     return probabilities / row_sums
 
 
+def _label_index(label: str, label_to_index: dict[str, int], class_labels: list[str]) -> int:
+    """Return the probability-column index for a true label, recovering unique zero-padded labels."""
+
+    if label in label_to_index:
+        return label_to_index[label]
+    recovered = _zero_padded_label(label, class_labels)
+    if recovered in label_to_index:
+        return label_to_index[recovered]
+    return -1
+
+
+def _zero_padded_label(label: str, class_labels: list[str]) -> str:
+    """Safely map numeric-looking labels such as ``100`` to class labels like ``0100``."""
+
+    if not label.isdigit():
+        return label
+    matches = [
+        candidate
+        for candidate in class_labels
+        if candidate.isdigit() and len(candidate) > len(label) and int(candidate) == int(label)
+    ]
+    return matches[0] if len(matches) == 1 else label
+
+
+def _detect_probability_columns(predictions: pd.DataFrame) -> list[str]:
+    """Return probability columns using supported Paper 2 prefixes."""
+
+    return [
+        column
+        for column in predictions.columns
+        if any(column.startswith(prefix) and len(column) > len(prefix) for prefix in PROBABILITY_PREFIXES)
+    ]
+
+
 def _probability_label(column: str, prefix: str) -> str:
-    return column[len(prefix) :] if prefix and column.startswith(prefix) else column
+    prefixes = [prefix] if prefix else []
+    prefixes.extend(item for item in PROBABILITY_PREFIXES if item not in prefixes)
+    for candidate in prefixes:
+        if candidate and column.startswith(candidate):
+            return column[len(candidate) :]
+    return column
+
+
+def _read_predictions(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        raise FileNotFoundError(f"Prediction CSV not found: {path}")
+    predictions = pd.read_csv(path, dtype=str, keep_default_na=False)
+    if predictions.empty:
+        raise ValueError(f"Prediction CSV is empty: {path}")
+    return _preserve_string_columns(predictions)
+
+
+def _preserve_string_columns(frame: pd.DataFrame, extra_columns: list[str] | None = None) -> pd.DataFrame:
+    preserved = frame.copy()
+    for column in [*SYMBOLIC_STRING_COLUMNS, *(extra_columns or [])]:
+        if column in preserved.columns:
+            preserved[column] = preserved[column].fillna("").astype(str)
+    return preserved
 
 
 def _require_columns(frame: pd.DataFrame, columns: list[str]) -> None:
