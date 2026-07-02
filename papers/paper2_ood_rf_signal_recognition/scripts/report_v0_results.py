@@ -51,6 +51,12 @@ SCORE_PATTERNS = {
 }
 
 MODEL_PATTERNS = {
+    ("logistic", "regression", "ts"): "logistic_regression_ts",
+    ("logistic_regression", "ts"): "logistic_regression_ts",
+    ("logistic_regression_ts",): "logistic_regression_ts",
+    ("lr", "ts"): "logistic_regression_ts",
+    ("mlp", "ts"): "mlp_ts",
+    ("mlp_ts",): "mlp_ts",
     ("nearest", "centroid"): "nearest_centroid",
     ("nearest_centroid",): "nearest_centroid",
     ("nc",): "nearest_centroid",
@@ -59,6 +65,9 @@ MODEL_PATTERNS = {
     ("logreg",): "logistic_regression",
     ("lr",): "logistic_regression",
     ("mlp",): "mlp",
+    ("random", "baseline"): "none",
+    ("random_baseline",): "none",
+    ("random",): "none",
 }
 
 PROTOCOL_PATTERNS = {
@@ -176,6 +185,7 @@ def _infer_metadata(path: Path, metrics: dict[str, Any]) -> dict[str, str]:
         model, tokens = _consume_suffix(tokens, MODEL_PATTERNS)
     else:
         _, tokens = _consume_suffix(tokens, MODEL_PATTERNS)
+        model = _normalize_model_name(model)
 
     if not dataset and not protocol:
         protocol, tokens = _consume_prefix(tokens, PROTOCOL_PATTERNS)
@@ -192,6 +202,27 @@ def _infer_metadata(path: Path, metrics: dict[str, Any]) -> dict[str, str]:
         "model": model,
         "score_method": score_method or "unknown",
     }
+
+
+def _normalize_model_name(model: str) -> str:
+    """Normalize direct model metadata values to report display names."""
+
+    normalized = str(model).strip()
+    aliases = {
+        "nc": "nearest_centroid",
+        "nearest_centroid": "nearest_centroid",
+        "lr": "logistic_regression",
+        "logreg": "logistic_regression",
+        "logistic_regression": "logistic_regression",
+        "lr_ts": "logistic_regression_ts",
+        "logistic_regression_ts": "logistic_regression_ts",
+        "mlp": "mlp",
+        "mlp_ts": "mlp_ts",
+        "random": "none",
+        "random_baseline": "none",
+        "none": "none",
+    }
+    return aliases.get(normalized, normalized)
 
 
 def _metric_stem(path: Path) -> str:
