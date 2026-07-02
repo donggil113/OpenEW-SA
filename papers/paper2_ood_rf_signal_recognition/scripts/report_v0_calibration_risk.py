@@ -70,13 +70,39 @@ RISK_METRICS = [
     "n_samples",
 ]
 
+MODEL_SUFFIX_PATTERNS = {
+    ("logistic", "regression", "ts"): "logistic_regression_ts",
+    ("logistic_regression", "ts"): "logistic_regression_ts",
+    ("logistic_regression_ts",): "logistic_regression_ts",
+    ("lr", "ts"): "logistic_regression_ts",
+    ("mlp", "ts"): "mlp_ts",
+    ("mlp_ts",): "mlp_ts",
+    ("nearest", "centroid"): "nearest_centroid",
+    ("nearest_centroid",): "nearest_centroid",
+    ("nc",): "nearest_centroid",
+    ("logistic", "regression"): "logistic_regression",
+    ("logistic_regression",): "logistic_regression",
+    ("logreg",): "logistic_regression",
+    ("lr",): "logistic_regression",
+    ("mlp",): "mlp",
+    ("random", "baseline"): "none",
+    ("random_baseline",): "none",
+    ("random",): "none",
+}
+
 MODEL_ALIASES = {
     "nc": "nearest_centroid",
     "nearest_centroid": "nearest_centroid",
     "lr": "logistic_regression",
     "logreg": "logistic_regression",
     "logistic_regression": "logistic_regression",
+    "lr_ts": "logistic_regression_ts",
+    "logistic_regression_ts": "logistic_regression_ts",
     "mlp": "mlp",
+    "mlp_ts": "mlp_ts",
+    "random": "none",
+    "random_baseline": "none",
+    "none": "none",
 }
 
 PROTOCOL_ALIASES = {
@@ -232,15 +258,37 @@ def infer_metadata(path: Path, table_kind: str) -> dict[str, str]:
     if len(tokens) < 3:
         raise ValueError(f"Could not infer dataset/protocol/model from filename: {path.name}")
 
-    model_token = tokens[-1]
-    model = MODEL_ALIASES.get(model_token, model_token)
-    dataset = tokens[0]
-    protocol = _normalize_protocol_name("_".join(tokens[1:-1]))
+    model, metadata_tokens = _consume_model_suffix(tokens)
+    if not model:
+        model_token = tokens[-1]
+        model = _normalize_model_name(model_token)
+        metadata_tokens = tokens[:-1]
+    if len(metadata_tokens) < 2:
+        raise ValueError(f"Could not infer dataset/protocol/model from filename: {path.name}")
+
+    dataset = metadata_tokens[0]
+    protocol = _normalize_protocol_name("_".join(metadata_tokens[1:]))
     return {
         "dataset": dataset or "unknown",
         "protocol": PROTOCOL_ALIASES.get(protocol, protocol or "unknown"),
         "model": model or "unknown",
     }
+
+
+def _consume_model_suffix(tokens: list[str]) -> tuple[str, list[str]]:
+    """Return a normalized model suffix and the remaining filename tokens."""
+
+    for pattern, value in sorted(MODEL_SUFFIX_PATTERNS.items(), key=lambda item: len(item[0]), reverse=True):
+        if len(tokens) >= len(pattern) and tuple(tokens[-len(pattern) :]) == pattern:
+            return value, tokens[: -len(pattern)]
+    return "", tokens
+
+
+def _normalize_model_name(model: str) -> str:
+    """Normalize direct model metadata values to report display names."""
+
+    normalized = str(model).strip()
+    return MODEL_ALIASES.get(normalized, normalized)
 
 
 def _strip_metric_suffix(stem: str, table_kind: str) -> str:
