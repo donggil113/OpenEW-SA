@@ -41,6 +41,15 @@ METRIC_COLUMNS = [
 SYMBOLIC_STRING_COLUMNS = ["dataset", "protocol", "model", "score_method"]
 
 SCORE_PATTERNS = {
+    ("nearest", "centroid", "euclidean"): "nearest_centroid_euclidean",
+    ("nearest_centroid", "euclidean"): "nearest_centroid_euclidean",
+    ("nearest_centroid_euclidean",): "nearest_centroid_euclidean",
+    ("nc", "euclidean"): "nearest_centroid_euclidean",
+    ("nearest", "centroid", "cosine"): "nearest_centroid_cosine",
+    ("nearest_centroid", "cosine"): "nearest_centroid_cosine",
+    ("nearest_centroid_cosine",): "nearest_centroid_cosine",
+    ("nc", "cosine"): "nearest_centroid_cosine",
+    ("mahalanobis",): "mahalanobis",
     ("max", "softmax", "probability"): "max_softmax_probability",
     ("msp",): "max_softmax_probability",
     ("entropy",): "entropy",
@@ -48,6 +57,12 @@ SCORE_PATTERNS = {
     ("energy",): "energy_score",
     ("random", "baseline"): "random_baseline",
     ("random",): "random_baseline",
+}
+MODEL_FREE_SCORE_METHODS = {
+    "mahalanobis",
+    "nearest_centroid_cosine",
+    "nearest_centroid_euclidean",
+    "random_baseline",
 }
 
 MODEL_PATTERNS = {
@@ -195,7 +210,7 @@ def _infer_metadata(path: Path, metrics: dict[str, Any]) -> dict[str, str]:
         protocol = "_".join(tokens)
     protocol = _normalize_protocol_name(protocol)
     if not model:
-        model = "none" if score_method == "random_baseline" else "unknown"
+        model = "none" if score_method in MODEL_FREE_SCORE_METHODS else "unknown"
     return {
         "dataset": dataset or "unknown",
         "protocol": protocol or "unknown",

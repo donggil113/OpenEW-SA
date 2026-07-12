@@ -21,6 +21,7 @@ papers/paper2_ood_rf_signal_recognition/
     generate_ood_splits.py
     train_baseline_classifier.py
     temperature_scaling.py
+    feature_distance_ood_scores.py
     baseline_ood_scores.py
     calibration_metrics.py
     ood_detection_metrics.py
@@ -185,6 +186,61 @@ python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py `
   --summary-output D:\openew_sa_data\paper2\risk_coverage\class_ood_nearest_centroid_temperature_scaled_risk_coverage.json
 ```
 
+## Feature-Distance OOD Scoring
+
+Fit train-only feature-space OOD scores from split manifests and evaluate them with the existing OOD
+metric script. The score CSVs preserve symbolic labels and use higher-is-more-OOD scores.
+
+ElectroSense class-OOD with Euclidean nearest-centroid distance:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\feature_distance_ood_scores.py `
+  --train-csv D:\openew_sa_data\paper2\splits\electrosense_class_ood\electrosense_class_ood_train.csv `
+  --eval-csv D:\openew_sa_data\paper2\splits\electrosense_class_ood\electrosense_class_ood_eval.csv `
+  --output D:\openew_sa_data\paper2\scores\electrosense_class_ood_nearest_centroid_euclidean_scores.csv `
+  --method nearest_centroid_euclidean `
+  --label-column label `
+  --seed 42
+
+python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py `
+  --scores D:\openew_sa_data\paper2\scores\electrosense_class_ood_nearest_centroid_euclidean_scores.csv `
+  --output D:\openew_sa_data\paper2\metrics\electrosense_class_ood_nearest_centroid_euclidean_metrics.json
+```
+
+DeepSense day2-OOD with cosine nearest-centroid distance:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\feature_distance_ood_scores.py `
+  --train-csv D:\openew_sa_data\paper2\splits\deepsense_day2_ood\deepsense_day2_ood_train.csv `
+  --eval-csv D:\openew_sa_data\paper2\splits\deepsense_day2_ood\deepsense_day2_ood_eval.csv `
+  --output D:\openew_sa_data\paper2\scores\deepsense_day2_ood_nearest_centroid_cosine_scores.csv `
+  --method nearest_centroid_cosine `
+  --label-column label `
+  --seed 42
+
+python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py `
+  --scores D:\openew_sa_data\paper2\scores\deepsense_day2_ood_nearest_centroid_cosine_scores.csv `
+  --output D:\openew_sa_data\paper2\metrics\deepsense_day2_ood_nearest_centroid_cosine_metrics.json
+```
+
+JamShield scenario-OOD with Mahalanobis distance:
+
+```powershell
+python papers\paper2_ood_rf_signal_recognition\scripts\feature_distance_ood_scores.py `
+  --train-csv D:\openew_sa_data\paper2\splits\jamshield_scenario_ood\jamshield_scenario_ood_train.csv `
+  --eval-csv D:\openew_sa_data\paper2\splits\jamshield_scenario_ood\jamshield_scenario_ood_eval.csv `
+  --output D:\openew_sa_data\paper2\scores\jamshield_scenario_ood_mahalanobis_scores.csv `
+  --method mahalanobis `
+  --label-column label `
+  --regularization 1e-4 `
+  --max-train-samples-per-class 2000 `
+  --seed 42
+
+python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py `
+  --scores D:\openew_sa_data\paper2\scores\jamshield_scenario_ood_mahalanobis_scores.csv `
+  --output D:\openew_sa_data\paper2\metrics\jamshield_scenario_ood_mahalanobis_metrics.json
+```
+
 ## Baseline Score Generation
 
 Generate smoke-test OOD scores directly from a split manifest:
@@ -272,6 +328,7 @@ python papers\paper2_ood_rf_signal_recognition\scripts\generate_ood_splits.py --
 python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\temperature_scaling.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\feature_distance_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
