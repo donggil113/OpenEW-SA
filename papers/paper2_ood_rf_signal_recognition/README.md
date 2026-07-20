@@ -22,10 +22,12 @@ papers/paper2_ood_rf_signal_recognition/
     train_baseline_classifier.py
     temperature_scaling.py
     baseline_ood_scores.py
+    feature_distance_ood_scores.py
     calibration_metrics.py
     ood_detection_metrics.py
     risk_coverage_curves.py
     report_v0_results.py
+    run_v2_distance_experiments.sh
 ```
 
 ## OpenEW-SA Artifact Assumptions
@@ -223,6 +225,34 @@ python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py `
 
 The same script also supports `energy_score` for logit columns with `--logit-prefix`.
 
+## Feature-Distance OOD Scores (v2)
+
+Stage 1 adds train-only nearest-centroid Euclidean, nearest-centroid cosine, and shared-covariance
+Mahalanobis scores. Every score is a distance, so larger values are always more OOD-like. The
+evaluation manifest may combine ID and OOD rows and must contain `ood_label` for metric generation.
+
+```bash
+python papers/paper2_ood_rf_signal_recognition/scripts/feature_distance_ood_scores.py \
+  --train-csv /mnt/d/openew_sa_data/paper2/splits/deepsense_domain_ood/deepsense_day2_ood_train.csv \
+  --eval-csv /mnt/d/openew_sa_data/paper2/splits/deepsense_domain_ood/deepsense_day2_ood_eval.csv \
+  --output /mnt/d/openew_sa_data/paper2/scores/deepsense_day2_ood_mahalanobis_scores.csv \
+  --metadata-output /mnt/d/openew_sa_data/paper2/scores/metadata/deepsense_day2_ood_mahalanobis_metadata.json \
+  --method mahalanobis --regularization 1e-4 --batch-size 4096 --seed 42
+```
+
+`--max-train-samples-per-class` provides deterministic, seed-controlled fitting subsampling. The
+metadata JSON records original and fitted class counts, dimensions, row counts, regularization,
+batching, and subsampling settings. Run all three methods for the three established protocols with:
+
+```bash
+bash papers/paper2_ood_rf_signal_recognition/scripts/run_v2_distance_experiments.sh
+```
+
+The runner writes scores, score metadata, and metrics to the established Paper 2 output directories,
+and logs to the v2 snapshot. Its `REPO_ROOT`, `DATA_ROOT`, `PYTHON`, `REGULARIZATION`, `BATCH_SIZE`,
+`SEED`, and `LOG_ROOT` environment variables can be overridden. It does not use or modify the frozen
+v0/v1 snapshots.
+
 ## Metric Generation
 
 Compute OOD detection metrics from a baseline score CSV:
@@ -273,6 +303,7 @@ python papers\paper2_ood_rf_signal_recognition\scripts\build_paper2_manifest.py 
 python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\temperature_scaling.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\feature_distance_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py --help
