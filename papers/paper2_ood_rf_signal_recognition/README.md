@@ -23,11 +23,14 @@ papers/paper2_ood_rf_signal_recognition/
     temperature_scaling.py
     baseline_ood_scores.py
     feature_distance_ood_scores.py
+    entropy_scores_from_predictions.py
+    fuse_ood_scores.py
     calibration_metrics.py
     ood_detection_metrics.py
     risk_coverage_curves.py
     report_v0_results.py
     run_v2_distance_experiments.sh
+    run_v3_fusion_experiments.sh
 ```
 
 ## OpenEW-SA Artifact Assumptions
@@ -253,6 +256,61 @@ and logs to the v2 snapshot. Its `REPO_ROOT`, `DATA_ROOT`, `PYTHON`, `REGULARIZA
 `SEED`, and `LOG_ROOT` environment variables can be overridden. It does not use or modify the frozen
 v0/v1 snapshots.
 
+## Uncertainty-Distance Fusion (v3)
+
+Stage 1 combines temperature-scaled entropy with train-fitted feature distances. Each component is
+oriented so that higher values are more OOD-like. Normalization is fitted exclusively on ID
+validation scores and then frozen for evaluation:
+
+```text
+normalized = (score - validation_median) / (validation_IQR + 1e-12)
+```
+
+If validation IQR is zero or non-finite, the fusion script falls back to validation standard
+deviation; if that is also unusable, it uses scale 1 and records a warning in metadata. Evaluation
+OOD labels are used only for output consistency and downstream metrics, never for normalization,
+orientation, weights, or thresholds.
+
+Calibrated prediction files can be converted directly to entropy score components. Validation input
+may be ID-only and does not need `ood_label`:
+
+```bash
+python papers/paper2_ood_rf_signal_recognition/scripts/entropy_scores_from_predictions.py \
+  --predictions /path/to/predictions_val_calibrated.csv \
+  --output /path/to/validation_ts_entropy_scores.csv
+```
+
+`feature_distance_ood_scores.py` likewise accepts an ID-only validation manifest. Its canonical v2
+evaluation schema remains unchanged when `ood_label` is present.
+
+Fuse matching validation and evaluation components with strict sample-ID alignment:
+
+```bash
+python papers/paper2_ood_rf_signal_recognition/scripts/fuse_ood_scores.py \
+  --validation-component ts_entropy=/path/to/validation_entropy.csv \
+  --validation-component nearest_centroid_cosine=/path/to/validation_cosine.csv \
+  --evaluation-component ts_entropy=/path/to/evaluation_entropy.csv \
+  --evaluation-component nearest_centroid_cosine=/path/to/evaluation_cosine.csv \
+  --output /path/to/fused_scores.csv \
+  --metadata-output /path/to/fused_metadata.json \
+  --normalization robust_zscore --seed 42
+```
+
+Omitting `--weights` gives every component equal weight. Explicit repeated
+`--weights component=value` arguments must cover every component and are normalized to sum to one.
+The runner covers ElectroSense class-OOD, DeepSense day-2 OOD, and JamShield scenario-OOD with
+variants A-D (equal-weight primary fusions) and variant E (the Mahalanobis exploratory ablation):
+
+```bash
+bash papers/paper2_ood_rf_signal_recognition/scripts/run_v3_fusion_experiments.sh
+```
+
+The runner writes working artifacts beneath `paper2/v3_fusion` by default, reads calibrated
+predictions from `paper2/runs`, and copies valid canonical v2 evaluation distance scores without
+modifying v0, v1, or v2 snapshots. After validation, `finalize_v3_fusion.py` creates tables,
+analysis, integrity reports, and documentation for the frozen v3 snapshot. Stage 1 does not run
+the real-data experiment script.
+
 ## Metric Generation
 
 Compute OOD detection metrics from a baseline score CSV:
@@ -304,6 +362,8 @@ python papers\paper2_ood_rf_signal_recognition\scripts\train_baseline_classifier
 python papers\paper2_ood_rf_signal_recognition\scripts\temperature_scaling.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\baseline_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\feature_distance_ood_scores.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\entropy_scores_from_predictions.py --help
+python papers\paper2_ood_rf_signal_recognition\scripts\fuse_ood_scores.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\calibration_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\ood_detection_metrics.py --help
 python papers\paper2_ood_rf_signal_recognition\scripts\risk_coverage_curves.py --help

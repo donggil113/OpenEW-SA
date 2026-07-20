@@ -120,6 +120,42 @@ Next experimental gaps:
 - Per-domain and per-class error analysis to identify which emitters, days, sensors, or scenarios
   drive failures.
 
+## v1-v3 Experimental Findings
+
+Temperature scaling (v1) improved the DeepSense logistic-regression entropy AUROC from 0.484 to
+0.527, but did not close the gap to the v0 nearest-centroid MSP result (0.653). Its effects on OOD
+ranking were otherwise modest, reinforcing that calibration and OOD separation are distinct.
+
+The train-fitted feature-distance experiment (v2) found strong ElectroSense cosine and Euclidean
+distance rankings (AUROC 0.799 and 0.796), but weaker Mahalanobis ranking (0.772). JamShield distance
+scores remained weak, with the best at about 0.50 AUROC. All DeepSense distances were systematically
+inverted under the preregistered higher-distance-is-more-OOD orientation: cosine 0.378, Euclidean
+0.384, and Mahalanobis 0.410 AUROC. This is evidence that the held-out day often lies closer to the
+training prototypes than retained ID evaluation samples, not justification for an OOD-label-driven
+orientation flip.
+
+The v3 experiment robust-normalized every component using only ID validation medians and IQRs, then
+applied equal-weight fusion with fixed higher-is-OOD orientation. It evaluated five variants without
+using evaluation OOD labels for orientation, fitting, weights, variant choice, or threshold choice.
+The descriptive best ElectroSense result combines temperature-scaled entropy, cosine, Euclidean,
+and Mahalanobis scores (AUROC 0.893, AUPR-OOD 0.949, FPR95 0.393). The same four-component fusion is
+the descriptive JamShield leader (AUROC 0.663), although FPR95 remains high at 0.904. DeepSense does
+not benefit: its strongest v3 ranking is distance-only cosine-plus-Euclidean at 0.384 AUROC, and all
+five variants remain below chance (0.316-0.384). Post-hoc negation gives 0.616-0.684 AUROC but is
+reported only as an inversion diagnostic and was not used to alter the experiment.
+
+Across v0-v3, the best observed AUROC changes from 0.799 to 0.893 on ElectroSense and from 0.591 to
+0.663 on JamShield, while DeepSense v3 falls well below the v0 nearest-centroid MSP reference of
+0.653. Scientifically, uncertainty and geometry provide complementary evidence for class novelty
+and some scenario shifts, but geometric typicality is not domain-invariant. A distance can be
+well-defined and validation-normalized yet point in the wrong direction after a domain change.
+
+Unresolved limitations include a single split per dataset, correlated equal-weight components,
+shared-covariance assumptions for Mahalanobis distance, probability-derived rather than logit-energy
+uncertainty, and evaluation-descriptive detection-accuracy thresholds that are not deployable.
+The next experiment should preregister an ID-validation-only density or two-sided tail-typicality
+mapping, then apply it unchanged to untouched domain-OOD evaluations.
+
 ## Planned Tables And Figures
 
 - Table 1: OpenEW-SA datasets, RF views, labels, domains, and OOD protocol mapping.

@@ -79,6 +79,31 @@ class FeatureDistanceSmokeTest(unittest.TestCase):
                 self.assertEqual({"0000": 3, "0001": 3}, payload["class_counts"])
                 self.assertEqual(2, payload["batch_size"])
 
+    def test_id_only_validation_manifest_does_not_require_ood_label(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="paper2_distance_validation_") as temporary:
+            root = Path(temporary)
+            features = np.asarray([[1, 0], [0, 1], [0.9, 0.1]], dtype=np.float32)
+            feature_path = root / "features.npy"
+            np.save(feature_path, features)
+            common = {"feature_path": str(feature_path)}
+            train = pd.DataFrame({
+                "sample_id": ["t0", "t1"], "label": ["0000", "0001"],
+                "feature_index": [0, 1], **common,
+            })
+            validation = pd.DataFrame({
+                "sample_id": ["v0"], "label": ["0000"], "feature_index": [2], **common,
+            })
+            train_path, validation_path, output = root / "train.csv", root / "val.csv", root / "scores.csv"
+            train.to_csv(train_path, index=False)
+            validation.to_csv(validation_path, index=False)
+            subprocess.run([
+                sys.executable, str(SCRIPT), "--train-csv", str(train_path), "--eval-csv", str(validation_path),
+                "--output", str(output), "--method", "nearest_centroid_cosine",
+            ], check=True, capture_output=True, text=True)
+            result = pd.read_csv(output, dtype=str)
+            self.assertEqual(["sample_id", "true_label", "ood_score", "nearest_class", "method"], result.columns.tolist())
+            self.assertEqual("0000", result.loc[0, "true_label"])
+
 
 if __name__ == "__main__":
     unittest.main()
