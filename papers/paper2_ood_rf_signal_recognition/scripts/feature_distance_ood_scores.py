@@ -63,8 +63,6 @@ def main() -> None:
     _validate_manifest_columns(
         splits, args.label_column, args.feature_index_column, args.feature_path_column, args.sample_id_column
     )
-    if "ood_label" not in evaluation.frame.columns:
-        raise ValueError("Evaluation CSV is missing required column: ood_label")
     feature_dim = _max_feature_dim(splits, args.feature_path_column)
     train_features = _load_features(
         train, feature_dim, args.feature_path_column, args.feature_index_column, None
@@ -95,15 +93,16 @@ def main() -> None:
         eval_features, centroids, classes, args.method, args.batch_size, inverse_covariance
     )
     _require_finite(scores, "output scores")
-    ood_labels = evaluation.frame["ood_label"].astype(str).to_numpy()
     output = pd.DataFrame({
         "sample_id": evaluation.frame[args.sample_id_column].astype(str),
         "true_label": evaluation.frame[args.label_column].astype(str),
-        "ood_label": ood_labels,
         "ood_score": scores,
         "nearest_class": nearest,
         "method": args.method,
-    })[OUTPUT_COLUMNS]
+    })
+    if "ood_label" in evaluation.frame.columns:
+        output.insert(2, "ood_label", evaluation.frame["ood_label"].astype(str).to_numpy())
+        output = output[OUTPUT_COLUMNS]
     args.output.parent.mkdir(parents=True, exist_ok=True)
     output.to_csv(args.output, index=False)
 
