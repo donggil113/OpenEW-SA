@@ -51,7 +51,10 @@ def metric_figure(ci: pd.DataFrame, metric: str, ylabel: str, name: str, figures
                hatch="//" if method == "four_component_exploratory" else None, label=METHOD_NAMES[method])
         ax.errorbar(x + (i - 2) * width, values, yerr=np.vstack([low, high]), fmt="none", color="#222222", capsize=2, lw=.7)
     ax.set_xticks(x, [DATASET_NAMES[d] for d in datasets]); ax.set_ylabel(ylabel); ax.set_ylim(0, 1)
-    ax.set_title(f"{ylabel} with 95% paired-bootstrap confidence intervals")
+    if metric == "auroc":
+        ax.axhline(.5, color="#222222", linestyle="--", linewidth=.9,
+                   label="Chance AUROC", zorder=0)
+    ax.set_title(f"{ylabel} with 95% bootstrap confidence intervals")
     ax.grid(axis="y", color="#dddddd", linewidth=.5); ax.legend(ncol=2, frameon=False, loc="upper center", bbox_to_anchor=(.5, -0.14))
     _save(fig, figures, name)
 
@@ -59,18 +62,21 @@ def metric_figure(ci: pd.DataFrame, metric: str, ylabel: str, name: str, figures
 def primary_comparison(differences: pd.DataFrame, figures: Path) -> None:
     rows = differences[(differences.metric == "auroc") & differences.comparison.str.startswith("v3_primary_vs")].copy()
     comparator_order = ["temperature_scaled_entropy", "nearest_centroid_cosine", "nearest_centroid_euclidean"]
-    fig, axes = plt.subplots(1, 3, figsize=(7.1, 3.25), sharex=True)
+    fig, axes = plt.subplots(1, 3, figsize=(7.1, 3.45), sharex=True)
     for panel, (ax, dataset) in enumerate(zip(axes, DATASETS)):
         subset = rows[rows.dataset == dataset].set_index("right_method").loc[comparator_order]
         y = np.arange(3); values = subset.point_difference_left_minus_right.to_numpy()
         ax.errorbar(values, y, xerr=np.vstack([values - subset.ci_lower, subset.ci_upper - values]),
-                    fmt="o", color=COLORS["v3_primary"], ecolor="#333333", capsize=3)
+                    fmt="o", markersize=5, markeredgecolor="white", markeredgewidth=.6,
+                    color=COLORS["v3_primary"], ecolor="#222222", elinewidth=1.15,
+                    capsize=4, capthick=1.15, zorder=3)
         ax.axvline(0, color="#222222", lw=.8); ax.set_title(DATASET_NAMES[dataset]); ax.grid(axis="x", color="#dddddd", linewidth=.5)
         labels = [METHOD_NAMES[m].replace("Nearest-centroid ", "NC ") for m in comparator_order]
         ax.set_yticks(y, labels if panel == 0 else ["", "", ""]); ax.invert_yaxis()
     axes[0].set_ylabel("Prespecified comparator")
-    fig.supxlabel("AUROC difference: primary fusion minus comparator (focused difference scale)")
-    fig.suptitle("Prespecified primary fusion comparisons with 95% paired-bootstrap intervals", y=1.02)
+    fig.supxlabel("Paired AUROC difference: primary \N{MINUS SIGN} comparator", y=.035)
+    fig.suptitle("Prespecified primary fusion comparisons with 95% paired-bootstrap intervals", y=.97)
+    fig.subplots_adjust(bottom=.25, top=.78, wspace=.22)
     _save(fig, figures, "figure_primary_fusion_comparison")
 
 
@@ -99,7 +105,7 @@ def deepsense_diagnostic(v3_root: Path, figures: Path) -> None:
     ax.bar(x + width/2, inverted, width, facecolor="white", edgecolor="#D55E00", hatch="//", label="Negated score (post-hoc diagnostic only)")
     ax.axhline(.5, color="#222222", ls="--", lw=.8, label="Chance AUROC")
     ax.set_ylim(0, 1); ax.set_ylabel("AUROC"); ax.set_xticks(x, [METHOD_NAMES[m].replace("Nearest-centroid ", "NC ") for m in methods], rotation=20, ha="right")
-    ax.set_title("DeepSense score inversion — POST-HOC DIAGNOSTIC SENSITIVITY ANALYSIS")
+    ax.set_title("DeepSense distance and fusion score inversion \N{EM DASH} POST-HOC DIAGNOSTIC")
     ax.grid(axis="y", color="#dddddd", linewidth=.5); ax.legend(frameon=False, ncol=2, loc="upper center", bbox_to_anchor=(.5, -0.28))
     _save(fig, figures, "figure_deepsense_inversion_diagnostic")
 

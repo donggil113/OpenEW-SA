@@ -16,6 +16,7 @@ import pandas as pd
 from bootstrap_ood_statistics import DATASETS, METHOD_FILES, METRICS, N_BOOTSTRAP, SEED, load_dataset
 
 FROZEN = ("v0_ood_baselines", "v1_temperature_scaling_full", "v2_distance_ood_scores", "v3_uncertainty_distance_fusion")
+DATASET_NAMES = {"electrosense": "ElectroSense", "deepsense": "DeepSense", "jamshield": "JamShield"}
 
 
 def now() -> str:
@@ -38,6 +39,10 @@ def run_git(repo: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=repo, check=True, text=True, capture_output=True).stdout
 
 
+def write_text(path: Path, content: str) -> None:
+    path.write_text(content, encoding="utf-8")
+
+
 def write_markdown(frame: pd.DataFrame, path: Path) -> None:
     display = frame.copy()
     for column in display.select_dtypes(include=["float"]).columns:
@@ -45,7 +50,7 @@ def write_markdown(frame: pd.DataFrame, path: Path) -> None:
     headers = display.columns.tolist()
     lines = ["| " + " | ".join(headers) + " |", "| " + " | ".join(["---"] * len(headers)) + " |"]
     lines.extend("| " + " | ".join(map(str, row)) + " |" for row in display.itertuples(index=False, name=None))
-    path.write_text("\n".join(lines) + "\n")
+    write_text(path, "\n".join(lines) + "\n")
 
 
 def build_summary(v3_root: Path, output: Path) -> pd.DataFrame:
@@ -71,7 +76,7 @@ def primary_lines(ci: pd.DataFrame) -> list[str]:
     for dataset in DATASETS:
         rows = ci[(ci.dataset == dataset) & (ci.method == "v3_primary")].set_index("metric")
         lines.append(
-            f"- {dataset.title()}: AUROC {rows.loc['auroc','point_estimate']:.6f} "
+            f"- {DATASET_NAMES[dataset]}: AUROC {rows.loc['auroc','point_estimate']:.6f} "
             f"(95% CI {rows.loc['auroc','ci_lower']:.6f}–{rows.loc['auroc','ci_upper']:.6f}); "
             f"AUPR-OOD {rows.loc['aupr_ood','point_estimate']:.6f} "
             f"(95% CI {rows.loc['aupr_ood','ci_lower']:.6f}–{rows.loc['aupr_ood','ci_upper']:.6f}); "
@@ -84,16 +89,34 @@ def primary_lines(ci: pd.DataFrame) -> list[str]:
 def write_manuscript(repo: Path, output: Path, ci: pd.DataFrame, diffs: pd.DataFrame) -> None:
     target = repo / "papers/paper2_ood_rf_signal_recognition/manuscript"; target.mkdir(parents=True, exist_ok=True)
     trace = "All numerical estimates in this draft are traceable to `paper2_v3_bootstrap_confidence_intervals.csv` or `paper2_v3_paired_differences.csv`."
-    (target / "methods_v3_uncertainty_fusion_draft.md").write_text(f"""# Methods: v3 uncertainty–distance fusion (draft)
+    write_text(target / "methods_v3_uncertainty_fusion_draft.md", f"""# Methods: v3 uncertainty–distance fusion (draft)
 
 The prespecified primary score was the equal-weight fusion `ts_entropy_cosine_euclidean`, comprising temperature-scaled predictive entropy, nearest-centroid cosine distance, and nearest-centroid Euclidean distance. Component scores retained the fixed convention that larger values indicate greater OOD-likeness. Each component was robustly normalized using ID validation data only, and no test-OOD result was used to select orientation, weights, thresholds, the primary method, or comparators. The equal-weight four-component variant adding Mahalanobis distance was treated as an exploratory ablation.
 
-Uncertainty was estimated using 1,000 nonparametric bootstrap replicates with seed 20260721. ID and OOD observations were resampled separately at their original counts. A common pair of ID/OOD index samples was reused across methods within each dataset, enabling paired differences. Percentile 95% confidence intervals were calculated for AUROC, AUPR-OOD, FPR95, and detection accuracy. Detection accuracy is descriptive because its threshold was optimized on the evaluation sample.
+AUPR-OOD treated OOD observations as the positive class and used the existing Paper 2 average-precision implementation. Scores were sorted in descending order with a stable mergesort, precision was evaluated at each OOD-positive rank, and those precision values were averaged over all OOD observations. Equal-score observations therefore retained their input CSV order. The same implementation was used for every point estimate and bootstrap replicate.
+
+Uncertainty was estimated using 1,000 nonparametric bootstrap replicates with seed 20260721. ID and OOD observations were resampled separately at their original counts. A common pair of ID/OOD index samples was reused across methods within each dataset, enabling paired differences. Percentile 95% confidence intervals were calculated for AUROC, AUPR-OOD, FPR95, and detection accuracy. Intervals are interpreted for the specific dataset, metric, and comparison reported; they do not support a universal statistical-significance claim, and no family-wise multiplicity adjustment was applied. Detection accuracy is labeled evaluation-descriptive because its threshold was optimized on the evaluation sample.
 
 {trace}
 """)
-    (target / "results_v0_v3_draft.md").write_text("# Results: v0–v3 (draft)\n\nThe prespecified primary fusion produced the following fixed-orientation results:\n\n" + "\n".join(primary_lines(ci)) + f"\n\nDeepSense was a negative result under the fixed score orientation: its primary-fusion AUROC was below 0.5. Post-hoc score negation is presented only as a diagnostic sensitivity analysis and does not replace the primary result. The four-component method is an exploratory ablation and is not described as prespecified. Paired comparisons and whether their 95% intervals exclude zero are reported in `paper2_v3_paired_differences.csv`; no comparator was selected according to test performance.\n\n{trace}\n")
-    (target / "discussion_v3_draft.md").write_text(f"""# Discussion: v3 (draft)
+    results_text = (
+        "# Results: v0\N{EN DASH}v3 (draft)\n\n"
+        "The prespecified primary fusion produced the following fixed-orientation results:\n\n"
+        + "\n".join(primary_lines(ci))
+        + "\n\nFor JamShield, the primary fusion improved AUROC against each prespecified "
+        "comparator, but AUPR-OOD and FPR95 were not uniformly better against every "
+        "comparator. AUPR-OOD was lower than temperature-scaled entropy, and FPR95 "
+        "was higher than nearest-centroid cosine.\n\n"
+        "DeepSense was a negative result under the fixed score orientation: its "
+        "primary-fusion AUROC was below 0.5. Post-hoc score negation is presented only "
+        "as a diagnostic sensitivity analysis and does not replace the primary result. "
+        "The four-component method is an exploratory ablation and is not described as "
+        "prespecified. Paired comparisons and whether their 95% intervals exclude zero "
+        "are reported in `paper2_v3_paired_differences.csv`; no comparator was selected "
+        f"according to test performance.\n\n{trace}\n"
+    )
+    write_text(target / "results_v0_v3_draft.md", results_text)
+    write_text(target / "discussion_v3_draft.md", f"""# Discussion: v3 (draft)
 
 The results support a dataset-dependent interpretation of uncertainty–distance fusion. The prespecified fusion improved some fixed-orientation comparisons but did not generalize uniformly: DeepSense remained directionally inverted, and performance patterns differed across datasets and metrics. These observations warrant caution against universal claims.
 
@@ -101,27 +124,27 @@ The exploratory Mahalanobis addition should be interpreted as an ablation. Any p
 
 {trace}
 """)
-    (target / "limitations_v3_draft.md").write_text(f"""# Limitations: v3 (draft)
+    write_text(target / "limitations_v3_draft.md", f"""# Limitations: v3 (draft)
 
 The evaluation covers one frozen split for each of three datasets and therefore does not establish universal generalization. Bootstrap intervals quantify sampling variability conditional on these samples and do not capture dataset-shift uncertainty. Detection accuracy uses an evaluation-selected threshold and is descriptive rather than deployment-valid. Equal weighting and score orientation were fixed; no test-OOD adaptation was permitted. The DeepSense result is negative under that orientation. The negated-score analysis is post-hoc and diagnostic only. Multiple dataset, metric, and comparator intervals are reported without a family-wise multiplicity adjustment, so interval exclusion of zero should be interpreted narrowly.
 
 {trace}
 """)
-    (target / "figure_captions_v3.md").write_text("""# Figure captions: v3
+    write_text(target / "figure_captions_v3.md", """# Figure captions: v3
 
-1. **OOD AUROC with confidence intervals.** Point estimates and percentile 95% bootstrap confidence intervals under the fixed higher-is-more-OOD orientation. The three-component fusion is prespecified; the four-component method is exploratory.
+1. **OOD AUROC with confidence intervals.** Point estimates and percentile 95% bootstrap confidence intervals under the fixed higher-is-more-OOD orientation; the dashed AUROC = 0.5 line marks chance. The three-component fusion is prespecified; the four-component method is exploratory.
 2. **FPR95 with confidence intervals.** False-positive rate at 95% OOD true-positive rate, with percentile 95% bootstrap confidence intervals. Lower values are preferable; axes include zero and the full probability range.
-3. **Primary fusion comparison.** Paired AUROC differences between the prespecified primary fusion and each prespecified comparator. Intervals use identical bootstrap resamples across methods; the focused difference scale is centered on zero.
-4. **Score distributions.** ID and OOD score-density outlines for the prespecified primary fusion, clipped only for display to the 0.5th–99.5th score percentiles within each dataset.
-5. **DeepSense inversion diagnostic.** **POST-HOC DIAGNOSTIC SENSITIVITY ANALYSIS.** Fixed-orientation AUROC is compared with AUROC after score negation. Negated values were not used to change the primary analysis.
+3. **Primary fusion comparison.** This figure reports AUROC only. Paired AUROC differences compare the prespecified primary fusion with each prespecified comparator. Intervals use identical bootstrap resamples across methods; the focused difference scale is centered on zero.
+4. **Score distributions.** ID and OOD score-density outlines for the prespecified primary fusion, clipped only for display to the 0.5th–99.5th score percentiles within each dataset. Score and density axes are dataset-specific and should not be compared as common scales across panels.
+5. **DeepSense distance and fusion score inversion.** **POST-HOC DIAGNOSTIC ONLY.** Fixed-orientation AUROC is compared with AUROC after score negation. Negated values were not used to change or replace the primary analysis.
 """)
-    (target / "table_captions_v3.md").write_text("""# Table captions: v3
+    write_text(target / "table_captions_v3.md", """# Table captions: v3
 
 1. **Bootstrap confidence intervals.** Fixed-orientation point estimates and percentile 95% confidence intervals from 1,000 stratified bootstrap replicates. Detection accuracy is evaluation-descriptive.
 2. **Paired method differences.** Left-minus-right metric differences using identical resampling indices within dataset. The comparator set was fixed independently of test performance.
 3. **v0–v3 publication summary.** Frozen stage-wise OOD results. The three-component v3 method is the prespecified primary analysis; the four-component method is exploratory.
 """)
-    (target / "reproducibility_checklist_v3.md").write_text("""# Reproducibility checklist: v3
+    write_text(target / "reproducibility_checklist_v3.md", """# Reproducibility checklist: v3
 
 - [x] Source commit and Paper 2 v3 tag recorded.
 - [x] Frozen v0/v1/v2/v3 inputs hashed before and after analysis.
@@ -180,20 +203,29 @@ def main() -> None:
     ci = pd.read_csv(output / "tables/paper2_v3_bootstrap_confidence_intervals.csv"); diffs = pd.read_csv(output / "tables/paper2_v3_paired_differences.csv")
     write_manuscript(args.repo_root, output, ci, diffs)
     metadata = output / "metadata"
-    (metadata / "source_commit.txt").write_text(run_git(args.repo_root, "rev-parse", "HEAD"))
-    (metadata / "source_tag.txt").write_text("paper2-v3-uncertainty-distance-fusion-20260721\n")
-    (metadata / "git_status.txt").write_text(run_git(args.repo_root, "status", "--short"))
-    (metadata / "git_diff_stat.txt").write_text(run_git(args.repo_root, "diff", "--stat"))
-    (metadata / "run_timestamps.txt").write_text(f"finalized_utc={now()}\n")
+    write_text(metadata / "source_commit.txt", run_git(args.repo_root, "rev-parse", "HEAD"))
+    write_text(metadata / "source_tag.txt", "paper2-v3-uncertainty-distance-fusion-20260721\n")
+    write_text(metadata / "git_status.txt", run_git(args.repo_root, "status", "--short"))
+    write_text(metadata / "git_diff_stat.txt", run_git(args.repo_root, "diff", "--stat"))
+    write_text(metadata / "run_timestamps.txt", f"finalized_utc={now()}\n")
     config = {"primary_method": "ts_entropy_cosine_euclidean", "exploratory_ablation": "ts_entropy_cosine_euclidean_mahalanobis", "score_orientation": "higher_is_more_ood_like", "bootstrap_replicates": N_BOOTSTRAP, "bootstrap_seed": SEED, "confidence_interval": "percentile_95", "detection_accuracy": "evaluation-descriptive", "dataset_expected_counts": {k: v[1] for k,v in DATASETS.items()}}
-    (metadata / "analysis_configuration.json").write_text(json.dumps(config, indent=2) + "\n")
+    write_text(metadata / "analysis_configuration.json", json.dumps(config, indent=2) + "\n")
     validation = validate(args.repo_root, args.data_root, output, frozen_before)
-    (metadata / "validation_report.json").write_text(json.dumps(validation, indent=2) + "\n")
+    write_text(metadata / "validation_report.json", json.dumps(validation, indent=2) + "\n")
     findings = "\n".join(primary_lines(ci))
-    (output / "publication_analysis_summary.md").write_text(f"# Paper 2 v3 publication analysis summary\n\n## Prespecified primary analysis\n\n{findings}\n\nThe four-component method is an exploratory ablation. DeepSense is a negative result under the fixed higher-is-more-OOD orientation. Paired comparisons are reported without choosing comparators from test performance. Detection accuracy is evaluation-descriptive.\n")
+    write_text(output / "publication_analysis_summary.md",
+        f"# Paper 2 v3 publication analysis summary\n\n"
+        f"## Prespecified primary analysis\n\n{findings}\n\n"
+        "For JamShield, primary-fusion AUROC improved against each prespecified comparator, "
+        "but AUPR-OOD and FPR95 were not uniformly better against every comparator. "
+        "The four-component method is an exploratory ablation. DeepSense is a negative "
+        "result under the fixed higher-is-more-OOD orientation. Paired comparisons are "
+        "reported without choosing comparators from test performance. Detection accuracy "
+        "is evaluation-descriptive.\n"
+    )
     failures_text = "No analysis failures were recorded.\n" if not validation["failures"] else "\n".join(f"- {x}" for x in validation["failures"]) + "\n"
-    (output / "publication_analysis_failures.md").write_text("# Publication analysis failures\n\n" + failures_text)
-    (output / "README_v3_publication_analysis.md").write_text("""# Paper 2 v3 publication analysis
+    write_text(output / "publication_analysis_failures.md", "# Publication analysis failures\n\n" + failures_text)
+    write_text(output / "README_v3_publication_analysis.md", """# Paper 2 v3 publication analysis
 
 This package contains fixed-orientation, prespecified primary results; an explicitly exploratory four-component ablation; 1,000-replicate stratified paired-bootstrap confidence intervals and differences; publication figures; manuscript drafts; and validation/provenance metadata. Detection accuracy is descriptive because its threshold is selected on evaluation data. The DeepSense negated-score figure is post-hoc diagnostic sensitivity analysis only.
 
@@ -212,7 +244,7 @@ python -m compileall "$REPO_ROOT/papers/paper2_ood_rf_signal_recognition/scripts
 python -m unittest discover -s "$REPO_ROOT/papers/paper2_ood_rf_signal_recognition/tests" -v
 git -C "$REPO_ROOT" diff --check
 """
-    (output / "reproducibility_commands.sh").write_text(commands)
+    write_text(output / "reproducibility_commands.sh", commands)
     (output / "reproducibility_commands.sh").chmod(0o755)
     manifest_rows = [{"path": str(p.relative_to(output)), "sha256": sha256(p), "bytes": p.stat().st_size} for p in sorted(output.rglob("*")) if p.is_file() and p.name != "SHA256_manifest.csv"]
     pd.DataFrame(manifest_rows).to_csv(metadata / "SHA256_manifest.csv", index=False)
