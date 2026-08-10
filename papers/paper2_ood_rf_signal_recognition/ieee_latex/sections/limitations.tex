@@ -1,0 +1,16 @@
+\section{Limitations}
+\label{sec:limitations}
+
+The evaluation uses a single frozen split for each dataset. This supports reproducibility but limits claims about alternative class partitions, days, sensors, or jammer scenarios. The bootstrap captures sampling variation conditional on those evaluation rows and not the broader uncertainty of future domain shifts.
+
+The title's multi-view framing is realized here as heterogeneous dataset representations and fusion of uncertainty and geometric score views. The current experiment does not train a single model that jointly consumes raw I/Q, PSD, spectrogram, and tabular views for each sample. Each dataset contributes its available processed representation, so cross-dataset performance differences may reflect both protocol difficulty and representation quality.
+
+The supervised uncertainty path is based on a lightweight logistic-regression classifier and probability-derived temperature scaling. The verified publication comparison does not include a logit-energy model, deep ensemble, Monte Carlo dropout model, or learned uncertainty head. The feature-distance methods use the existing processed feature space; Euclidean and cosine scores assume useful class prototypes, and Mahalanobis scoring uses a regularized shared covariance model.
+
+Equal fusion weights and the higher-is-more-OOD direction are fixed. This avoids target leakage but does not establish that equal weighting is optimal. The DeepSense result shows that a fixed one-sided distance assumption can fail under domain shift. The score-negation analysis is post-hoc diagnostic only and cannot be considered evidence for a deployable orientation-selection rule.
+
+Detection accuracy is evaluation-descriptive because its threshold is optimized on the same evaluation sample. It should not be used as a claimed deployment operating point. FPR95 is more directly tied to a stated OOD recall target, but it can still be unstable under shifts in prevalence or score distribution.
+
+The stable-order AUPR-OOD implementation retains input order within score ties. It is applied consistently across every method and bootstrap replicate, but it may differ from grouped-threshold implementations when ties are common. Reproduction and external comparison require preserving or explicitly translating this convention.
+
+Finally, the paired intervals are pointwise and unadjusted for the family of datasets, metrics, and comparisons. An interval excluding zero supports only its listed comparison. The current evidence does not justify universal generalization, universal superiority, or a causal explanation for the observed score geometry.

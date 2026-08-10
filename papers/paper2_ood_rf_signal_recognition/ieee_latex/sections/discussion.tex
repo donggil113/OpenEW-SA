@@ -1,0 +1,26 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Calibration and OOD Separation Are Distinct}
+
+Temperature scaling is valuable because it supplies an explicit, validation-fitted calibration baseline without retraining the classifier. Its objective, however, is ID validation likelihood. It cannot guarantee that unseen classes or domains receive higher entropy than retained ID samples. The DeepSense and JamShield results make this distinction operational: a confidence transformation can be well specified and leak-free while the target shift remains weakly separated. Claims about calibrated confidence should therefore be accompanied by direct OOD and selective-prediction evaluation. \pendingcite{R7} \pendingcite{R16}
+
+\subsection{When Uncertainty and Geometry Complement Each Other}
+
+ElectroSense supports the intended complementarity. The class-novelty protocol lets entropy and prototype distances contribute distinct evidence, and the primary fusion improves the reported comparison metrics relative to each standalone prespecified comparator. This is evidence for the frozen ElectroSense protocol, not proof that the same combination will generalize to every modulation, sensor, or frequency regime.
+
+JamShield offers a more qualified result. Fusion improves AUROC against all prespecified comparators, suggesting better global ordering of retained and held-out scenarios. Yet AUPR-OOD and FPR95 move differently depending on the comparator. This is not contradictory: AUROC averages ranking behavior across operating points, AUPR-OOD depends on positive-class retrieval and prevalence, and FPR95 emphasizes a high-recall region. A deployment decision should therefore specify the relevant operating metric rather than treating AUROC as a complete substitute.
+
+\subsection{Geometry Can Invert Under Domain Shift}
+
+The DeepSense result is scientifically important because it falsifies the simple assumption that a held-out domain must be farther from training prototypes. A day shift can move both ID-like and OOD-labeled samples so that the held-out day becomes more concentrated around class centroids than the retained ID test set. Robust validation normalization aligns component scales but cannot correct a direction that reverses after deployment. Reversing the score after seeing OOD labels would produce a useful diagnostic but an invalid primary detector.
+
+A next-step method should be prespecified and validation-identifiable. Candidate directions include two-sided tail scores, validation-fitted density or typicality models, and domain-robust representations. Such methods must be selected without target OOD labels and evaluated on untouched shifts. \pendingcite{R17}
+
+\subsection{Interpreting the Exploratory Mahalanobis Component}
+
+The exploratory four-component fusion sometimes changes AUROC in a favorable direction, but its effects are not uniform across AUPR-OOD and FPR95. A shared covariance model can emphasize feature directions that help one shift while degrading another operating region. Because this component was not the prespecified primary method, its intervals should motivate a future preregistered comparison rather than retroactively redefine the present claim.
+
+\subsection{Statistical Scope}
+
+Paired intervals exploit exact sample alignment and provide a direct uncertainty estimate for each fixed comparison. Interval exclusion of zero is reported explicitly, but it is not labeled universal statistical significance. The intervals are pointwise, multiple metrics and comparisons are shown, and no family-wise adjustment is applied. The bootstrap also remains conditional on the observed samples; it does not quantify uncertainty over unseen datasets, sensors, or acquisition campaigns.
