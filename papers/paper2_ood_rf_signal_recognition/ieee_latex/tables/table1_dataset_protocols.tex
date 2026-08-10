@@ -1,0 +1,26 @@
+\begin{table*}[!t]
+  \caption{Dataset and OOD protocol summary. Processed input view, recognition target, frozen OOD definition, and verified ID/OOD evaluation counts for ElectroSense, DeepSense, and JamShield. Counts refer to the frozen evaluation set, not the training or validation partitions.}
+  \label{tab:dataset-protocols}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.12}
+  \begin{tabularx}{\textwidth}{@{}l l l l Y Y r r r@{}}
+    \toprule
+    Dataset & Input & Target & Protocol & ID definition & OOD definition & ID & OOD & Total \\
+    \midrule
+    ElectroSense & PSD & Signal technology & Class OOD &
+      DAB, DVB-T, FM, and LTE classes &
+      GSM and TETRA classes &
+      5,840 & 16,550 & 22,390 \\
+    DeepSense & I/Q & Wi-Fi occupancy code & Acquisition-day OOD &
+      Retained day-one samples &
+      Held-out day-two samples &
+      3,200 & 16,000 & 19,200 \\
+    JamShield & Tabular radio/network metrics & Normal versus abnormal interference & Scenario OOD &
+      Retained benign and jammer scenarios &
+      Held-out benign and jammer scenarios &
+      14,534 & 19,817 & 34,351 \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}

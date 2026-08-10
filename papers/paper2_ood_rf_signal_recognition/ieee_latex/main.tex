@@ -1,0 +1,80 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{amsmath,amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{url}
+
+\graphicspath{{figures/}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\method}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\pendingcite}[1]{\cite{#1}\,\textbf{[REFERENCE NEEDED: #1]}}
+\hyphenation{OpenEW-SA ElectroSense DeepSense JamShield}
+
+\title{Uncertainty-Calibrated Multi-View RF Signal Recognition for Open-Set Electromagnetic Spectrum Monitoring}
+
+\author{%
+  \textbf{[AUTHOR PLACEHOLDER(S)]}%
+  \thanks{\textbf{[AFFILIATION PLACEHOLDER(S)]}}%
+  \thanks{Corresponding author: \textbf{[CORRESPONDING AUTHOR AND EMAIL PLACEHOLDER]}.}%
+  \thanks{ORCID: \textbf{[AUTHOR ORCID PLACEHOLDER(S)]}.}%
+  \thanks{Funding: \textbf{[FUNDING AGENCY, PROGRAM, AND GRANT NUMBER PLACEHOLDER]}.}%
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Electromagnetic spectrum monitors encounter signal classes, receivers, acquisition days, and interference scenarios that are absent from closed-set training data. A recognizer can therefore be accurate and apparently well calibrated on retained in-distribution (ID) samples while assigning unwarranted confidence to operationally novel observations. This study develops a reproducible open-set evaluation path over existing OpenEW-SA processed artifacts from ElectroSense, DeepSense, and JamShield. The approach combines a calibrated predictive-uncertainty view with train-fitted feature-geometry views. A scalar temperature is fitted only on ID validation predictions; temperature-scaled entropy, nearest-centroid cosine distance, and nearest-centroid Euclidean distance are then normalized using validation-only robust statistics and averaged to form the prespecified primary score, \method{ts_entropy_cosine_euclidean}. A variant that additionally includes Mahalanobis distance is retained as an exploratory ablation. All scores use a fixed higher-is-more-OOD orientation, and evaluation OOD labels are not used to choose orientations, weights, methods, or thresholds. Stratified paired bootstrap analysis shows that the primary fusion is effective for ElectroSense class novelty and improves AUROC against the prespecified comparators for JamShield scenario shift. JamShield nevertheless exhibits an operating-metric trade-off: AUPR-OOD and FPR95 are not uniformly better against every comparator. DeepSense remains a negative fixed-orientation result, indicating that a held-out acquisition day can appear more geometrically typical than retained ID data. Post-hoc score negation is reported only as a diagnostic and does not replace the primary result. These findings support a dataset-dependent view of uncertainty-distance fusion and show that closed-set calibration alone does not ensure robust OOD separation.
+\end{abstract}
+
+\begin{IEEEkeywords}
+RF signal recognition, electromagnetic spectrum monitoring, out-of-distribution detection, open-set recognition, uncertainty calibration, temperature scaling, feature distance, score fusion.
+\end{IEEEkeywords}
+
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/datasets}
+\input{sections/methods}
+\input{sections/experimental_setup}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/limitations}
+\input{sections/conclusion}
+\input{sections/reproducibility}
+
+\section*{Declarations}
+\noindent\textbf{Conflict of Interest:} \textbf{[CONFLICT-OF-INTEREST STATEMENT PLACEHOLDER].}
+
+\noindent\textbf{Data Availability:} \textbf{[DATA-AVAILABILITY AND DATA-LICENSE STATEMENT PLACEHOLDER].}
+
+\noindent\textbf{Code Availability:} \textbf{[CODE-AVAILABILITY, REPOSITORY, VERSION, AND LICENSE STATEMENT PLACEHOLDER].}
+
+\section*{Acknowledgments}
+\textbf{[ACKNOWLEDGMENTS PLACEHOLDER].}
+
+\begin{thebibliography}{17}
+\bibitem{R1}\textbf{[REFERENCE NEEDED: R1]} Authoritative RF spectrum-monitoring review, standards document, or primary field study.
+\bibitem{R2}\textbf{[REFERENCE NEEDED: R2]} Foundational or peer-reviewed OOD/calibration study.
+\bibitem{R3}\textbf{[REFERENCE NEEDED: R3]} Peer-reviewed OOD/open-set evaluation-protocol or model-selection guidance.
+\bibitem{R4}\textbf{[REFERENCE NEEDED: R4]} Foundational open-set recognition paper or authoritative survey.
+\bibitem{R5}\textbf{[REFERENCE NEEDED: R5]} RF OOD/domain-generalization survey or primary RF studies.
+\bibitem{R6}\textbf{[REFERENCE NEEDED: R6]} Original confidence/OOD baseline papers or an authoritative benchmark.
+\bibitem{R7}\textbf{[REFERENCE NEEDED: R7]} Original temperature-scaling/calibration paper and, if needed, an OOD-calibration study.
+\bibitem{R8}\textbf{[REFERENCE NEEDED: R8]} Original energy-based OOD detection paper.
+\bibitem{R9}\textbf{[REFERENCE NEEDED: R9]} Foundational prototype/open-set or feature-distance OOD work.
+\bibitem{R10}\textbf{[REFERENCE NEEDED: R10]} Canonical Mahalanobis OOD paper and, if required, a numerical-method source.
+\bibitem{R11}\textbf{[REFERENCE NEEDED: R11]} Authoritative OOD benchmark or metric-methodology reference.
+\bibitem{R12}\textbf{[REFERENCE NEEDED: R12]} Statistical bootstrap reference and paired-model-comparison guidance.
+\bibitem{R13}\textbf{[REFERENCE NEEDED: R13]} Primary ElectroSense dataset publication and official dataset record.
+\bibitem{R14}\textbf{[REFERENCE NEEDED: R14]} Primary DeepSense dataset publication and official dataset record.
+\bibitem{R15}\textbf{[REFERENCE NEEDED: R15]} Primary JamShield dataset publication and official dataset record.
+\bibitem{R16}\textbf{[REFERENCE NEEDED: R16]} Foundational selective-classification or risk-coverage reference.
+\bibitem{R17}\textbf{[REFERENCE NEEDED: R17]} Peer-reviewed typicality, density-based OOD, or two-sided anomaly-detection work.
+\end{thebibliography}
+
+\end{document}
