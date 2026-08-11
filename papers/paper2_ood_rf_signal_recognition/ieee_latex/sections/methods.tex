@@ -77,7 +77,7 @@ The implementation uses a small positive stabilizer. If the validation interquar
 
 \subsection{Equal-Weight Uncertainty-Distance Fusion}
 
-The prespecified primary method, \method{ts_entropy_cosine_euclidean}, averages the normalized temperature-scaled entropy, nearest-centroid cosine distance, and nearest-centroid Euclidean distance:
+The prespecified primary method, \primarymethod, averages the normalized temperature-scaled entropy, nearest-centroid cosine distance, and nearest-centroid Euclidean distance:
 \begin{align}
   s_{\mathrm{primary}}(x)
   &= \frac{1}{\lvert\mathcal{C}\rvert}
@@ -86,7 +86,7 @@ The prespecified primary method, \method{ts_entropy_cosine_euclidean}, averages 
   &= \{\text{TS entropy},\text{cosine},\text{Euclidean}\}.
   \nonumber
 \end{align}
-Weights in \eqref{eq:primary-fusion} are equal and are not fitted on evaluation performance. The method \method{ts_entropy_cosine_euclidean_mahalanobis} adds the normalized Mahalanobis component with equal weighting. It is an exploratory ablation, not a replacement primary analysis. In this implementation, \textquotedblleft{}multi-view\textquotedblright{} fusion refers to uncertainty and geometric score views over the same dataset-specific processed representation.
+Weights in \eqref{eq:primary-fusion} are equal and are not fitted on evaluation performance. The method \exploratorymethod{} adds the normalized Mahalanobis component with equal weighting. It is an exploratory ablation, not a replacement primary analysis. In this implementation, \textquotedblleft{}multi-view\textquotedblright{} fusion refers to uncertainty and geometric score views over the same dataset-specific processed representation.
 
 \subsection{OOD Metrics and Tied-Score Handling}
 

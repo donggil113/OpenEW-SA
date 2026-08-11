@@ -11,7 +11,11 @@
 \graphicspath{{figures/}}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcommand{\method}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\compactmethod}[1]{{\footnotesize\method{#1}}}
+\newcommand{\primarymethod}{{\footnotesize\texttt{ts\_\allowbreak entropy\_\allowbreak cosine\_\allowbreak euclidean}}}
+\newcommand{\exploratorymethod}{{\footnotesize\texttt{ts\_\allowbreak entropy\_\allowbreak cosine\_\allowbreak euclidean\_\allowbreak mahalanobis}}}
 \newcommand{\pendingcite}[1]{\cite{#1}\,\textbf{[REFERENCE NEEDED: #1]}}
+\newcommand{\submissionplaceholder}[1]{\textit{[Placeholder: #1]}}
 \hyphenation{OpenEW-SA ElectroSense DeepSense JamShield}
 
 \title{Uncertainty-Calibrated Multi-View RF Signal Recognition for Open-Set Electromagnetic Spectrum Monitoring}
@@ -29,7 +33,7 @@
 \maketitle
 
 \begin{abstract}
-Electromagnetic spectrum monitors encounter signal classes, receivers, acquisition days, and interference scenarios that are absent from closed-set training data. A recognizer can therefore be accurate and apparently well calibrated on retained in-distribution (ID) samples while assigning unwarranted confidence to operationally novel observations. This study develops a reproducible open-set evaluation path over existing OpenEW-SA processed artifacts from ElectroSense, DeepSense, and JamShield. The approach combines a calibrated predictive-uncertainty view with train-fitted feature-geometry views. A scalar temperature is fitted only on ID validation predictions; temperature-scaled entropy, nearest-centroid cosine distance, and nearest-centroid Euclidean distance are then normalized using validation-only robust statistics and averaged to form the prespecified primary score, \method{ts_entropy_cosine_euclidean}. A variant that additionally includes Mahalanobis distance is retained as an exploratory ablation. All scores use a fixed higher-is-more-OOD orientation, and evaluation OOD labels are not used to choose orientations, weights, methods, or thresholds. Stratified paired bootstrap analysis shows that the primary fusion is effective for ElectroSense class novelty and improves AUROC against the prespecified comparators for JamShield scenario shift. JamShield nevertheless exhibits an operating-metric trade-off: AUPR-OOD and FPR95 are not uniformly better against every comparator. DeepSense remains a negative fixed-orientation result, indicating that a held-out acquisition day can appear more geometrically typical than retained ID data. Post-hoc score negation is reported only as a diagnostic and does not replace the primary result. These findings support a dataset-dependent view of uncertainty-distance fusion and show that closed-set calibration alone does not ensure robust OOD separation.
+Electromagnetic spectrum monitors encounter signal classes, receivers, acquisition days, and interference scenarios that are absent from closed-set training data. A recognizer can therefore be accurate and apparently well calibrated on retained in-distribution (ID) samples while assigning unwarranted confidence to operationally novel observations. This study develops a reproducible open-set evaluation path over existing OpenEW-SA processed artifacts from ElectroSense, DeepSense, and JamShield. The approach combines a calibrated predictive-uncertainty view with train-fitted feature-geometry views. A scalar temperature is fitted only on ID validation predictions; temperature-scaled entropy, nearest-centroid cosine distance, and nearest-centroid Euclidean distance are then normalized using validation-only robust statistics and averaged to form the prespecified primary score, \primarymethod. A variant that additionally includes Mahalanobis distance is retained as an exploratory ablation. All scores use a fixed higher-is-more-OOD orientation, and evaluation OOD labels are not used to choose orientations, weights, methods, or thresholds. Stratified paired bootstrap analysis shows that the primary fusion is effective for ElectroSense class novelty and improves AUROC against the prespecified comparators for JamShield scenario shift. JamShield nevertheless exhibits an operating-metric trade-off: AUPR-OOD and FPR95 are not uniformly better against every comparator. DeepSense remains a negative fixed-orientation result, indicating that a held-out acquisition day can appear more geometrically typical than retained ID data. Post-hoc score negation is reported only as a diagnostic and does not replace the primary result. These findings support a dataset-dependent view of uncertainty-distance fusion and show that closed-set calibration alone does not ensure robust OOD separation.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -48,14 +52,14 @@ RF signal recognition, electromagnetic spectrum monitoring, out-of-distribution 
 \input{sections/reproducibility}
 
 \section*{Declarations}
-\noindent\textbf{Conflict of Interest:} \textbf{[CONFLICT-OF-INTEREST STATEMENT PLACEHOLDER].}
+\noindent\textbf{Conflict of Interest:} \submissionplaceholder{conflict-of-interest statement}.
 
-\noindent\textbf{Data Availability:} \textbf{[DATA-AVAILABILITY AND DATA-LICENSE STATEMENT PLACEHOLDER].}
+\noindent\textbf{Data Availability:} \submissionplaceholder{data-availability and data-license statement}.
 
-\noindent\textbf{Code Availability:} \textbf{[CODE-AVAILABILITY, REPOSITORY, VERSION, AND LICENSE STATEMENT PLACEHOLDER].}
+\noindent\textbf{Code Availability:} \submissionplaceholder{code-availability, repository/version, and license statement}.
 
 \section*{Acknowledgments}
-\textbf{[ACKNOWLEDGMENTS PLACEHOLDER].}
+\submissionplaceholder{acknowledgments}.
 
 \begin{thebibliography}{17}
 \bibitem{R1}\textbf{[REFERENCE NEEDED: R1]} Authoritative RF spectrum-monitoring review, standards document, or primary field study.

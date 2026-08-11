@@ -2,9 +2,9 @@
   \caption{v0--v3 publication summary. Frozen stage-wise OOD results for raw confidence baselines, temperature-scaled confidence, feature distances, and uncertainty-distance fusion. The three-component v3 method is the prespecified primary analysis; the Mahalanobis four-component method is exploratory.}
   \label{tab:stagewise-summary}
   \centering
-  \fontsize{6.4}{7.2}\selectfont
-  \setlength{\tabcolsep}{2.4pt}
-  \renewcommand{\arraystretch}{0.96}
+  \scriptsize
+  \setlength{\tabcolsep}{2.0pt}
+  \renewcommand{\arraystretch}{0.92}
   \begin{tabularx}{\textwidth}{@{}c c Y r r r r c@{}}
     \toprule
     Stage & Data & Score method & AUROC & AUPR-OOD & FPR95 & Det.\ acc. & Role \\
@@ -49,6 +49,6 @@
   \end{tabularx}
 
   \vspace{2pt}
-  \parbox{\textwidth}{\fontsize{6.4}{7.2}\selectfont
+  \parbox{\textwidth}{\raggedright
   DS: DeepSense; ES: ElectroSense; JS: JamShield; LR: logistic regression; NC: nearest centroid; C: contextual comparator; P: prespecified primary (\method{ts_entropy_cosine_euclidean}); E: exploratory ablation (\method{ts_entropy_cosine_euclidean_mahalanobis}). All scores use the fixed higher-is-more-OOD orientation. Detection accuracy (Det.\ acc.) is evaluation-descriptive because its threshold was selected on evaluation data.}
 \end{table*}
