@@ -1,0 +1,10 @@
+\section{Reproducibility Statement}
+\label{sec:reproducibility}
+
+All manuscript results are derived from the frozen Paper 2 v0--v3 artifacts and the verified publication-analysis package. The source tables are \path{tables/paper2_v3_bootstrap_confidence_intervals.csv}, \path{tables/paper2_v3_paired_differences.csv}, and \path{tables/paper2_v0_v3_publication_summary.csv}. The independent review report, deterministic bootstrap metadata, validation report, publication figures, and SHA256 manifest are stored in the same package. The local path needed to audit these sources is recorded only in the package README and is intentionally omitted from this submission-facing manuscript.
+
+Repository scripts document manifest construction, split generation, supervised prediction, temperature scaling, entropy extraction, feature-distance scoring, validation-only fusion, metric computation, bootstrap analysis, and publication finalization. The split and score readers preserve \method{sample_id}, labels, domains, and split identifiers as strings; the publication validator explicitly checks DeepSense leading-zero occupancy labels. All compared methods use exact within-dataset sample alignment and the fixed higher-is-more-OOD orientation.
+
+The prespecified method and analysis roles are named in machine-readable metadata. The primary score is \primarymethod; the Mahalanobis-augmented method is exploratory; and the DeepSense negation is post-hoc diagnostic only. Detection accuracy is marked evaluation-descriptive in the generated tables. The numerical traceability matrix maps every empirical value reported in this manuscript to its source CSV row and columns.
+
+This manuscript integration does not rerun model training, OOD score generation, or bootstrap sampling. It reads the verified tables and leaves Paper 1 and all frozen Paper 2 snapshots unchanged. Repository-level validation and remaining editorial tasks are recorded in \path{manuscript_completion_checklist.md}.

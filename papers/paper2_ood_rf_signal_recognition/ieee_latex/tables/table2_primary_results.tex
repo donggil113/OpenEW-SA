@@ -1,0 +1,33 @@
+\begin{table*}[!t]
+  \caption{Bootstrap confidence intervals for the prespecified primary method. Fixed-orientation point estimates and percentile 95\% confidence intervals from 1,000 stratified bootstrap replicates are shown. Detection accuracy is evaluation-descriptive because its threshold is selected on the evaluation sample.}
+  \label{tab:primary-results}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{@{}l *{4}{>{\centering\arraybackslash}X}@{}}
+    \toprule
+    Dataset &
+    AUROC [95\% CI] &
+    AUPR-OOD [95\% CI] &
+    FPR95 [95\% CI] &
+    Detection accuracy [95\% CI] \\
+    \midrule
+    ElectroSense &
+    0.857037 [0.851138, 0.862585] &
+    0.934429 [0.930849, 0.937570] &
+    0.434589 [0.420886, 0.447774] &
+    0.856632 [0.853235, 0.860741] \\
+    DeepSense &
+    0.352958 [0.340919, 0.364553] &
+    0.737936 [0.733647, 0.742146] &
+    0.992188 [0.989062, 0.995313] &
+    0.833490 [0.833333, 0.833750] \\
+    JamShield &
+    0.657625 [0.652294, 0.663324] &
+    0.710403 [0.704694, 0.716541] &
+    0.927205 [0.922869, 0.931402] &
+    0.634887 [0.630957, 0.639196] \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}

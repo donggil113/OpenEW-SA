@@ -1,0 +1,101 @@
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Notation and Fixed Score Orientation}
+
+Let \(x\) denote a processed RF feature vector, \(y\) a known-class label, \(p_k(x)\) the classifier probability for class \(k\), and \(z(x)\) the feature representation used by the classifier and distance models. Every OOD component is oriented before evaluation so that a larger value means more OOD-like. This convention is retained even when a dataset produces an inverted ranking. OOD labels do not enter any score definition.
+
+\subsection{Baseline Confidence Scores}
+
+The supervised baseline produces class probabilities and a predicted label for each validation and evaluation sample. The maximum-softmax-probability OOD score is implemented as
+\begin{equation}
+  s_{\mathrm{MSP}}(x) = 1 - \max_k p_k(x),
+  \label{eq:msp}
+\end{equation}
+so lower classifier confidence becomes a larger OOD score. Predictive entropy is
+\begin{equation}
+  s_{\mathrm{ent}}(x)
+  = -\frac{\sum_k p_k(x)\log p_k(x)}{\log K},
+  \label{eq:entropy}
+\end{equation}
+where \(K\) is the number of known classes. The normalization in \eqref{eq:entropy} bounds entropy across class counts while preserving the higher-is-more-OOD convention. The pipeline also supports an energy score when logits are present, but the verified publication comparison uses temperature-scaled entropy rather than logit energy. Random scoring, raw MSP, and raw entropy are retained as smoke-test or contextual v0 baselines; they are not the prespecified v3 primary method.
+
+Probability-column suffixes are treated as symbolic class labels. This is consequential for DeepSense, where a digit-looking occupancy code is not an integer. Label matching therefore preserves strings and can recover a unique fixed-width suffix only when a prior CSV reader has already removed leading zeros.
+
+\subsection{Temperature Scaling}
+
+A single positive temperature \(T\) is selected on ID validation predictions by minimizing negative log likelihood. When classifier logits are unavailable, the implementation takes the logarithm of the class probabilities after numerical clipping, divides those log-probabilities by \(T\), and applies a softmax:
+\begin{equation}
+  \widetilde{p}_k(x;T)
+  = \frac{\exp\!\left(\log p_k(x)/T\right)}
+  {\sum_j \exp\!\left(\log p_j(x)/T\right)}.
+  \label{eq:temperature-scaling}
+\end{equation}
+The selected temperature in \eqref{eq:temperature-scaling} is then frozen and applied to validation, test-ID, and test-OOD predictions. Temperature-scaled predictive entropy is the uncertainty component used in the primary fusion and is also a prespecified standalone comparator. The procedure calibrates a closed-set probability model on ID validation data; it does not use OOD labels and does not, by construction, guarantee OOD separation. \pendingcite{R7}
+
+\subsection{Feature-Distance Scoring}
+
+All feature-distance models are fitted on the ID training split only. For each known class \(k\), the class centroid is
+\begin{equation}
+  \mu_k = \frac{1}{\lvert\mathcal{T}_k\rvert}
+  \sum_{i\in\mathcal{T}_k} z(x_i).
+  \label{eq:centroid}
+\end{equation}
+The nearest-centroid Euclidean score is the minimum Euclidean distance to a class centroid:
+\begin{equation}
+  s_{\mathrm{euc}}(x) = \min_k \left\lVert z(x)-\mu_k \right\rVert_2.
+  \label{eq:euclidean}
+\end{equation}
+The cosine score normalizes both samples and centroids and computes
+\begin{equation}
+  s_{\mathrm{cos}}(x)
+  = 1-\max_k
+  \frac{z(x)^\top\mu_k}
+  {\left\lVert z(x)\right\rVert_2\left\lVert\mu_k\right\rVert_2}.
+  \label{eq:cosine}
+\end{equation}
+For Mahalanobis scoring, within-class residuals are pooled into a shared covariance estimate. A diagonal regularizer is added, a numerically stable pseudo-inverse is computed, and the score is the minimum square-root Mahalanobis distance:
+\begin{equation}
+  s_{\mathrm{mah}}(x)
+  = \min_k \sqrt{
+  (z(x)-\mu_k)^\top
+  \Sigma_{\mathrm{reg}}^{+}
+  (z(x)-\mu_k)}.
+  \label{eq:mahalanobis}
+\end{equation}
+Equations~\eqref{eq:euclidean}--\eqref{eq:mahalanobis} are all distances, so larger scores remain more OOD-like. Nearest-centroid cosine and Euclidean distances are prespecified comparators and components of the primary fusion. Mahalanobis distance appears only in the exploratory four-component ablation.
+
+\subsection{Validation-Only Robust Normalization}
+
+The component scores have different units and ranges. For each component \(c\), the method estimates a median \(m_c\) and interquartile range \(q_c\) from ID validation scores only, then applies the frozen transform
+\begin{equation}
+  \widehat{s}_c(x)
+  = \frac{s_c(x)-m_c}{q_c+\epsilon}.
+  \label{eq:robust-normalization}
+\end{equation}
+The implementation uses a small positive stabilizer. If the validation interquartile range is zero or non-finite, the validation standard deviation is used; if that scale is also unusable, unit scale is used and recorded as a warning. Evaluation scores, sample classes, and OOD labels do not affect the center or scale in \eqref{eq:robust-normalization}. This makes the normalization deployable in the limited sense that it can be fixed before the target OOD population is observed.
+
+\subsection{Equal-Weight Uncertainty-Distance Fusion}
+
+The prespecified primary method, \primarymethod, averages the normalized temperature-scaled entropy, nearest-centroid cosine distance, and nearest-centroid Euclidean distance:
+\begin{align}
+  s_{\mathrm{primary}}(x)
+  &= \frac{1}{\lvert\mathcal{C}\rvert}
+  \sum_{c\in\mathcal{C}}\widehat{s}_c(x), \label{eq:primary-fusion}\\
+  \mathcal{C}
+  &= \{\text{TS entropy},\text{cosine},\text{Euclidean}\}.
+  \nonumber
+\end{align}
+Weights in \eqref{eq:primary-fusion} are equal and are not fitted on evaluation performance. The method \exploratorymethod{} adds the normalized Mahalanobis component with equal weighting. It is an exploratory ablation, not a replacement primary analysis. In this implementation, \textquotedblleft{}multi-view\textquotedblright{} fusion refers to uncertainty and geometric score views over the same dataset-specific processed representation.
+
+\subsection{OOD Metrics and Tied-Score Handling}
+
+OOD is the positive class for all detection metrics. AUROC evaluates global ranking. AUPR-OOD evaluates positive-class precision--recall behavior. FPR95 is the minimum ID false-positive rate at which OOD true-positive rate reaches the target operating level; lower is preferable. Detection accuracy is the best accuracy over thresholds of the rule \textquotedblleft{}score at or above the threshold is OOD.\textquotedblright{} Because that threshold is optimized on the evaluation sample, detection accuracy is \textbf{evaluation-descriptive} and must not be interpreted as a deployment-valid operating point.
+
+Paper 2 uses its existing stable-order AUPR-OOD implementation. Samples are sorted by descending OOD score with a stable mergesort; precision is evaluated at each OOD-positive rank and averaged over the OOD rows. Equal-score rows therefore retain their input-CSV order. The same implementation is used for every point estimate and bootstrap replicate. This convention is documented because it can differ from grouped-threshold average-precision implementations when scores are tied.
+
+\subsection{Bootstrap Statistical Analysis}
+
+Uncertainty is estimated with 1,000 nonparametric replicates. ID and OOD observations are resampled separately at their original evaluation counts. Within each dataset and replicate, the same sampled ID and OOD indices are reused across all methods, enabling paired left-minus-right differences. Pointwise percentile 95\% confidence intervals are reported for AUROC, AUPR-OOD, FPR95, and detection accuracy. The deterministic seed is recorded in the external analysis metadata.
+
+The paired comparison set is fixed: primary versus temperature-scaled entropy, primary versus nearest-centroid cosine, primary versus nearest-centroid Euclidean, and exploratory four-component fusion versus primary. An interval that excludes zero supports a difference only for that dataset, metric, score orientation, and comparison. No family-wise multiplicity adjustment is applied, so interval exclusion is not described as universal statistical significance.

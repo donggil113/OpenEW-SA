@@ -1,0 +1,67 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Prespecified Primary Method}
+
+Table~\ref{tab:primary-results} reports the fixed-orientation primary results. Values are point estimates followed by percentile 95\% confidence intervals. The three datasets show materially different behavior. ElectroSense has strong class-OOD ranking and the lowest primary FPR95 among the three evaluations. DeepSense is a negative result: primary AUROC is below chance and FPR95 is near the upper end of its range. JamShield has above-chance AUROC but a high FPR95, indicating that global ranking improvement does not imply a uniformly favorable high-recall operating point.
+
+\input{tables/table2_primary_results}
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{figure_ood_auroc_with_ci.pdf}
+  \caption{OOD AUROC with confidence intervals. Point estimates and percentile 95\% bootstrap confidence intervals under the fixed higher-is-more-OOD orientation; the dashed \(\mathrm{AUROC}=0.5\) line marks chance. The three-component fusion is prespecified; the four-component method is exploratory. The primary result is not replaced by any score-negated analysis.}
+  \label{fig:ood-auroc}
+\end{figure*}
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=0.91\textwidth]{figure_fpr95_with_ci.pdf}
+  \caption{FPR95 with confidence intervals. False-positive rate at 95\% OOD true-positive rate, with percentile 95\% bootstrap confidence intervals under the fixed score orientation. Lower values are preferable; axes include zero and the full probability range.}
+  \label{fig:fpr95}
+\end{figure*}
+
+\subsection{Paired Comparisons}
+
+Table~\ref{tab:paired-comparisons} states the decision for every reported paired interval. A positive sign means that the left method has a larger metric value; a negative sign means it has a smaller value. For AUROC, AUPR-OOD, and detection accuracy, larger values are ordinarily favorable. For FPR95, smaller values are favorable. Detection-accuracy comparisons remain evaluation-descriptive even when their intervals exclude zero.
+
+\input{tables/table3_paired_comparisons}
+
+For ElectroSense, all primary-versus-comparator intervals exclude zero in the favorable direction: AUROC, AUPR-OOD, and evaluation-descriptive detection accuracy are higher, while FPR95 is lower. The four-component fusion also has favorable intervals relative to the primary method on this dataset, but that result remains exploratory and cannot be used to relabel the primary analysis.
+
+For DeepSense, the primary fusion is worse than every prespecified comparator on AUROC, AUPR-OOD, and FPR95, and all of those intervals exclude zero. Detection-accuracy intervals include zero against temperature-scaled entropy and cosine distance, whereas the interval against Euclidean distance excludes zero in the negative direction. Adding Mahalanobis distance produces exploratory increases in AUROC and AUPR-OOD whose intervals exclude zero, but it also increases FPR95 with an interval excluding zero; the detection-accuracy interval includes zero. These differences do not repair the fixed-orientation failure.
+
+For JamShield, primary-fusion AUROC is higher than each prespecified comparator and each AUROC interval excludes zero. The other metrics expose a trade-off. Against temperature-scaled entropy, primary AUPR-OOD is lower while FPR95 is lower, with both intervals excluding zero. Against nearest-centroid cosine, primary AUPR-OOD is higher but FPR95 is also higher, with both intervals excluding zero; the detection-accuracy interval includes zero. Against Euclidean distance, the primary method is favorable on all reported metrics and every interval excludes zero. The exploratory Mahalanobis addition increases AUROC and evaluation-descriptive detection accuracy and lowers FPR95, but lowers AUPR-OOD; each of those paired intervals excludes zero. Thus JamShield does not support a claim that fusion uniformly improves every metric against every comparator.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=0.98\textwidth]{figure_primary_fusion_comparison.pdf}
+  \caption{Primary fusion comparison. This figure reports AUROC only. Paired AUROC differences compare the prespecified primary fusion with each prespecified comparator. Intervals use identical bootstrap resamples across methods; the focused difference scale is centered on zero. The shared horizontal label is \textquotedblleft{}Paired AUROC difference: primary \(-\) comparator.\textquotedblright{}}
+  \label{fig:primary-comparison}
+\end{figure*}
+
+\subsection{Score Distributions and the DeepSense Inversion}
+
+The dataset-specific score distributions in Fig.~\ref{fig:score-distributions} provide a qualitative view of the fixed orientation. Their score and density axes are independently scaled and must not be compared as common units across datasets. ElectroSense shows useful separation under the primary fusion; JamShield shows partial overlap consistent with its mixed operating metrics; and DeepSense shows a direction mismatch rather than merely broad uncertainty.
+
+DeepSense is retained as a negative fixed-orientation result. Fig.~\ref{fig:deepsense-inversion} compares the original scores with post-hoc negated scores solely to diagnose inversion. The negated scores were not used to choose the primary method, replace any reported value, or make a primary performance claim. The diagnostic suggests that held-out day-two samples can lie closer to training prototypes or receive lower uncertainty than retained day-one test samples under the current representation.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{figure_score_distributions_by_dataset.pdf}
+  \caption{Primary-score distributions by dataset. ID and OOD score-density outlines for the prespecified primary fusion, clipped only for display to the 0.5th--99.5th score percentiles within each dataset. Score and density axes are dataset-specific and must not be interpreted as common scales across panels.}
+  \label{fig:score-distributions}
+\end{figure*}
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{figure_deepsense_inversion_diagnostic.pdf}
+  \caption{DeepSense distance and fusion score inversion---\textbf{POST-HOC DIAGNOSTIC ONLY}. Fixed-orientation AUROC is compared with AUROC after score negation. Negated values are diagnostic only and were not used to change, replace, or reinterpret the primary result.}
+  \label{fig:deepsense-inversion}
+\end{figure*}
+
+\subsection{Context Across v0--v3}
+
+Table~\ref{tab:stagewise-summary} preserves the stage-wise results used to contextualize the final analysis. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid. The v1 rows cover temperature-scaled logistic-regression entropy and maximum-softmax scores. The v2 rows cover Euclidean, cosine, and Mahalanobis feature distances. The v3 rows contain the prespecified primary fusion and the exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
+
+\input{tables/table4_stagewise_summary}

@@ -1,0 +1,18 @@
+\section{Related Work}
+\label{sec:related-work}
+
+\subsection{Open-Set and OOD Recognition for RF Monitoring}
+
+Open-set recognition distinguishes known-class classification from the additional requirement to reject observations outside the modeled class support. OOD detection broadens the concern to covariate and domain shifts that can preserve labels while changing the observation distribution. Both settings are relevant to RF monitoring because waveform, sensor, site, day, channel, and interference changes can alter the feature distribution independently of the nominal recognition task. A final version should cite foundational open-set/OOD work and RF-specific evaluations rather than treating computer-vision evidence as automatically transferable. \pendingcite{R4} \pendingcite{R5}
+
+\subsection{Confidence and Calibration}
+
+Maximum softmax probability, predictive entropy, and logit-energy scores are common post-hoc confidence baselines because they can be computed from an existing classifier without retraining an explicit OOD model. Temperature scaling fits a scalar on held-out ID predictions to improve probabilistic calibration while leaving the classifier architecture fixed. These techniques address different properties: calibration concerns the relationship between confidence and correctness on a specified distribution, whereas OOD detection concerns ranking or separating a shifted population. Their relationship should therefore be tested rather than assumed. \pendingcite{R6} \pendingcite{R7} \pendingcite{R8}
+
+\subsection{Feature Geometry and Score Fusion}
+
+Prototype and Mahalanobis approaches score a sample by its position relative to class-conditional training features. Euclidean and cosine distances encode different geometry, while a shared-covariance Mahalanobis score adjusts directions by estimated within-class variability. Their usefulness depends on whether novelty actually maps to increasing distance in the learned or processed representation. Combining uncertainty and distance can expose complementary evidence, but score scales must be aligned without consulting evaluation OOD labels. \pendingcite{R9} \pendingcite{R10}
+
+\subsection{Statistical Evaluation of OOD Scores}
+
+AUROC, AUPR with OOD as the positive class, and FPR at a high OOD true-positive rate summarize different aspects of ranking and operating behavior. Paired resampling is useful when competing methods score exactly the same observations because a shared resample preserves within-sample dependence. Confidence intervals nevertheless quantify uncertainty conditional on the observed dataset and resampling design; they do not establish performance on every future domain. \pendingcite{R11} \pendingcite{R12}

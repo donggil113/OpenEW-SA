@@ -1,0 +1,18 @@
+\section{Experimental Setup}
+\label{sec:experimental-setup}
+
+\subsection{Artifact and Split Pipeline}
+
+Each processed artifact directory contains \compactmethod{metadata.csv}, \compactmethod{labels.json}, and a shared NumPy feature array when available. A unified Paper 2 manifest stores \compactmethod{sample_id}, dataset, task, label, domain, input type, feature path, and feature index. Protocol-specific split CSVs preserve these columns and append the split and OOD label. The evaluation file contains test-ID and test-OOD rows, matching the prediction and score files one-to-one by \compactmethod{sample_id}.
+
+\subsection{Supervised Classifier and Calibration}
+
+The publication pipeline uses standardized logistic regression as the classifier underlying temperature-scaled entropy. It is fitted on the ID training split and writes symbolic true and predicted labels, confidence, and one probability column per known class for ID validation, test ID, and test OOD. Temperature scaling is fitted on the validation prediction file and then applied without further adjustment. Earlier nearest-centroid probability baselines and raw logistic-regression confidence scores are retained in the v0--v3 publication summary as contextual results, not as selected primary competitors.
+
+\subsection{Distance and Fusion Stages}
+
+The v2 stage fits Euclidean, cosine, and shared-covariance Mahalanobis distance models using training features only. The v3 stage converts calibrated predictions to entropy scores, scores the validation and evaluation manifests with the distance models, robust-normalizes each component on ID validation data, and writes strictly sample-aligned fused scores. The analysis roles were held fixed: \primarymethod{} is the prespecified primary method; temperature-scaled entropy, nearest-centroid cosine, and nearest-centroid Euclidean are prespecified comparators; and the Mahalanobis-augmented fusion is exploratory.
+
+\subsection{Evaluation Integrity}
+
+All compared v3 score files contain the same ordered sample IDs, true labels, and OOD labels within each dataset. DeepSense occupancy identifiers remain symbolic strings. Non-finite scores are rejected. The publication analysis consumes frozen v0--v3 snapshots and writes separate tables, figures, bootstrap summaries, and provenance metadata. The manuscript integration reported here reads those verified outputs and does not rerun training, score generation, or bootstrap sampling.

@@ -1,0 +1,31 @@
+\begin{table*}[!t]
+  \caption{Paired method differences and interval decisions. Each cell refers to a left-minus-right percentile confidence interval using identical resampling indices within dataset. The comparator set was fixed independently of test performance. A positive sign means that the left method has a larger metric value; a negative sign means it has a smaller value. For AUROC, AUPR-OOD, and detection accuracy, larger values are ordinarily favorable; for FPR95, smaller values are favorable. Exact differences and interval bounds are preserved in the verified paired-differences CSV. Detection-accuracy comparisons are evaluation-descriptive.}
+  \label{tab:paired-comparisons}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{2.8pt}
+  \renewcommand{\arraystretch}{1.08}
+  \newcommand{\ExcludesPositive}{\shortstack{Excludes\\zero (+)}}
+  \newcommand{\ExcludesNegative}{\shortstack{Excludes\\zero (\(-\))}}
+  \newcommand{\IncludesZero}{\shortstack{Includes\\zero}}
+  \begin{tabularx}{\textwidth}{@{}l Y c c c c@{}}
+    \toprule
+    Dataset & Left-minus-right comparison & AUROC & AUPR-OOD & FPR95 & Detection accuracy \\
+    \midrule
+    ElectroSense & Primary \(-\) TS entropy & \ExcludesPositive & \ExcludesPositive & \ExcludesNegative & \ExcludesPositive \\
+    ElectroSense & Primary \(-\) NC cosine & \ExcludesPositive & \ExcludesPositive & \ExcludesNegative & \ExcludesPositive \\
+    ElectroSense & Primary \(-\) NC Euclidean & \ExcludesPositive & \ExcludesPositive & \ExcludesNegative & \ExcludesPositive \\
+    ElectroSense & Exploratory four-component \(-\) primary & \ExcludesPositive & \ExcludesPositive & \ExcludesNegative & \ExcludesPositive \\
+    \addlinespace
+    DeepSense & Primary \(-\) TS entropy & \ExcludesNegative & \ExcludesNegative & \ExcludesPositive & \IncludesZero \\
+    DeepSense & Primary \(-\) NC cosine & \ExcludesNegative & \ExcludesNegative & \ExcludesPositive & \IncludesZero \\
+    DeepSense & Primary \(-\) NC Euclidean & \ExcludesNegative & \ExcludesNegative & \ExcludesPositive & \ExcludesNegative \\
+    DeepSense & Exploratory four-component \(-\) primary & \ExcludesPositive & \ExcludesPositive & \ExcludesPositive & \IncludesZero \\
+    \addlinespace
+    JamShield & Primary \(-\) TS entropy & \ExcludesPositive & \ExcludesNegative & \ExcludesNegative & \ExcludesPositive \\
+    JamShield & Primary \(-\) NC cosine & \ExcludesPositive & \ExcludesPositive & \ExcludesPositive & \IncludesZero \\
+    JamShield & Primary \(-\) NC Euclidean & \ExcludesPositive & \ExcludesPositive & \ExcludesNegative & \ExcludesPositive \\
+    JamShield & Exploratory four-component \(-\) primary & \ExcludesPositive & \ExcludesNegative & \ExcludesNegative & \ExcludesPositive \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}

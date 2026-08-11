@@ -1,0 +1,6 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+This study integrates calibrated predictive uncertainty and train-fitted feature distance into a leak-resistant OOD evaluation pipeline for OpenEW-SA RF artifacts. Validation-only temperature scaling and robust normalization make the procedure reproducible without consulting target OOD labels, and equal-weight fusion provides a simple prespecified test of complementary evidence.
+
+The results are deliberately mixed. The primary fusion is effective for ElectroSense class novelty and improves JamShield AUROC against the prespecified comparators, but JamShield retains metric-specific trade-offs. DeepSense remains a negative result under the fixed orientation, and post-hoc negation is diagnostic only. The central conclusion is therefore not that one fused score solves open-set RF monitoring. It is that closed-set calibration, feature geometry, and OOD operating behavior must be measured separately, combined without target leakage, and interpreted at the level of the actual dataset and shift.

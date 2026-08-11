@@ -1,0 +1,22 @@
+\section{Datasets and OOD Evaluation Protocols}
+\label{sec:datasets}
+
+The experiments use converted OpenEW-SA artifacts with one metadata row per sample, an index into a shared feature array, and symbolic labels loaded as strings. Each frozen protocol contains an ID training split, an ID validation split, an ID test split, and an OOD test split. The evaluation CSV is the concatenation of test ID and test OOD rows only. Table~\ref{tab:dataset-protocols} reports the verified evaluation counts used by every compared v3 method.
+
+\input{tables/table1_dataset_protocols}
+
+\subsection{ElectroSense Class OOD}
+
+ElectroSense contributes processed PSD features for signal-technology recognition. DAB, DVB-T, FM, and LTE are treated as known classes for classifier fitting and ID evaluation. GSM and TETRA are withheld from classifier training and treated as OOD at evaluation. The protocol therefore tests semantic class novelty while retaining the sensor diversity present in the converted artifact. A dataset citation and the provenance of the converted OpenEW-SA subset are required in the final manuscript. \pendingcite{R13}
+
+\subsection{DeepSense Acquisition-Day OOD}
+
+DeepSense contributes processed I/Q windows labeled by binary occupancy codes. All occupancy codes remain known labels, while the acquisition day defines the shift: retained day-one rows provide train, validation, and test-ID samples, and held-out day-two rows provide OOD samples. Labels such as \method{0000}, \method{0001}, \method{0010}, and \method{0100} are identifiers and are read and written as strings so their leading zeros cannot be lost. This protocol tests domain shift rather than unseen-class rejection. \pendingcite{R14}
+
+\subsection{JamShield Scenario OOD}
+
+JamShield contributes tabular radio and network telemetry for normal-versus-abnormal interference recognition. Both recognition labels occur in the retained scenarios, while a frozen subset of benign and jammer scenarios is held out as OOD. The task therefore asks whether a classifier and its training geometry can identify scenario novelty even when the nominal label vocabulary remains unchanged. The exact retained and held-out domain identifiers are fixed in the split manifests. \pendingcite{R15}
+
+\subsection{Leakage Controls}
+
+Training features and labels are used to fit the classifier and the class centroids. ID validation predictions are used to fit temperature scaling, and ID validation component scores are used to fit score normalization. Test-ID and test-OOD labels are used only for final metric computation, audit alignment, and the explicitly labeled post-hoc DeepSense diagnostic. They are not used to choose the score orientation, normalization statistics, fusion weights, primary method, comparator set, or a deployment threshold.

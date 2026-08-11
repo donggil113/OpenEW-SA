@@ -1,0 +1,54 @@
+\begin{table*}[!t]
+  \caption{v0--v3 publication summary. Frozen stage-wise OOD results for raw confidence baselines, temperature-scaled confidence, feature distances, and uncertainty-distance fusion. The three-component v3 method is the prespecified primary analysis; the Mahalanobis four-component method is exploratory.}
+  \label{tab:stagewise-summary}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{2.0pt}
+  \renewcommand{\arraystretch}{0.92}
+  \begin{tabularx}{\textwidth}{@{}c c Y r r r r c@{}}
+    \toprule
+    Stage & Data & Score method & AUROC & AUPR-OOD & FPR95 & Det.\ acc. & Role \\
+    \midrule
+    v0 & DS & LR entropy & 0.483999 & 0.803427 & 0.922188 & 0.833333 & C \\
+    v0 & DS & LR maximum softmax probability & 0.483857 & 0.804785 & 0.922188 & 0.833333 & C \\
+    v0 & DS & NC entropy & 0.581740 & 0.840774 & 0.689063 & 0.861354 & C \\
+    v0 & DS & NC maximum softmax probability & 0.652601 & 0.897748 & 0.756563 & 0.846667 & C \\
+    v0 & ES & LR entropy & 0.795915 & 0.914413 & 0.742808 & 0.771148 & C \\
+    v0 & ES & LR maximum softmax probability & 0.795837 & 0.914227 & 0.742808 & 0.771282 & C \\
+    v0 & ES & NC entropy & 0.731201 & 0.840276 & 0.643322 & 0.797320 & C \\
+    v0 & ES & NC maximum softmax probability & 0.734348 & 0.838485 & 0.601712 & 0.809826 & C \\
+    v0 & JS & LR entropy & 0.590865 & 0.716855 & 0.942136 & 0.618468 & C \\
+    v0 & JS & LR maximum softmax probability & 0.590865 & 0.716855 & 0.942136 & 0.618468 & C \\
+    v0 & JS & NC entropy & 0.556382 & 0.612281 & 0.940553 & 0.689179 & C \\
+    v0 & JS & NC maximum softmax probability & 0.556382 & 0.612281 & 0.940553 & 0.689179 & C \\
+    \addlinespace
+    v1 & DS & Temperature-scaled LR entropy & 0.527378 & 0.822862 & 0.902188 & 0.833333 & C \\
+    v1 & DS & Temperature-scaled LR maximum softmax probability & 0.505368 & 0.810584 & 0.920000 & 0.833333 & C \\
+    v1 & ES & Temperature-scaled LR entropy & 0.795345 & 0.914816 & 0.745719 & 0.769942 & C \\
+    v1 & ES & Temperature-scaled LR maximum softmax probability & 0.795090 & 0.914278 & 0.744007 & 0.770165 & C \\
+    v1 & JS & Temperature-scaled LR entropy & 0.590533 & 0.716634 & 0.942136 & 0.618468 & C \\
+    v1 & JS & Temperature-scaled LR maximum softmax probability & 0.590533 & 0.716634 & 0.942136 & 0.618468 & C \\
+    \addlinespace
+    v2 & DS & Mahalanobis & 0.409787 & 0.757572 & 0.939688 & 0.843281 & C \\
+    v2 & DS & Nearest-centroid cosine & 0.378069 & 0.745347 & 0.951562 & 0.833333 & C \\
+    v2 & DS & Nearest-centroid Euclidean & 0.383826 & 0.746319 & 0.939688 & 0.842396 & C \\
+    v2 & ES & Mahalanobis & 0.771683 & 0.902674 & 0.815411 & 0.765699 & C \\
+    v2 & ES & Nearest-centroid cosine & 0.798722 & 0.877693 & 0.466267 & 0.844484 & C \\
+    v2 & ES & Nearest-centroid Euclidean & 0.795617 & 0.863038 & 0.464384 & 0.842296 & C \\
+    v2 & JS & Mahalanobis & 0.475216 & 0.582084 & 0.920325 & 0.587057 & C \\
+    v2 & JS & Nearest-centroid cosine & 0.585667 & 0.594142 & 0.894110 & 0.639195 & C \\
+    v2 & JS & Nearest-centroid Euclidean & 0.485118 & 0.539054 & 0.939177 & 0.612122 & C \\
+    \addlinespace
+    v3 & DS & TS entropy + cosine + Euclidean & 0.352958 & 0.737936 & 0.992188 & 0.833490 & P \\
+    v3 & DS & Primary + Mahalanobis & 0.357490 & 0.739380 & 0.996250 & 0.833490 & E \\
+    v3 & ES & TS entropy + cosine + Euclidean & 0.857037 & 0.934429 & 0.434589 & 0.856632 & P \\
+    v3 & ES & Primary + Mahalanobis & 0.893312 & 0.949018 & 0.393322 & 0.862841 & E \\
+    v3 & JS & TS entropy + cosine + Euclidean & 0.657625 & 0.710403 & 0.927205 & 0.634887 & P \\
+    v3 & JS & Primary + Mahalanobis & 0.663391 & 0.705880 & 0.903674 & 0.642630 & E \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{2pt}
+  \parbox{\textwidth}{\raggedright
+  DS: DeepSense; ES: ElectroSense; JS: JamShield; LR: logistic regression; NC: nearest centroid; C: contextual comparator; P: prespecified primary (\method{ts_entropy_cosine_euclidean}); E: exploratory ablation (\method{ts_entropy_cosine_euclidean_mahalanobis}). All scores use the fixed higher-is-more-OOD orientation. Detection accuracy (Det.\ acc.) is evaluation-descriptive because its threshold was selected on evaluation data.}
+\end{table*}
