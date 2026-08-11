@@ -3,7 +3,7 @@
 
 \subsection{Artifact and Split Pipeline}
 
-Each processed artifact directory contains \method{metadata.csv}, \method{labels.json}, and a shared NumPy feature array when available. A unified Paper 2 manifest stores \method{sample_id}, dataset, task, label, domain, input type, feature path, and feature index. Protocol-specific split CSVs preserve these columns and append the split and OOD label. The evaluation file contains test-ID and test-OOD rows, matching the prediction and score files one-to-one by \method{sample_id}.
+Each processed artifact directory contains \compactmethod{metadata.csv}, \compactmethod{labels.json}, and a shared NumPy feature array when available. A unified Paper 2 manifest stores \compactmethod{sample_id}, dataset, task, label, domain, input type, feature path, and feature index. Protocol-specific split CSVs preserve these columns and append the split and OOD label. The evaluation file contains test-ID and test-OOD rows, matching the prediction and score files one-to-one by \compactmethod{sample_id}.
 
 \subsection{Supervised Classifier and Calibration}
 
@@ -11,7 +11,7 @@ The publication pipeline uses standardized logistic regression as the classifier
 
 \subsection{Distance and Fusion Stages}
 
-The v2 stage fits Euclidean, cosine, and shared-covariance Mahalanobis distance models using training features only. The v3 stage converts calibrated predictions to entropy scores, scores the validation and evaluation manifests with the distance models, robust-normalizes each component on ID validation data, and writes strictly sample-aligned fused scores. The analysis roles were held fixed: \method{ts_entropy_cosine_euclidean} is the prespecified primary method; temperature-scaled entropy, nearest-centroid cosine, and nearest-centroid Euclidean are prespecified comparators; and the Mahalanobis-augmented fusion is exploratory.
+The v2 stage fits Euclidean, cosine, and shared-covariance Mahalanobis distance models using training features only. The v3 stage converts calibrated predictions to entropy scores, scores the validation and evaluation manifests with the distance models, robust-normalizes each component on ID validation data, and writes strictly sample-aligned fused scores. The analysis roles were held fixed: \primarymethod{} is the prespecified primary method; temperature-scaled entropy, nearest-centroid cosine, and nearest-centroid Euclidean are prespecified comparators; and the Mahalanobis-augmented fusion is exploratory.
 
 \subsection{Evaluation Integrity}
 
