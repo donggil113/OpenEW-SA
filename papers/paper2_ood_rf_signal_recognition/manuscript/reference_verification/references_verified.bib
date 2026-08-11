@@ -1,0 +1,348 @@
+% Paper 2 verified references (R1-R17 verification audit, access date 2026-08-11).
+% Every field below was checked against a primary or publisher source; fields that
+% could not be verified (e.g., NeurIPS/ICLR page numbers) are deliberately omitted.
+% See reference_evidence_notes.md for per-entry verification provenance and
+% reference_verification_matrix.md for the R-token -> key mapping and statuses.
+% PARTIALLY_VERIFIED entries are marked in their entry comment; do not treat them
+% as fully verified.
+
+% ---------------------------------------------------------------------------
+% R6 (also R11): MSP baseline; AUROC/AUPR for OOD. VERIFIED.
+% Note: proposes MSP only; predictive entropy is not from this paper.
+@inproceedings{hendrycks2017baseline,
+  author        = {Hendrycks, Dan and Gimpel, Kevin},
+  title         = {A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks},
+  booktitle     = {International Conference on Learning Representations (ICLR)},
+  year          = {2017},
+  url           = {https://openreview.net/forum?id=Hkg4TI9xl},
+  eprint        = {1610.02136},
+  archivePrefix = {arXiv}
+}
+
+% R7: temperature scaling on validation set. VERIFIED.
+@inproceedings{guo2017calibration,
+  author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q.},
+  title     = {On Calibration of Modern Neural Networks},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {70},
+  pages     = {1321--1330},
+  publisher = {PMLR},
+  year      = {2017},
+  url       = {https://proceedings.mlr.press/v70/guo17a.html}
+}
+
+% R2 primary (also R7 secondary): calibration degrades under dataset shift. VERIFIED
+% (title/authors/volume from proceedings page; pages omitted - not shown there).
+@inproceedings{ovadia2019trust,
+  author    = {Ovadia, Yaniv and Fertig, Emily and Ren, Jie and Nado, Zachary and Sculley, D. and Nowozin, Sebastian and Dillon, Joshua and Lakshminarayanan, Balaji and Snoek, Jasper},
+  title     = {Can You Trust Your Model's Uncertainty? {E}valuating Predictive Uncertainty Under Dataset Shift},
+  booktitle = {Advances in Neural Information Processing Systems 32 (NeurIPS 2019)},
+  year      = {2019},
+  url       = {https://proceedings.neurips.cc/paper/2019/hash/8558cb408c1d76621371888657d2eb1d-Abstract.html}
+}
+
+% R8: energy score from logits. VERIFIED.
+@inproceedings{liu2020energy,
+  author        = {Liu, Weitang and Wang, Xiaoyun and Owens, John D. and Li, Yixuan},
+  title         = {Energy-based Out-of-distribution Detection},
+  booktitle     = {Advances in Neural Information Processing Systems 33 (NeurIPS 2020)},
+  year          = {2020},
+  url           = {https://proceedings.neurips.cc/paper/2020/hash/f5496252609c43eb8a3d147ab9b9c006-Abstract.html},
+  eprint        = {2010.03759},
+  archivePrefix = {arXiv}
+}
+
+% R9: class prototypes / centroid distance; Euclidean vs cosine geometry. VERIFIED.
+@inproceedings{snell2017prototypical,
+  author        = {Snell, Jake and Swersky, Kevin and Zemel, Richard},
+  title         = {Prototypical Networks for Few-shot Learning},
+  booktitle     = {Advances in Neural Information Processing Systems 30 (NIPS 2017)},
+  year          = {2017},
+  url           = {https://proceedings.neurips.cc/paper/2017/hash/cb8da6767461f2812ae4290eac7cbc42-Abstract.html},
+  eprint        = {1703.05175},
+  archivePrefix = {arXiv}
+}
+
+% R9: non-parametric feature-distance OOD scoring. VERIFIED.
+@inproceedings{sun2022knn,
+  author    = {Sun, Yiyou and Ming, Yifei and Zhu, Xiaojin and Li, Yixuan},
+  title     = {Out-of-Distribution Detection with Deep Nearest Neighbors},
+  booktitle = {Proceedings of the 39th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {162},
+  pages     = {20827--20840},
+  publisher = {PMLR},
+  year      = {2022},
+  url       = {https://proceedings.mlr.press/v162/sun22d.html}
+}
+
+% R10: tied-covariance Mahalanobis OOD score. VERIFIED.
+% Note: covariance regularization is the manuscript's implementation detail,
+% not from this paper. Pages from NeurIPS-31 volume record.
+@inproceedings{lee2018mahalanobis,
+  author        = {Lee, Kimin and Lee, Kibok and Lee, Honglak and Shin, Jinwoo},
+  title         = {A Simple Unified Framework for Detecting Out-of-Distribution Samples and Adversarial Attacks},
+  booktitle     = {Advances in Neural Information Processing Systems 31 (NeurIPS 2018)},
+  pages         = {7167--7177},
+  year          = {2018},
+  url           = {https://proceedings.neurips.cc/paper_files/paper/2018/hash/abdeb6f575ac5c6676b747bca8d09cc2-Abstract.html},
+  eprint        = {1807.03888},
+  archivePrefix = {arXiv}
+}
+
+% R11: FPR at 95% TPR metric (ODIN). VERIFIED.
+@inproceedings{liang2018enhancing,
+  author        = {Liang, Shiyu and Li, Yixuan and Srikant, R.},
+  title         = {Enhancing The Reliability of Out-of-distribution Image Detection in Neural Networks},
+  booktitle     = {International Conference on Learning Representations (ICLR)},
+  year          = {2018},
+  url           = {https://openreview.net/forum?id=H1VGkIxRZ},
+  eprint        = {1706.02690},
+  archivePrefix = {arXiv}
+}
+
+% R11 optional: PR vs ROC under class imbalance. Metadata via DBLP (ACM DL 403).
+@inproceedings{davis2006prroc,
+  author    = {Davis, Jesse and Goadrich, Mark},
+  title     = {The Relationship Between Precision-Recall and {ROC} Curves},
+  booktitle = {Proceedings of the 23rd International Conference on Machine Learning},
+  pages     = {233--240},
+  year      = {2006},
+  doi       = {10.1145/1143844.1143874}
+}
+
+% R12: bootstrap / percentile intervals. PARTIALLY_VERIFIED (composite claim;
+% cite as underpinnings, not as prescribing the exact paired-stratified design).
+@book{efron1993bootstrap,
+  author    = {Efron, Bradley and Tibshirani, Robert J.},
+  title     = {An Introduction to the Bootstrap},
+  publisher = {Chapman \& Hall/CRC},
+  address   = {New York},
+  year      = {1993},
+  series    = {Monographs on Statistics and Applied Probability},
+  number    = {57},
+  isbn      = {978-0-412-04231-7},
+  doi       = {10.1201/9780429246593}
+}
+
+% R12: paired statistical comparison of learners on shared data. VERIFIED metadata.
+@article{dietterich1998approximate,
+  author    = {Dietterich, Thomas G.},
+  title     = {Approximate Statistical Tests for Comparing Supervised Classification Learning Algorithms},
+  journal   = {Neural Computation},
+  volume    = {10},
+  number    = {7},
+  pages     = {1895--1923},
+  year      = {1998},
+  publisher = {MIT Press},
+  doi       = {10.1162/089976698300017197}
+}
+
+% ---------------------------------------------------------------------------
+% R13: ElectroSense. PARTIALLY_VERIFIED overall (class taxonomy documented in
+% official framework code, not on the Zenodo record; taxonomy includes 'unkn').
+
+@article{rajendran2018electrosense,
+  author  = {Rajendran, Sreeraj and Calvo-Palomino, Roberto and Fuchs, Markus and Van den Bergh, Bertold and Cordob{\'e}s, H{\'e}ctor and Giustiniano, Domenico and Pollin, Sofie and Lenders, Vincent},
+  title   = {Electrosense: Open and Big Spectrum Data},
+  journal = {IEEE Communications Magazine},
+  volume  = {56},
+  number  = {1},
+  pages   = {210--217},
+  year    = {2018},
+  doi     = {10.1109/MCOM.2017.1700200}
+}
+
+@inproceedings{scalingi2023framework,
+  author    = {Scalingi, Alessio and Giustiniano, Domenico and Calvo-Palomino, Roberto and Apostolakis, Nikolaos and Bovet, G{\'e}r{\^o}me},
+  title     = {A Framework for Wireless Technology Classification using Crowdsensing Platforms},
+  booktitle = {IEEE INFOCOM 2023 - IEEE Conference on Computer Communications},
+  year      = {2023},
+  pages     = {1--10},
+  doi       = {10.1109/INFOCOM53939.2023.10228867}
+}
+
+@misc{scalingi2023electrosensepsd,
+  author    = {Scalingi, Alessio},
+  title     = {ElectroSense {PSD} Spectrum Dataset},
+  year      = {2023},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.7521246},
+  url       = {https://zenodo.org/records/7521246},
+  note      = {Version v1, published 2023-01-10. Custom dataset license. Accessed 2026-08-11}
+}
+
+% R14: DeepSense. VERIFIED (paper + official GitHub record incl. day1/day2 files).
+@inproceedings{uvaydov2021deepsense,
+  author    = {Uvaydov, Daniel and D'Oro, Salvatore and Restuccia, Francesco and Melodia, Tommaso},
+  title     = {DeepSense: Fast Wideband Spectrum Sensing Through Real-Time In-the-Loop Deep Learning},
+  booktitle = {IEEE INFOCOM 2021 - IEEE Conference on Computer Communications},
+  year      = {2021},
+  pages     = {1--10},
+  doi       = {10.1109/INFOCOM42981.2021.9488764}
+}
+
+@misc{wineslab2021deepsensedataset,
+  author       = {{WiNES Lab, Northeastern University}},
+  title        = {DeepSense Spectrum Sensing Datasets},
+  howpublished = {\url{https://github.com/wineslab/deepsense-spectrum-sensing-datasets}},
+  note         = {MIT License. Data hosted at Northeastern University Digital Repository (SDR 802.11a/g: neu:n009w2985; simulated LTE-M: neu:n009w299f). Accessed 2026-08-11}
+}
+
+% R15: JamShield. VERIFIED. IMPORTANT: now published at IEEE ICC 2025 —
+% supersedes the arXiv-only skeleton in the Paper 1 citation plan.
+@inproceedings{panitsas2025jamshield,
+  author    = {Panitsas, Ioannis and Yigit, Yagmur and Tassiulas, Leandros and Maglaras, Leandros and Canberk, Berk},
+  title     = {JamShield: A Machine Learning Detection System for Over-the-Air Jamming Attacks},
+  booktitle = {ICC 2025 - IEEE International Conference on Communications},
+  year      = {2025},
+  pages     = {1067--1072},
+  doi       = {10.1109/ICC52391.2025.11161395}
+}
+
+@misc{panitsas2024jamshielddataset,
+  author       = {Panitsas, Ioannis and Yigit, Yagmur and Tassiulas, Leandros and Maglaras, Leandros and Canberk, Berk},
+  title        = {JamShield Dataset},
+  year         = {2024},
+  publisher    = {IEEE DataPort},
+  doi          = {10.21227/5hzf-w161},
+  howpublished = {\url{https://github.com/panitsasi/JamShield-Dataset}},
+  note         = {Published 2024-10-26; CSV telemetry with constant/random/reactive jammer and no-jammer scenarios under LOS/NLOS. No explicit license stated. Accessed 2026-08-11}
+}
+
+% ---------------------------------------------------------------------------
+% R16: selective prediction / risk-coverage. VERIFIED.
+@article{elyaniv2010foundations,
+  author  = {El-Yaniv, Ran and Wiener, Yair},
+  title   = {On the Foundations of Noise-free Selective Classification},
+  journal = {Journal of Machine Learning Research},
+  volume  = {11},
+  number  = {53},
+  pages   = {1605--1641},
+  year    = {2010},
+  url     = {https://www.jmlr.org/papers/v11/el-yaniv10a.html}
+}
+
+@inproceedings{geifman2017selective,
+  author    = {Geifman, Yonatan and El-Yaniv, Ran},
+  title     = {Selective Classification for Deep Neural Networks},
+  booktitle = {Advances in Neural Information Processing Systems 30 (NIPS 2017)},
+  year      = {2017},
+  url       = {https://papers.nips.cc/paper_files/paper/2017/hash/4a8423d5e91fda00bb7e46540e2b0cf1-Abstract.html}
+}
+
+% R17: density/likelihood inversion and corrective scoring. VERIFIED.
+% Note: the separate typicality paper (arXiv:1906.02994) is arXiv-only — if cited,
+% cite as preprint; the two entries below are the peer-reviewed selections.
+@inproceedings{nalisnick2019deep,
+  author        = {Nalisnick, Eric and Matsukawa, Akihiro and Teh, Yee Whye and Gorur, Dilan and Lakshminarayanan, Balaji},
+  title         = {Do Deep Generative Models Know What They Don't Know?},
+  booktitle     = {International Conference on Learning Representations (ICLR)},
+  year          = {2019},
+  eprint        = {1810.09136},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/1810.09136}
+}
+
+@inproceedings{ren2019likelihood,
+  author    = {Ren, Jie and Liu, Peter J. and Fertig, Emily and Snoek, Jasper and Poplin, Ryan and DePristo, Mark A. and Dillon, Joshua V. and Lakshminarayanan, Balaji},
+  title     = {Likelihood Ratios for Out-of-Distribution Detection},
+  booktitle = {Advances in Neural Information Processing Systems 32 (NeurIPS 2019)},
+  year      = {2019},
+  url       = {https://papers.nips.cc/paper_files/paper/2019/hash/1e79596878b2320cac26dd792a6c51c9-Abstract.html}
+}
+
+% ---------------------------------------------------------------------------
+% R1: operational scope of spectrum monitoring. VERIFIED.
+% (Second R1 support: rajendran2018electrosense, listed under R13 above.)
+@book{itu2011spectrum,
+  author    = {{International Telecommunication Union, Radiocommunication Bureau}},
+  title     = {Handbook on Spectrum Monitoring},
+  edition   = {2011},
+  publisher = {International Telecommunication Union},
+  address   = {Geneva, Switzerland},
+  year      = {2011},
+  isbn      = {92-61-13501-3},
+  url       = {https://www.itu.int/pub/R-HDB-23},
+  note      = {Fifth edition. Accessed 2026-08-11}
+}
+
+% R2: closed-set overconfidence on unrecognizable inputs. VERIFIED.
+% (R2 primary ovadia2019trust listed above.)
+@inproceedings{nguyen2015fooled,
+  author    = {Nguyen, Anh and Yosinski, Jason and Clune, Jeff},
+  title     = {Deep Neural Networks Are Easily Fooled: High Confidence Predictions for Unrecognizable Images},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2015},
+  pages     = {427--436},
+  doi       = {10.1109/CVPR.2015.7298640}
+}
+
+% R3: no tuning on evaluation-distribution OOD data. VERIFIED.
+% BMVC 2019 online proceedings assign no pages/DOI.
+@inproceedings{shafaei2019biased,
+  author    = {Shafaei, Alireza and Schmidt, Mark and Little, James J.},
+  title     = {A Less Biased Evaluation of Out-of-distribution Sample Detectors},
+  booktitle = {British Machine Vision Conference (BMVC)},
+  year      = {2019},
+  url       = {https://bmvc2019.org/wp-content/uploads/papers/0333-paper.pdf},
+  eprint    = {1809.04729},
+  archivePrefix = {arXiv}
+}
+
+% R3 secondary: standardized OOD benchmarking. VERIFIED metadata;
+% claim support abstract-level (see evidence notes).
+@inproceedings{yang2022openood,
+  author    = {Yang, Jingkang and Wang, Pengyun and Zou, Dejian and Zhou, Zitang and Ding, Kunyuan and Peng, Wenxuan and Wang, Haoqi and Chen, Guangyao and Li, Bo and Sun, Yiyou and Du, Xuefeng and Zhou, Kaiyang and Zhang, Wayne and Hendrycks, Dan and Li, Yixuan and Liu, Ziwei},
+  title     = {{OpenOOD}: Benchmarking Generalized Out-of-Distribution Detection},
+  booktitle = {Advances in Neural Information Processing Systems 35 (NeurIPS), Datasets and Benchmarks Track},
+  year      = {2022},
+  url       = {https://papers.nips.cc/paper_files/paper/2022/hash/d201587e3a84fc4761eadc743e9b3f35-Abstract-Datasets_and_Benchmarks.html}
+}
+
+% R4: original open-set recognition formalization. VERIFIED.
+% Published title uses "Toward" (not "Towards").
+@article{scheirer2013toward,
+  author  = {Scheirer, Walter J. and de Rezende Rocha, Anderson and Sapkota, Archana and Boult, Terrance E.},
+  title   = {Toward Open Set Recognition},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2013},
+  volume  = {35},
+  number  = {7},
+  pages   = {1757--1772},
+  doi     = {10.1109/TPAMI.2012.256}
+}
+
+% R4: authoritative OSR survey. VERIFIED (cite 2021 versioned issue).
+@article{geng2021recent,
+  author  = {Geng, Chuanxing and Huang, Sheng-Jun and Chen, Songcan},
+  title   = {Recent Advances in Open Set Recognition: A Survey},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2021},
+  volume  = {43},
+  number  = {10},
+  pages   = {3614--3631},
+  doi     = {10.1109/TPAMI.2020.2981604}
+}
+
+% R5: channel/day shift collapses RF fingerprinting accuracy. VERIFIED.
+@inproceedings{alshawabka2020exposing,
+  author    = {Al-Shawabka, Amani and Restuccia, Francesco and D'Oro, Salvatore and Jian, Tong and Costa Rendon, Bruno and Soltani, Nasim and Dy, Jennifer and Ioannidis, Stratis and Chowdhury, Kaushik and Melodia, Tommaso},
+  title     = {Exposing the Fingerprint: Dissecting the Impact of the Wireless Channel on Radio Fingerprinting},
+  booktitle = {IEEE INFOCOM 2020 - IEEE Conference on Computer Communications},
+  year      = {2020},
+  pages     = {646--655},
+  doi       = {10.1109/INFOCOM41043.2020.9155259}
+}
+
+% R5: receiver- and day-shift degradation; large-scale WiFi dataset. VERIFIED.
+@article{hanna2022wisig,
+  author  = {Hanna, Samer and Karunaratne, Samurdhi and Cabric, Danijela},
+  title   = {{WiSig}: A Large-Scale {WiFi} Signal Dataset for Receiver and Channel Agnostic {RF} Fingerprinting},
+  journal = {IEEE Access},
+  volume  = {10},
+  pages   = {22808--22818},
+  year    = {2022},
+  doi     = {10.1109/ACCESS.2022.3154790}
+}
