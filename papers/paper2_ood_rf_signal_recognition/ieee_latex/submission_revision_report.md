@@ -19,9 +19,12 @@ The scientific/editorial submission revision passes the requested LaTeX, citatio
 9. papers/paper2_ood_rf_signal_recognition/ieee_latex/sections/methods.tex
 10. papers/paper2_ood_rf_signal_recognition/ieee_latex/sections/results.tex
 11. papers/paper2_ood_rf_signal_recognition/ieee_latex/sections/discussion.tex
-12. papers/paper2_ood_rf_signal_recognition/ieee_latex/submission_revision_report.md
+12. papers/paper2_ood_rf_signal_recognition/ieee_latex/tables/table3_paired_comparisons.tex
+13. papers/paper2_ood_rf_signal_recognition/ieee_latex/supplementary/supplementary.tex
+14. papers/paper2_ood_rf_signal_recognition/ieee_latex/supplementary/tables/table_s1_stagewise_summary.tex
+15. papers/paper2_ood_rf_signal_recognition/ieee_latex/submission_revision_report.md
 
-No Paper 1 file, frozen experiment output, bootstrap output, source table, or source figure was modified.
+No Paper 1 file, frozen experiment output, bootstrap output, source CSV, or source figure was modified.
 
 ## Verified citations applied
 
@@ -43,7 +46,7 @@ The applied evidence groups are:
 - selective prediction: El-Yaniv and Wiener and Geifman and El-Yaniv; and
 - likelihood/typicality inversion context: Nalisnick et al. and Ren et al.
 
-No bibliographic metadata was invented or repaired from memory. The verified bibliography contains 30 audit-approved records; 29 records are rendered because one verified optional record is not cited by the final text.
+No bibliographic metadata was invented or repaired from memory. The reference-verification audit retains 30 approved records, while the submission bibliography now contains the 29 records actually cited and rendered. The unused optional `davis2006prroc` entry was removed from `ieee_latex/references.bib`; no citation was added merely to retain it.
 
 ## Bounded citation treatments
 
@@ -81,34 +84,52 @@ The current manuscript title remains unchanged. manuscript/title_review.md evalu
 
 This recommendation minimizes the risk of implying simultaneous raw multimodal fusion while retaining clear RF/open-set scope. Final title selection remains a human author decision.
 
+## Final table-only readability pass
+
+### Table III redesign
+
+Table III now uses compact, single-line mathematical notation in all 48 decision cells: `CI > 0` for a complete paired left-minus-right interval above zero, `CI < 0` for an interval below zero, and `0 in CI` for an interval containing zero. The caption defines each symbol, reiterates that smaller FPR95 is favorable, and states explicitly that the entries are interval-location summaries rather than significance tests. No color-dependent meaning was introduced. A row-by-row equivalence check confirms that all 48 prior positive, negative, and includes-zero decisions are preserved exactly.
+
+### Table IV supplementary relocation
+
+The main manuscript no longer renders the dense 33-row Table IV. The Results section instead points readers to Supplementary Table S1. The complete 33-row v0--v3 table was copied without pruning or method selection to `supplementary/tables/table_s1_stagewise_summary.tex`; every data row is byte-equivalent to the corresponding row in the former main-text table source. The original `tables/table4_stagewise_summary.tex` source remains unchanged and unrendered for traceability.
+
+### File-mode hygiene
+
+`submission_revision_report.md` and `manuscript/title_review.md` now have filesystem mode `0644`, recorded by Git as a pending mode change from `100755` to `100644`. No executable script mode was changed.
+
 ## IEEE build and PDF audit
 
 - Clean build command: latexmk -C main.tex, followed by latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
 - Compile result: **PASS**
 - Compile errors: 0
-- Pages: 12
-- PDF size: 555,802 bytes
+- Main PDF pages: 11
+- Main PDF size: 554,661 bytes
 - Paper size: letter, 612 x 792 points
 - Figures present: 5 of 5
-- Tables present: 4 of 4
+- Main-text tables present: 3 of 3
 - Undefined citations: 0
 - Undefined references: 0
 - Multiply defined labels: 0
 - Overfull boxes: 0
 - Underfull hboxes: 12
-- Underfull vboxes: 4
-- LaTeX warnings: 2, both float-only-page notices for page 7
+- Underfull vboxes: 2
+- LaTeX warnings: 0
 - Font embedding: all fonts embedded
 - Type 3 fonts: 0
 
-The underfull boxes are non-clipping justification or float-page effects, including long verified URLs and monospaced provenance filenames. They were left intact rather than changing verified metadata or scientifically correct prose. Visual review of all 12 rendered pages found no clipped table text or unreadable captions/legends. Figure 3 remains explicitly AUROC-only, Figure 5 remains explicitly **POST-HOC DIAGNOSTIC ONLY**, and Table IV is complete.
+The supplementary manuscript also compiles successfully from clean source. Its final PDF has 1 page and is 41,187 bytes, with zero undefined references or citations, zero overfull or underfull boxes, all fonts embedded, and zero Type 3 fonts. Supplementary Table S1 contains all 33 frozen stage-wise rows.
+
+The remaining main-manuscript underfull boxes are non-clipping justification or float effects, including long verified URLs and monospaced provenance filenames. They were left intact rather than changing verified metadata or scientifically correct prose. Visual review of all 11 main pages and the complete supplementary page found no clipped table text or unreadable captions/legends. Table III is readable at 100% zoom; Figure 3 remains explicitly AUROC-only; and Figure 5 remains explicitly **POST-HOC DIAGNOSTIC ONLY**.
 
 ## Validation and integrity
 
 - Paper 2 tests: **17/17 PASS**
 - git diff --check: PASS
 - Paper 1: unchanged
-- IEEE numeric tables: unchanged from HEAD
+- Scientific numerical values: unchanged from HEAD
+- Table III paired decisions: 48/48 preserved; notation only redesigned
+- Supplementary Table S1: all 33 former Table IV data rows preserved byte-for-byte
 - IEEE source figures: unchanged from HEAD
 - TeX equation blocks: byte-equivalent to HEAD
 - Markdown equation blocks: byte-equivalent to HEAD

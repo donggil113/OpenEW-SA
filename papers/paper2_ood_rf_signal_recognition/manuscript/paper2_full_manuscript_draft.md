@@ -245,9 +245,9 @@ DeepSense is retained as a negative fixed-orientation result. Figure 5 compares 
 
 ### Context across v0-v3
 
-Table 4 preserves the stage-wise results used to contextualize the final analysis. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid. The v1 rows cover temperature-scaled logistic-regression entropy and maximum-softmax scores. The v2 rows cover Euclidean, cosine, and Mahalanobis feature distances. The v3 rows contain the prespecified primary fusion and the exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
+Complete frozen stage-wise v0-v3 results are reported in Supplementary Table S1. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid. The v1 rows cover temperature-scaled logistic-regression entropy and maximum-softmax scores. The v2 rows cover Euclidean, cosine, and Mahalanobis feature distances. The v3 rows contain the prespecified primary fusion and the exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
 
-*[Table 4 about here: `paper2_v0_v3_publication_summary.csv`.]*
+*[Supplementary Table S1: complete `paper2_v0_v3_publication_summary.csv`.]*
 
 ## Discussion
 
@@ -327,9 +327,9 @@ This manuscript integration does not rerun model training, OOD score generation,
 
 **Table 2. Bootstrap confidence intervals.** Fixed-orientation point estimates and percentile 95% confidence intervals for the prespecified primary fusion. The full verified source table also contains all prespecified comparators and the exploratory ablation. Detection accuracy is evaluation-descriptive. <!-- TRACE: N004 -->
 
-**Table 3. Paired method differences.** Left-minus-right interval decisions based on identical resampling indices within each dataset. Exact point differences and bounds are retained in the verified paired-differences CSV. The comparator set was fixed independently of test performance, and detection accuracy is evaluation-descriptive.
+**Table 3. Paired method differences.** Left-minus-right interval decisions based on identical resampling indices within each dataset. `CI > 0` means the complete paired interval lies above zero, `CI < 0` means it lies below zero, and `0 in CI` means it contains zero. For FPR95, smaller values are favorable. These entries are interval-location summaries, not significance tests. Exact point differences and bounds are retained in the verified paired-differences CSV. The comparator set was fixed independently of test performance, and detection accuracy is evaluation-descriptive.
 
-**Table 4. v0-v3 publication summary.** Frozen stage-wise OOD results for raw confidence baselines, temperature-scaled confidence, feature distances, and uncertainty-distance fusion. The three-component v3 method is the prespecified primary analysis; the Mahalanobis four-component method is exploratory.
+**Supplementary Table S1. v0-v3 publication summary.** Complete frozen stage-wise OOD results for raw confidence baselines, temperature-scaled confidence, feature distances, and uncertainty-distance fusion. The three-component v3 method is the prespecified primary analysis; the Mahalanobis four-component method is exploratory.
 
 ## References
 

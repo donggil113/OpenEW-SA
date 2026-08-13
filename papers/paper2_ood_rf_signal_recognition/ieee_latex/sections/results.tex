@@ -64,6 +64,4 @@ DeepSense is retained as a negative fixed-orientation result. Fig.~\ref{fig:deep
 
 \subsection{Context Across v0--v3}
 
-Table~\ref{tab:stagewise-summary} preserves the stage-wise results used to contextualize the final analysis. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid. The v1 rows cover temperature-scaled logistic-regression entropy and maximum-softmax scores. The v2 rows cover Euclidean, cosine, and Mahalanobis feature distances. The v3 rows contain the prespecified primary fusion and the exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
-
-\input{tables/table4_stagewise_summary}
+Complete frozen stage-wise v0--v3 results are reported in Supplementary Table~S1. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid; v1 covers temperature-scaled logistic-regression entropy and maximum-softmax scores; v2 covers Euclidean, cosine, and Mahalanobis feature distances; and v3 contains the prespecified primary fusion and exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
