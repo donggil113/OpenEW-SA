@@ -5,6 +5,8 @@
 
 Table~\ref{tab:primary-results} reports the fixed-orientation primary results. Values are point estimates followed by percentile 95\% confidence intervals. The three datasets show materially different behavior. ElectroSense has strong class-OOD ranking and the lowest primary FPR95 among the three evaluations. DeepSense is a negative result: primary AUROC is below chance and FPR95 is near the upper end of its range. JamShield has above-chance AUROC but a high FPR95, indicating that global ranking improvement does not imply a uniformly favorable high-recall operating point.
 
+DeepSense contains 3,200 ID and 16,000 OOD rows among 19,200 evaluation observations, giving OOD prevalence \(0.833333\). The corresponding no-skill AUPR-OOD baseline and all-OOD trivial detection-accuracy baseline are therefore both \(0.833333\). The primary AUPR-OOD, \(0.737936\), is below its no-skill baseline, while the evaluation-descriptive detection accuracy, \(0.833490\), is only marginally above the all-OOD baseline. These descriptive anchors reinforce the fixed-orientation negative result; they are not additional statistical tests, and detection accuracy remains evaluation-descriptive.
+
 \input{tables/table2_primary_results}
 
 \begin{figure*}[!t]
@@ -62,6 +64,4 @@ DeepSense is retained as a negative fixed-orientation result. Fig.~\ref{fig:deep
 
 \subsection{Context Across v0--v3}
 
-Table~\ref{tab:stagewise-summary} preserves the stage-wise results used to contextualize the final analysis. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid. The v1 rows cover temperature-scaled logistic-regression entropy and maximum-softmax scores. The v2 rows cover Euclidean, cosine, and Mahalanobis feature distances. The v3 rows contain the prespecified primary fusion and the exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
-
-\input{tables/table4_stagewise_summary}
+Complete frozen stage-wise v0--v3 results are reported in Supplementary Table~S1. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid; v1 covers temperature-scaled logistic-regression entropy and maximum-softmax scores; v2 covers Euclidean, cosine, and Mahalanobis feature distances; and v3 contains the prespecified primary fusion and exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.

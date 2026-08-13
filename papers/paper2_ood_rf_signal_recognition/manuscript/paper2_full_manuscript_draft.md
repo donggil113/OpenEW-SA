@@ -8,9 +8,9 @@ Electromagnetic spectrum monitors encounter signal classes, receivers, acquisiti
 
 ## Introduction
 
-Electromagnetic spectrum monitoring systems are expected to recognize known activity while operating across changing emitters, receivers, sites, propagation conditions, acquisition schedules, and interference regimes. Conventional supervised recognition assumes that evaluation samples belong to the same label and domain support as the training set. That assumption is fragile in open-spectrum operation, where an unknown signal technology, a new acquisition domain, or a previously unseen jammer scenario may be encountered without an OOD label available at decision time. Closed-set models can remain confident under such shifts, so classification confidence and OOD separability must be evaluated as related but distinct properties. [REFERENCE NEEDED: R1] [REFERENCE NEEDED: R2]
+Electromagnetic spectrum monitoring systems are expected to recognize known activity while operating across changing emitters, receivers, sites, propagation conditions, acquisition schedules, and interference regimes [@itu2011spectrum; @rajendran2018electrosense]. Conventional supervised recognition assumes that evaluation samples belong to the same label and domain support as the training set. That assumption is fragile in open-spectrum operation, where an unknown signal technology, a new acquisition domain, or a previously unseen jammer scenario may be encountered without an OOD label available at decision time. Closed-set models can remain confident under such shifts, so classification confidence and OOD separability must be evaluated as related but distinct properties [@ovadia2019trust; @nguyen2015fooled].
 
-RF OOD evaluation also has a protocol-design problem. An apparent detector can be improved after the fact by reversing a score, selecting the strongest test comparator, fitting normalization on evaluation samples, or optimizing a threshold using OOD labels. Those operations leak information from the target shift and can turn a diagnostic observation into an overstated primary result. A deployment-relevant experiment instead fixes the score direction and analysis roles in advance, fits classifiers and distance models on training data, fits calibration and normalization on ID validation data, and leaves the test ID and test OOD rows untouched until evaluation. [REFERENCE NEEDED: R3]
+RF OOD evaluation also has a protocol-design problem. An apparent detector can be improved after the fact by reversing a score, selecting the strongest test comparator, fitting normalization on evaluation samples, or optimizing a threshold using OOD labels. Those operations leak information from the target shift and can turn a diagnostic observation into an overstated primary result. A deployment-relevant experiment instead fixes the score direction and analysis roles in advance, fits classifiers and distance models on training data, fits calibration and normalization on ID validation data, and leaves the test ID and test OOD rows untouched until evaluation [@shafaei2019biased; @yang2022openood].
 
 This work studies that disciplined path on the OpenEW-SA artifact convention. The term *multi-view* has two scopes here. Across datasets, the evaluation includes processed power-spectral-density (PSD), in-phase/quadrature (I/Q), and tabular radio/network representations. Within the proposed detector, the fused views are complementary evidence sources: predictive uncertainty and two forms of feature-space distance. The current experiments do not claim an end-to-end, within-sample fusion of raw I/Q, PSD, spectrogram, and metadata inputs; that broader multimodal model remains future work.
 
@@ -22,19 +22,19 @@ The resulting evidence is intentionally bounded. The primary method performs dif
 
 ### Open-set and OOD recognition for RF monitoring
 
-Open-set recognition distinguishes known-class classification from the additional requirement to reject observations outside the modeled class support. OOD detection broadens the concern to covariate and domain shifts that can preserve labels while changing the observation distribution. Both settings are relevant to RF monitoring because waveform, sensor, site, day, channel, and interference changes can alter the feature distribution independently of the nominal recognition task. A final version should cite foundational open-set/OOD work and RF-specific evaluations rather than treating computer-vision evidence as automatically transferable. [REFERENCE NEEDED: R4] [REFERENCE NEEDED: R5]
+Open-set recognition distinguishes known-class classification from the additional requirement to reject observations outside the modeled class support [@scheirer2013toward; @geng2021recent]. OOD detection broadens the concern to covariate and domain shifts that can preserve labels while changing the observation distribution. Both settings are relevant to RF monitoring because channel, receiver, and acquisition-day changes can alter RF feature distributions independently of the nominal recognition task [@alshawabka2020exposing; @hanna2022wisig]. The transferability of OOD evidence from other application domains therefore remains an empirical question in RF monitoring.
 
 ### Confidence and calibration
 
-Maximum softmax probability, predictive entropy, and logit-energy scores are common post-hoc confidence baselines because they can be computed from an existing classifier without retraining an explicit OOD model. Temperature scaling fits a scalar on held-out ID predictions to improve probabilistic calibration while leaving the classifier architecture fixed. These techniques address different properties: calibration concerns the relationship between confidence and correctness on a specified distribution, whereas OOD detection concerns ranking or separating a shifted population. Their relationship should therefore be tested rather than assumed. [REFERENCE NEEDED: R6] [REFERENCE NEEDED: R7] [REFERENCE NEEDED: R8]
+Maximum softmax probability is a common post-hoc confidence/OOD baseline [@hendrycks2017baseline]. Predictive entropy is also widely used as a predictive-uncertainty summary [@ovadia2019trust], while logit energy provides a distinct score computed from classifier logits [@liu2020energy]. Temperature scaling fits a scalar on held-out ID predictions to improve probabilistic calibration while leaving the classifier architecture fixed [@guo2017calibration]. These techniques address different properties: calibration concerns the relationship between confidence and correctness on a specified distribution, whereas OOD detection concerns ranking or separating a shifted population. Their relationship should therefore be tested rather than assumed.
 
 ### Feature geometry and score fusion
 
-Prototype and Mahalanobis approaches score a sample by its position relative to class-conditional training features. Euclidean and cosine distances encode different geometry, while a shared-covariance Mahalanobis score adjusts directions by estimated within-class variability. Their usefulness depends on whether novelty actually maps to increasing distance in the learned or processed representation. Combining uncertainty and distance can expose complementary evidence, but score scales must be aligned without consulting evaluation OOD labels. [REFERENCE NEEDED: R9] [REFERENCE NEEDED: R10]
+Prototype and nearest-neighbor approaches score a sample by its position relative to training features; Euclidean and cosine distances encode different geometry [@snell2017prototypical; @sun2022knn]. A shared-covariance Mahalanobis score adjusts directions by estimated within-class variability [@lee2018mahalanobis]. Their usefulness depends on whether novelty actually maps to increasing distance in the learned or processed representation. Combining uncertainty and distance can expose complementary evidence, but score scales must be aligned without consulting evaluation OOD labels.
 
 ### Statistical evaluation of OOD scores
 
-AUROC, AUPR with OOD as the positive class, and FPR at a high OOD true-positive rate summarize different aspects of ranking and operating behavior. Paired resampling is useful when competing methods score exactly the same observations because a shared resample preserves within-sample dependence. Confidence intervals nevertheless quantify uncertainty conditional on the observed dataset and resampling design; they do not establish performance on every future domain. [REFERENCE NEEDED: R11] [REFERENCE NEEDED: R12]
+AUROC, AUPR with OOD as the positive class, and FPR at a high OOD true-positive rate summarize different aspects of ranking and operating behavior [@hendrycks2017baseline; @liang2018enhancing]. Percentile bootstrap intervals and paired learner comparisons provide methodological underpinnings for uncertainty estimation on shared observations [@efron1993bootstrap; @dietterich1998approximate]. Neither source prescribes the exact composite resampling scheme used in this study; that analysis design is specified explicitly in Methods. Confidence intervals quantify uncertainty conditional on the observed dataset and resampling design; they do not establish performance on every future domain.
 
 ## Datasets and OOD Evaluation Protocols
 
@@ -52,15 +52,15 @@ The experiments use converted OpenEW-SA artifacts with one metadata row per samp
 
 ### ElectroSense class OOD
 
-ElectroSense contributes processed PSD features for signal-technology recognition. DAB, DVB-T, FM, and LTE are treated as known classes for classifier fitting and ID evaluation. GSM and TETRA are withheld from classifier training and treated as OOD at evaluation. The protocol therefore tests semantic class novelty while retaining the sensor diversity present in the converted artifact. A dataset citation and the provenance of the converted OpenEW-SA subset are required in the final manuscript. [REFERENCE NEEDED: R13]
+ElectroSense provides crowdsensed PSD data and an official wireless-technology classification framework [@rajendran2018electrosense; @scalingi2023framework; @scalingi2023electrosensepsd]. The taxonomy and split used here are scoped to the converted OpenEW-SA subset: DAB, DVB-T, FM, and LTE are treated as known classes for classifier fitting and ID evaluation, while GSM and TETRA are withheld from classifier training and treated as OOD at evaluation. The upstream framework code also defines an `unkn` label; the analyzed frozen manifest and split artifacts contain only the six named technology labels and therefore exclude `unkn`. This six-class construction is not attributed to the Zenodo record itself.
 
 ### DeepSense acquisition-day OOD
 
-DeepSense contributes processed I/Q windows labeled by binary occupancy codes. All occupancy codes remain known labels, while the acquisition day defines the shift: retained day-one rows provide train, validation, and test-ID samples, and held-out day-two rows provide OOD samples. Labels such as `0000`, `0001`, `0010`, and `0100` are identifiers and are read and written as strings so their leading zeros cannot be lost. This protocol tests domain shift rather than unseen-class rejection. [REFERENCE NEEDED: R14]
+DeepSense contributes processed I/Q windows labeled by binary occupancy codes [@uvaydov2021deepsense; @wineslab2021deepsensedataset]. All occupancy codes remain known labels, while the acquisition day defines the shift: retained day-one rows provide train, validation, and test-ID samples, and held-out day-two rows provide OOD samples. Labels such as `0000`, `0001`, `0010`, and `0100` are identifiers and are read and written as strings so their leading zeros cannot be lost. This protocol tests domain shift rather than unseen-class rejection; the official dataset record documents different transmitter orientations across the two acquisition days.
 
 ### JamShield scenario OOD
 
-JamShield contributes tabular radio and network telemetry for normal-versus-abnormal interference recognition. Both recognition labels occur in the retained scenarios, while a frozen subset of benign and jammer scenarios is held out as OOD. The task therefore asks whether a classifier and its training geometry can identify scenario novelty even when the nominal label vocabulary remains unchanged. The exact retained and held-out domain identifiers are fixed in the split manifests. [REFERENCE NEEDED: R15]
+JamShield contributes tabular radio and network telemetry for normal-versus-abnormal interference recognition [@panitsas2025jamshield; @panitsas2024jamshielddataset]. Both recognition labels occur in the retained scenarios, while a frozen subset of benign and jammer scenarios is held out as OOD. The task therefore asks whether a classifier and its training geometry can identify scenario novelty even when the nominal label vocabulary remains unchanged. The exact retained and held-out domain identifiers are fixed in the split manifests. The peer-reviewed ICC 2025 publication is cited for the system, while the public dataset record supports the scenario and telemetry provenance; no explicit dataset license was identified in the verified public records.
 
 ### Leakage controls
 
@@ -98,11 +98,11 @@ A single positive temperature (T) is selected on ID validation predictions by mi
 \tilde p_k(x;T) = \frac{\exp(\log p_k(x)/T)}{\sum_j \exp(\log p_j(x)/T)}.
 \]
 
-The selected temperature is then frozen and applied to validation, test-ID, and test-OOD predictions. Temperature-scaled predictive entropy is the uncertainty component used in the primary fusion and is also a prespecified standalone comparator. The procedure calibrates a closed-set probability model on ID validation data; it does not use OOD labels and does not, by construction, guarantee OOD separation. [REFERENCE NEEDED: R7]
+The selected temperature is then frozen and applied to validation, test-ID, and test-OOD predictions. Temperature-scaled predictive entropy is the uncertainty component used in the primary fusion and is also a prespecified standalone comparator. The procedure follows validation-fitted scalar temperature scaling [@guo2017calibration]: it calibrates a closed-set probability model on ID validation data, does not use OOD labels, and does not, by construction, guarantee OOD separation.
 
 ### Feature-distance scoring
 
-All feature-distance models are fitted on the ID training split only. For each known class (k), the class centroid is
+All feature-distance models are fitted on the ID training split only. Following prototype and feature-distance formulations [@snell2017prototypical; @sun2022knn], for each known class (k), the class centroid is
 
 \[
 \mu_k = \frac{1}{|\mathcal{T}_k|}\sum_{i\in\mathcal{T}_k} z(x_i).
@@ -120,7 +120,7 @@ The cosine score normalizes both samples and centroids and computes
 s_{\mathrm{cos}}(x) = 1 - \max_k \frac{z(x)^\top\mu_k}{\|z(x)\|_2\|\mu_k\|_2}.
 \]
 
-For Mahalanobis scoring, within-class residuals are pooled into a shared covariance estimate. A diagonal regularizer is added, a numerically stable pseudo-inverse is computed, and the score is the minimum square-root Mahalanobis distance:
+For Mahalanobis scoring, within-class residuals are pooled into a shared covariance estimate following the tied-covariance formulation of Lee et al. [@lee2018mahalanobis]. As an implementation detail of this study, a diagonal regularizer is added and a numerically stable pseudo-inverse is computed. The score is the minimum square-root Mahalanobis distance:
 
 \[
 s_{\mathrm{mah}}(x) = \min_k \sqrt{(z(x)-\mu_k)^\top\Sigma_{\mathrm{reg}}^{+}(z(x)-\mu_k)}.
@@ -152,13 +152,13 @@ Weights are equal and are not fitted on evaluation performance. The method `ts_e
 
 ### OOD metrics and tied-score handling
 
-OOD is the positive class for all detection metrics. AUROC evaluates global ranking. AUPR-OOD evaluates positive-class precision-recall behavior. FPR95 is the minimum ID false-positive rate at which OOD true-positive rate reaches the target operating level; lower is preferable. Detection accuracy is the best accuracy over thresholds of the rule “score at or above the threshold is OOD.” Because that threshold is optimized on the evaluation sample, detection accuracy is **evaluation-descriptive** and must not be interpreted as a deployment-valid operating point.
+OOD is the positive class for all detection metrics. AUROC evaluates global ranking. AUPR-OOD evaluates positive-class precision-recall behavior. FPR95 is the minimum ID false-positive rate at which OOD true-positive rate reaches the target operating level; lower is preferable [@hendrycks2017baseline; @liang2018enhancing]. Detection accuracy is the best accuracy over thresholds of the rule “score at or above the threshold is OOD.” Because that threshold is optimized on the evaluation sample, detection accuracy is **evaluation-descriptive** and must not be interpreted as a deployment-valid operating point.
 
 Paper 2 uses its existing stable-order AUPR-OOD implementation. Samples are sorted by descending OOD score with a stable mergesort; precision is evaluated at each OOD-positive rank and averaged over the OOD rows. Equal-score rows therefore retain their input-CSV order. The same implementation is used for every point estimate and bootstrap replicate. This convention is documented because it can differ from grouped-threshold average-precision implementations when scores are tied.
 
 ### Bootstrap statistical analysis
 
-Uncertainty is estimated with 1,000 nonparametric replicates. ID and OOD observations are resampled separately at their original evaluation counts. Within each dataset and replicate, the same sampled ID and OOD indices are reused across all methods, enabling paired left-minus-right differences. Pointwise percentile 95% confidence intervals are reported for AUROC, AUPR-OOD, FPR95, and detection accuracy. The deterministic seed is recorded in the external analysis metadata. <!-- TRACE: N004 -->
+The percentile-bootstrap and paired-comparison literature provides methodological underpinnings for this analysis [@efron1993bootstrap; @dietterich1998approximate], but neither source prescribes the exact composite procedure used here. In our analysis design, uncertainty is estimated with 1,000 nonparametric replicates: ID and OOD groups are resampled separately at their original evaluation counts, and identical sampled ID and OOD indices are reused across all methods within each dataset and replicate. This shared-index construction enables paired left-minus-right differences. Pointwise percentile 95% confidence intervals are reported for AUROC, AUPR-OOD, FPR95, and detection accuracy. The deterministic seed is recorded in the external analysis metadata. <!-- TRACE: N004 -->
 
 The paired comparison set is fixed: primary versus temperature-scaled entropy, primary versus nearest-centroid cosine, primary versus nearest-centroid Euclidean, and exploratory four-component fusion versus primary. An interval that excludes zero supports a difference only for that dataset, metric, score orientation, and comparison. No family-wise multiplicity adjustment is applied, so interval exclusion is not described as universal statistical significance.
 
@@ -185,6 +185,8 @@ All compared v3 score files contain the same ordered sample IDs, true labels, an
 ### Prespecified primary method
 
 Table 2 reports the fixed-orientation primary results. Values are point estimates followed by percentile 95% confidence intervals. The three datasets show materially different behavior. ElectroSense has strong class-OOD ranking and the lowest primary FPR95 among the three evaluations. DeepSense is a negative result: primary AUROC is below chance and FPR95 is near the upper end of its range. JamShield has above-chance AUROC but a high FPR95, indicating that global ranking improvement does not imply a uniformly favorable high-recall operating point.
+
+DeepSense contains 3,200 ID and 16,000 OOD rows among 19,200 evaluation observations, giving OOD prevalence 0.833333. The corresponding no-skill AUPR-OOD baseline and all-OOD trivial detection-accuracy baseline are therefore both 0.833333. The primary AUPR-OOD, 0.737936, is below its no-skill baseline, while the evaluation-descriptive detection accuracy, 0.833490, is only marginally above the all-OOD baseline. These descriptive anchors reinforce the fixed-orientation negative result; they are not additional statistical tests, and detection accuracy remains evaluation-descriptive. <!-- TRACE: N002, N010, N012, N017, N018 -->
 
 **Table 2. Bootstrap confidence intervals for the prespecified primary method.** Detection accuracy is evaluation-descriptive because its threshold is selected on the evaluation sample.
 
@@ -243,27 +245,29 @@ DeepSense is retained as a negative fixed-orientation result. Figure 5 compares 
 
 ### Context across v0-v3
 
-Table 4 preserves the stage-wise results used to contextualize the final analysis. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid. The v1 rows cover temperature-scaled logistic-regression entropy and maximum-softmax scores. The v2 rows cover Euclidean, cosine, and Mahalanobis feature distances. The v3 rows contain the prespecified primary fusion and the exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
+Complete frozen stage-wise v0-v3 results are reported in Supplementary Table S1. The v0 rows cover raw confidence baselines from logistic regression and nearest centroid. The v1 rows cover temperature-scaled logistic-regression entropy and maximum-softmax scores. The v2 rows cover Euclidean, cosine, and Mahalanobis feature distances. The v3 rows contain the prespecified primary fusion and the exploratory four-component ablation. This progression shows that calibration, distance, and fusion alter OOD behavior differently across datasets; it does not define the best method by looking backward at test performance.
 
-*[Table 4 about here: `paper2_v0_v3_publication_summary.csv`.]*
+*[Supplementary Table S1: complete `paper2_v0_v3_publication_summary.csv`.]*
 
 ## Discussion
 
 ### Calibration and OOD separation are distinct
 
-Temperature scaling is valuable because it supplies an explicit, validation-fitted calibration baseline without retraining the classifier. Its objective, however, is ID validation likelihood. It cannot guarantee that unseen classes or domains receive higher entropy than retained ID samples. The DeepSense and JamShield results make this distinction operational: a confidence transformation can be well specified and leak-free while the target shift remains weakly separated. Claims about calibrated confidence should therefore be accompanied by direct OOD and selective-prediction evaluation. [REFERENCE NEEDED: R7] [REFERENCE NEEDED: R16]
+Temperature scaling is valuable because it supplies an explicit, validation-fitted calibration baseline without retraining the classifier [@guo2017calibration]. Its objective, however, is ID validation likelihood. It cannot guarantee that unseen classes or domains receive higher entropy than retained ID samples. The DeepSense and JamShield results make this distinction operational: a confidence transformation can be well specified and leak-free while the target shift remains weakly separated. Claims about calibrated confidence should therefore be accompanied by direct OOD and selective-prediction evaluation [@elyaniv2010foundations; @geifman2017selective].
 
 ### When uncertainty and geometry complement each other
 
 ElectroSense supports the intended complementarity. The class-novelty protocol lets entropy and prototype distances contribute distinct evidence, and the primary fusion improves the reported comparison metrics relative to each standalone prespecified comparator. This is evidence for the frozen ElectroSense protocol, not proof that the same combination will generalize to every modulation, sensor, or frequency regime.
 
+The standalone temperature-scaled entropy, cosine-distance, and Euclidean-distance methods were prespecified comparators because they are the constituent evidence sources of the primary fusion. Their comparison therefore tests complementarity relative to those components; it does not establish superiority over the complete OOD literature. The v0-v2 results provide contextual baselines but were not retrospectively selected as primary competitors. Adding a new external baseline post hoc merely to improve the paper would conflict with the frozen protocol; broader comparisons should instead be prespecified in future work.
+
 JamShield offers a more qualified result. Fusion improves AUROC against all prespecified comparators, suggesting better global ordering of retained and held-out scenarios. Yet AUPR-OOD and FPR95 move differently depending on the comparator. This is not contradictory: AUROC averages ranking behavior across operating points, AUPR-OOD depends on positive-class retrieval and prevalence, and FPR95 emphasizes a high-recall region. A deployment decision should therefore specify the relevant operating metric rather than treating AUROC as a complete substitute.
 
 ### Geometry can invert under domain shift
 
-The DeepSense result is scientifically important because it falsifies the simple assumption that a held-out domain must be farther from training prototypes. A day shift can move both ID-like and OOD-labeled samples so that the held-out day becomes more concentrated around class centroids than the retained ID test set. Robust validation normalization aligns component scales but cannot correct a direction that reverses after deployment. Reversing the score after seeing OOD labels would produce a useful diagnostic but an invalid primary detector.
+The DeepSense result is scientifically important because it falsifies the simple assumption that a held-out domain must be farther from training prototypes. Its below-prevalence AUPR-OOD and near-trivial evaluation-descriptive detection accuracy reinforce that fixed-orientation failure rather than providing evidence of a usable operating point. A day shift can move both ID-like and OOD-labeled samples so that the held-out day becomes more concentrated around class centroids than the retained ID test set. Robust validation normalization aligns component scales but cannot correct a direction that reverses after deployment. Reversing the score after seeing OOD labels would produce a useful diagnostic but an invalid primary detector.
 
-A next-step method should be prespecified and validation-identifiable. Candidate directions include two-sided tail scores, validation-fitted density or typicality models, and domain-robust representations. Such methods must be selected without target OOD labels and evaluated on untouched shifts. [REFERENCE NEEDED: R17]
+A next-step method should be prespecified and validation-identifiable. Candidate directions include two-sided tail scores, validation-fitted density or likelihood-ratio models, and domain-robust representations. Generative-model likelihood inversion and corrective likelihood-ratio scoring illustrate why one-sided scores can fail [@nalisnick2019deep; @ren2019likelihood]. Such methods must be selected without target OOD labels and evaluated on untouched shifts.
 
 ### Interpreting the exploratory Mahalanobis component
 
@@ -297,7 +301,7 @@ The results are deliberately mixed. The primary fusion is effective for ElectroS
 
 ## Reproducibility Statement
 
-All manuscript results are derived from the frozen Paper 2 v0-v3 artifacts and the verified publication-analysis package at `/mnt/d/openew_sa_data/paper2/experiments/v3_publication_analysis_20260807`. The source tables are `tables/paper2_v3_bootstrap_confidence_intervals.csv`, `tables/paper2_v3_paired_differences.csv`, and `tables/paper2_v0_v3_publication_summary.csv`. The independent review report, deterministic bootstrap metadata, validation report, publication figures, and SHA256 manifest are stored in the same package.
+All manuscript results are derived from the frozen Paper 2 v0-v3 artifacts and the verified publication-analysis package. The source tables are `tables/paper2_v3_bootstrap_confidence_intervals.csv`, `tables/paper2_v3_paired_differences.csv`, and `tables/paper2_v0_v3_publication_summary.csv`. The independent review report, deterministic bootstrap metadata, validation report, publication figures, and SHA256 manifest are stored in the same package. The local audit path is recorded only in the package README and is intentionally omitted from this submission-facing manuscript.
 
 Repository scripts document manifest construction, split generation, supervised prediction, temperature scaling, entropy extraction, feature-distance scoring, validation-only fusion, metric computation, bootstrap analysis, and publication finalization. The split and score readers preserve `sample_id`, labels, domains, and split identifiers as strings; the publication validator explicitly checks DeepSense leading-zero occupancy labels. All compared methods use exact within-dataset sample alignment and the fixed higher-is-more-OOD orientation.
 
@@ -323,28 +327,10 @@ This manuscript integration does not rerun model training, OOD score generation,
 
 **Table 2. Bootstrap confidence intervals.** Fixed-orientation point estimates and percentile 95% confidence intervals for the prespecified primary fusion. The full verified source table also contains all prespecified comparators and the exploratory ablation. Detection accuracy is evaluation-descriptive. <!-- TRACE: N004 -->
 
-**Table 3. Paired method differences.** Left-minus-right interval decisions based on identical resampling indices within each dataset. Exact point differences and bounds are retained in the verified paired-differences CSV. The comparator set was fixed independently of test performance, and detection accuracy is evaluation-descriptive.
+**Table 3. Paired method differences.** Left-minus-right interval decisions based on identical resampling indices within each dataset. `CI > 0` means the complete paired interval lies above zero, `CI < 0` means it lies below zero, and `0 in CI` means it contains zero. For FPR95, smaller values are favorable. These entries are interval-location summaries, not significance tests. Exact point differences and bounds are retained in the verified paired-differences CSV. The comparator set was fixed independently of test performance, and detection accuracy is evaluation-descriptive.
 
-**Table 4. v0-v3 publication summary.** Frozen stage-wise OOD results for raw confidence baselines, temperature-scaled confidence, feature distances, and uncertainty-distance fusion. The three-component v3 method is the prespecified primary analysis; the Mahalanobis four-component method is exploratory.
+**Supplementary Table S1. v0-v3 publication summary.** Complete frozen stage-wise OOD results for raw confidence baselines, temperature-scaled confidence, feature distances, and uncertainty-distance fusion. The three-component v3 method is the prespecified primary analysis; the Mahalanobis four-component method is exploratory.
 
-## References Placeholder
+## References
 
-No bibliographic entries are invented in this draft. Each token below must be replaced with a verified reference before submission; the required evidence and preferred source type are listed in `unresolved_reference_requirements.md`.
-
-- [REFERENCE NEEDED: R1]
-- [REFERENCE NEEDED: R2]
-- [REFERENCE NEEDED: R3]
-- [REFERENCE NEEDED: R4]
-- [REFERENCE NEEDED: R5]
-- [REFERENCE NEEDED: R6]
-- [REFERENCE NEEDED: R7]
-- [REFERENCE NEEDED: R8]
-- [REFERENCE NEEDED: R9]
-- [REFERENCE NEEDED: R10]
-- [REFERENCE NEEDED: R11]
-- [REFERENCE NEEDED: R12]
-- [REFERENCE NEEDED: R13]
-- [REFERENCE NEEDED: R14]
-- [REFERENCE NEEDED: R15]
-- [REFERENCE NEEDED: R16]
-- [REFERENCE NEEDED: R17]
+Citation keys in this Markdown source resolve to the independently verified records in `reference_verification/references_verified.bib`. The IEEE manuscript renders the same verified metadata through `ieee_latex/references.bib` using the IEEEtran bibliography style. The bootstrap citations are methodological underpinnings rather than prescriptions of the exact analysis design, and the ElectroSense taxonomy claim is explicitly bounded to the verified converted subset.

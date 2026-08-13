@@ -31,11 +31,11 @@ A single positive temperature \(T\) is selected on ID validation predictions by 
   {\sum_j \exp\!\left(\log p_j(x)/T\right)}.
   \label{eq:temperature-scaling}
 \end{equation}
-The selected temperature in \eqref{eq:temperature-scaling} is then frozen and applied to validation, test-ID, and test-OOD predictions. Temperature-scaled predictive entropy is the uncertainty component used in the primary fusion and is also a prespecified standalone comparator. The procedure calibrates a closed-set probability model on ID validation data; it does not use OOD labels and does not, by construction, guarantee OOD separation. \pendingcite{R7}
+The selected temperature in \eqref{eq:temperature-scaling} is then frozen and applied to validation, test-ID, and test-OOD predictions. Temperature-scaled predictive entropy is the uncertainty component used in the primary fusion and is also a prespecified standalone comparator. The procedure follows validation-fitted scalar temperature scaling~\cite{guo2017calibration}: it calibrates a closed-set probability model on ID validation data, does not use OOD labels, and does not, by construction, guarantee OOD separation.
 
 \subsection{Feature-Distance Scoring}
 
-All feature-distance models are fitted on the ID training split only. For each known class \(k\), the class centroid is
+All feature-distance models are fitted on the ID training split only. Following prototype and feature-distance formulations~\cite{snell2017prototypical,sun2022knn}, for each known class \(k\), the class centroid is
 \begin{equation}
   \mu_k = \frac{1}{\lvert\mathcal{T}_k\rvert}
   \sum_{i\in\mathcal{T}_k} z(x_i).
@@ -54,7 +54,7 @@ The cosine score normalizes both samples and centroids and computes
   {\left\lVert z(x)\right\rVert_2\left\lVert\mu_k\right\rVert_2}.
   \label{eq:cosine}
 \end{equation}
-For Mahalanobis scoring, within-class residuals are pooled into a shared covariance estimate. A diagonal regularizer is added, a numerically stable pseudo-inverse is computed, and the score is the minimum square-root Mahalanobis distance:
+For Mahalanobis scoring, within-class residuals are pooled into a shared covariance estimate following the tied-covariance formulation of Lee \emph{et al.}~\cite{lee2018mahalanobis}. As an implementation detail of this study, a diagonal regularizer is added and a numerically stable pseudo-inverse is computed. The score is the minimum square-root Mahalanobis distance:
 \begin{equation}
   s_{\mathrm{mah}}(x)
   = \min_k \sqrt{
@@ -90,12 +90,12 @@ Weights in \eqref{eq:primary-fusion} are equal and are not fitted on evaluation 
 
 \subsection{OOD Metrics and Tied-Score Handling}
 
-OOD is the positive class for all detection metrics. AUROC evaluates global ranking. AUPR-OOD evaluates positive-class precision--recall behavior. FPR95 is the minimum ID false-positive rate at which OOD true-positive rate reaches the target operating level; lower is preferable. Detection accuracy is the best accuracy over thresholds of the rule \textquotedblleft{}score at or above the threshold is OOD.\textquotedblright{} Because that threshold is optimized on the evaluation sample, detection accuracy is \textbf{evaluation-descriptive} and must not be interpreted as a deployment-valid operating point.
+OOD is the positive class for all detection metrics. AUROC evaluates global ranking. AUPR-OOD evaluates positive-class precision--recall behavior. FPR95 is the minimum ID false-positive rate at which OOD true-positive rate reaches the target operating level; lower is preferable~\cite{hendrycks2017baseline,liang2018enhancing}. Detection accuracy is the best accuracy over thresholds of the rule \textquotedblleft{}score at or above the threshold is OOD.\textquotedblright{} Because that threshold is optimized on the evaluation sample, detection accuracy is \textbf{evaluation-descriptive} and must not be interpreted as a deployment-valid operating point.
 
 Paper 2 uses its existing stable-order AUPR-OOD implementation. Samples are sorted by descending OOD score with a stable mergesort; precision is evaluated at each OOD-positive rank and averaged over the OOD rows. Equal-score rows therefore retain their input-CSV order. The same implementation is used for every point estimate and bootstrap replicate. This convention is documented because it can differ from grouped-threshold average-precision implementations when scores are tied.
 
 \subsection{Bootstrap Statistical Analysis}
 
-Uncertainty is estimated with 1,000 nonparametric replicates. ID and OOD observations are resampled separately at their original evaluation counts. Within each dataset and replicate, the same sampled ID and OOD indices are reused across all methods, enabling paired left-minus-right differences. Pointwise percentile 95\% confidence intervals are reported for AUROC, AUPR-OOD, FPR95, and detection accuracy. The deterministic seed is recorded in the external analysis metadata.
+The percentile-bootstrap and paired-comparison literature provides methodological underpinnings for this analysis~\cite{efron1993bootstrap,dietterich1998approximate}, but neither source prescribes the exact composite procedure used here. In our analysis design, uncertainty is estimated with 1,000 nonparametric replicates: ID and OOD groups are resampled separately at their original evaluation counts, and identical sampled ID and OOD indices are reused across all methods within each dataset and replicate. This shared-index construction enables paired left-minus-right differences. Pointwise percentile 95\% confidence intervals are reported for AUROC, AUPR-OOD, FPR95, and detection accuracy. The deterministic seed is recorded in the external analysis metadata.
 
 The paired comparison set is fixed: primary versus temperature-scaled entropy, primary versus nearest-centroid cosine, primary versus nearest-centroid Euclidean, and exploratory four-component fusion versus primary. An interval that excludes zero supports a difference only for that dataset, metric, score orientation, and comparison. No family-wise multiplicity adjustment is applied, so interval exclusion is not described as universal statistical significance.

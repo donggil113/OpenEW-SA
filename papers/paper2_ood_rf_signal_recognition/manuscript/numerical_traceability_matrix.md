@@ -26,6 +26,8 @@ All point estimates and interval bounds are reproduced to six decimal places, ma
 | N002 | Datasets, Table 1, DeepSense | ID 3,200; OOD 16,000; total 19,200 | `PUB` | `stage=v3_fusion; dataset=deepsense; protocol=day2_ood; score_method=ts_entropy_cosine_euclidean` | Evaluation sample counts | `n_id`; `n_ood`; `n_samples` |
 | N003 | Datasets, Table 1, JamShield | ID 14,534; OOD 19,817; total 34,351 | `PUB` | `stage=v3_fusion; dataset=jamshield; protocol=scenario_ood; score_method=ts_entropy_cosine_euclidean` | Evaluation sample counts | `n_id`; `n_ood`; `n_samples` |
 | N004 | Methods, bootstrap analysis; Results, Table 2 heading/caption | 1,000 successful replicates; 95% confidence level | `CI` | All rows; values are invariant across dataset, method, and metric | Bootstrap configuration represented in result rows | `successful_replicates`; `confidence_level` |
+| N017 | Results, DeepSense no-skill context | OOD prevalence and no-skill AUPR-OOD baseline 0.833333 | `PUB` | `stage=v3_fusion; dataset=deepsense; protocol=day2_ood; score_method=ts_entropy_cosine_euclidean` | Derived prevalence anchor | `n_ood / n_samples = 16000 / 19200` |
+| N018 | Results, DeepSense no-skill context | All-OOD trivial detection-accuracy baseline 0.833333 | `PUB` | `stage=v3_fusion; dataset=deepsense; protocol=day2_ood; score_method=ts_entropy_cosine_euclidean` | Derived majority-class anchor | `max(n_id, n_ood) / n_samples = 16000 / 19200` |
 
 ## Prespecified Primary Point Estimates And Intervals
 
@@ -81,3 +83,4 @@ Its reported metrics map directly to `auroc`, `aupr_ood`, `fpr95`, and `detectio
 - Every Table 3 interval decision must match `interval_excludes_zero` and the interval bounds.
 - Every row described as evaluation-descriptive must have `threshold_note=evaluation-descriptive` in `CI` or `PAIR`, or the equivalent `detection_accuracy_note` in `PUB`.
 - Primary, exploratory, and comparator labels must match `analysis_role` in the source tables.
+- Derived DeepSense no-skill anchors N017 and N018 must equal the ratios of the frozen N002 evaluation counts and are descriptive quantities, not additional statistical tests.
