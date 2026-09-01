@@ -1,0 +1,28 @@
+schema_version: "1.0.0"
+storage:
+  acquisition_table: acquisition_metadata.parquet
+  annotation_table: annotations.parquet
+  provenance_sidecar: metadata_provenance.json
+identifier_policy:
+  preserve_as_string: true
+  reject_numeric_identifiers: true
+  raw_filename: opaque_capture_uuid_only
+temporal_validation:
+  require_utc_offset: true
+  require_session_boundaries: true
+  require_clock_reset_identifiers: true
+  require_gap_semantics_for_dynamic_use: true
+relation_construction:
+  fail_closed: true
+  require_explicit_whitelist: true
+  no_cross_partition_relations: true
+  labels_loaded: false
+quality_thresholds:
+  minimum_relation_coverage: 0.80
+  minimum_repeated_group_fraction: 0.50
+  max_session_size_warning: 100000
+target_proxy_audit:
+  near_deterministic_purity: 0.95
+  near_deterministic_group_rate: 0.90
+  normalized_mutual_information_reject: 0.80
+

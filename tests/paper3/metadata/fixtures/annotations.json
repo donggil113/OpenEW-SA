@@ -1,0 +1,8 @@
+[
+  {"sample_id":"000001","task_name":"mock_signal_state","target_label":"state-A","annotation_source":"synthetic_contract_fixture"},
+  {"sample_id":"000002","task_name":"mock_signal_state","target_label":"state-B","annotation_source":"synthetic_contract_fixture"},
+  {"sample_id":"000003","task_name":"mock_signal_state","target_label":"state-A","annotation_source":"synthetic_contract_fixture"},
+  {"sample_id":"000004","task_name":"mock_signal_state","target_label":"state-B","annotation_source":"synthetic_contract_fixture"},
+  {"sample_id":"000005","task_name":"mock_signal_state","target_label":"state-A","annotation_source":"synthetic_contract_fixture"},
+  {"sample_id":"000006","task_name":"mock_signal_state","target_label":"state-B","annotation_source":"synthetic_contract_fixture"}
+]

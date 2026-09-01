@@ -1,0 +1,2 @@
+"""Prospective metadata contract tests."""
+

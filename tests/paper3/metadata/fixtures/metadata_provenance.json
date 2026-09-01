@@ -1,0 +1,25 @@
+{
+  "schema_version": "1",
+  "parser_name": "synthetic_contract_fixture",
+  "parser_version": "1.0.0",
+  "source_sha256": {},
+  "warnings": ["Synthetic software-validation fixture; not scientific data."],
+  "fields": [
+    {"field":"schema_version","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"sample_id","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"acquisition_session_id","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"capture_id","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"within_capture_index","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"timestamp_utc","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"timestamp_source","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"clock_reset_id","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"receiver_id","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"site_id","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"center_frequency_hz","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"lower_frequency_hz","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"upper_frequency_hz","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"sample_rate_hz","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"source_file_id","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"},
+    {"field":"source_record_index","source_type":"synthetic_fixture","source_path_or_record":"fixture specification","parser_version":"1.0.0","extraction_method":"direct generation","verified_against":["fixture tests"],"confidence":"VERIFIED"}
+  ]
+}

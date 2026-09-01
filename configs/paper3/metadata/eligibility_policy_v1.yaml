@@ -1,0 +1,55 @@
+schema_version: 1
+default: UNRESOLVED
+RELATION_ALLOWED:
+  - acquisition_session_id
+  - capture_id
+  - clock_reset_id
+  - receiver_id
+  - station_id
+  - site_id
+  - sensor_id
+  - channel_id
+  - location_id
+  - environment_context_id
+  - operational_context_id
+MODEL_FEATURE_ALLOWED:
+  - timestamp_utc
+  - timestamp_source
+  - timestamp_resolution_ns
+  - timestamp_uncertainty_ns
+  - center_frequency_hz
+  - lower_frequency_hz
+  - upper_frequency_hz
+  - bandwidth_hz
+  - sample_rate_hz
+  - antenna_id
+  - antenna_configuration
+SPLIT_ONLY:
+  - campaign_id
+  - hardware_model
+  - hardware_serial_hash
+  - firmware_version
+  - location_precision_class
+  - domain_id
+AUDIT_ONLY:
+  - schema_version
+  - sample_id
+  - within_capture_index
+  - source_file_id
+  - source_record_index
+  - metadata_missing_mask
+  - metadata_quality_flags
+  - clock_domain
+FORBIDDEN_LABEL:
+  - target_label
+  - true_label
+  - attack_label
+  - occupancy_label
+  - situation_label
+  - ood_label
+FORBIDDEN_TARGET_PROXY:
+  - prediction
+  - correctness
+  - heldout_performance
+  - scenario_target
+
