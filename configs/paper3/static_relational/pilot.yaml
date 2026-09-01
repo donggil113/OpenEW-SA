@@ -1,0 +1,79 @@
+schema_version: 1
+experiment_name: static_relational_m0_m2_pilot
+artifacts:
+  jamshield: /mnt/d/openew_sa_data/processed/jamshield
+  deepsense: /mnt/d/openew_sa_data/processed/deepsense
+  electrosense: /mnt/d/openew_sa_data/processed/electrosense
+pre_run_integrity: /mnt/d/openew_sa_data/paper3/pilot_analysis/pre_run_integrity.json
+output_roots:
+  experiments: /mnt/d/openew_sa_data/paper3/experiments
+  logs: /mnt/d/openew_sa_data/paper3/logs
+  checkpoints: /mnt/d/openew_sa_data/paper3/checkpoints
+  analysis: /mnt/d/openew_sa_data/paper3/pilot_analysis
+relation_whitelist:
+  jamshield: [rx_id]
+  deepsense: []
+  electrosense: [rx_id, source_date_id]
+seeds: [829, 1829, 2829, 3829, 4829]
+split_seed: 20260901
+source_validation_fraction: 0.20
+max_context_size: 64
+training:
+  epochs: 10
+  learning_rate: 0.001
+  weight_decay: 0.01
+  hidden_dim: 128
+  dropout: 0.1
+  ece_bins: 15
+  batch_size:
+    jamshield: 64
+    electrosense: 128
+    deepsense: 128
+  class_weight:
+    jamshield: balanced
+    electrosense: none
+    deepsense: none
+smoke:
+  epochs: 3
+  max_train_samples: 8192
+  max_validation_samples: 2048
+  seed: 829
+retention_levels: [1.0, 0.75, 0.50, 0.25, 0.0]
+protocols:
+  jamshield_scenario:
+    dataset: jamshield
+    split_strategy: domain_holdout
+    holdout_domains:
+      - reactive_jammer_square_NLOS
+      - random_jammer_gaussian_NLOS
+      - constant_jammer_gaussian_25db
+    holdout_benign_domains: [data_benign_4]
+  jamshield_reactive:
+    dataset: jamshield
+    split_strategy: jammer_type_holdout
+    holdout_jammer_types: [reactive]
+    holdout_benign_domains: [data_benign_4]
+  electrosense_sensor:
+    dataset: electrosense
+    split_strategy: domain_holdout
+    holdout_domains: [alcorcon1, bcn-L, Geneva]
+  deepsense_cross_day:
+    dataset: deepsense
+    split_strategy: domain_holdout
+    holdout_domains: [day2]
+model_relations:
+  jamshield:
+    m0: []
+    m1: [station]
+    m2: [station]
+  electrosense:
+    m0: []
+    m1: [receiver, date]
+    m2: [receiver, date, receiver_date]
+  deepsense:
+    m0: []
+go_no_go:
+  heldout_non_degradation_tolerance: -0.01
+  actual_minus_shuffled_threshold: 0.005
+  retention_spearman_threshold: 0.5
+  retention_endpoint_threshold: 0.01
