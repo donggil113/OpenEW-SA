@@ -74,4 +74,3 @@ only in a separate controlled process once annotations exist. Freeze original
 capture hashes, preserve corrections as transformations, and quarantine—not
 silently drop—invalid rows. A collection is not dynamic-ready merely because
 timestamps parse; it must pass session/reset/gap/mixed-target episode criteria.
-

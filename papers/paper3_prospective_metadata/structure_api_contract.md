@@ -25,4 +25,3 @@ Dynamic availability is an evidence gate, not a parser convenience. The
 caller may pass `VALID_TEMPORAL_CONTEXT` only after a reviewed temporal audit
 establishes physical order, session/reset semantics, gap meaning,
 inference-time availability, and mixed-target episodes.
-

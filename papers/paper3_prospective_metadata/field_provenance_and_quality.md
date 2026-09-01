@@ -31,4 +31,3 @@ Corrections create a new derived table and add a transformation step. Original
 source hashes and extraction history remain available. Filesystem mtime is
 always `SYSTEM_METADATA_ONLY` unless independent acquisition documentation
 proves otherwise.
-

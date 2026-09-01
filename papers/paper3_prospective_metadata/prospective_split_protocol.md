@@ -28,4 +28,3 @@ eligibility review explicitly allows the underlying acquisition field.
 Each release writes sample/capture/session membership hashes and an overlap
 audit. If a domain is target-pure by collection design, the split is invalid for
 claiming label-independent domain generalization without additional evidence.
-

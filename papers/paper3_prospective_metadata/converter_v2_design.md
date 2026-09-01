@@ -33,4 +33,3 @@ OpenEW-SA artifacts.
 Field eligibility, target-proxy thresholds, relation whitelists, split families,
 episode semantics, and temporal readiness are frozen before target evaluation.
 Target performance cannot repair metadata validity.
-

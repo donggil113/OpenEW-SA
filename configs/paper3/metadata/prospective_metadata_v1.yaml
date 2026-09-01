@@ -25,4 +25,3 @@ target_proxy_audit:
   near_deterministic_purity: 0.95
   near_deterministic_group_rate: 0.90
   normalized_mutual_information_reject: 0.80
-

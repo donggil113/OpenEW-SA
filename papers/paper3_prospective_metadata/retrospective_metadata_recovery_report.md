@@ -57,4 +57,3 @@ Only separately obtained owner logs can change this decision. Any log must be
 linked to raw captures by cryptographic hash or stable capture UUID and must
 document timestamp, clock, session, receiver/site, and annotation provenance.
 The evidence must be audited before target performance is available.
-

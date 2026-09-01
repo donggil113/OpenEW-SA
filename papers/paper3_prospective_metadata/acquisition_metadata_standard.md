@@ -82,4 +82,3 @@ performance fields. Those belong to the annotation table.
   do not silently overwrite the original record.
 - Capture UUIDs and sample IDs never encode class, jammer, occupancy,
   technology, scenario target state, or split membership.
-

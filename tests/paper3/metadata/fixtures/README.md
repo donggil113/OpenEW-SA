@@ -5,4 +5,3 @@ to validate schema, provenance, relation, temporal-neighbor, hypergraph, and
 dynamic-snapshot software contracts. Annotations are stored in a separate
 file. No predictive model or scientific accuracy result is associated with
 this fixture.
-

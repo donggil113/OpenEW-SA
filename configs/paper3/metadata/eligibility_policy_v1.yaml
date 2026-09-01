@@ -52,4 +52,3 @@ FORBIDDEN_TARGET_PROXY:
   - correctness
   - heldout_performance
   - scenario_target
-

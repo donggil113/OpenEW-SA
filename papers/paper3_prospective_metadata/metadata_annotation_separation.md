@@ -48,4 +48,3 @@ cannot be a model feature.
 
 Loading annotations must never mutate acquisition metadata. Tests enforce that
 separation and inspect builder signatures.
-
