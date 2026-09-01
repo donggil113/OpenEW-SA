@@ -1,0 +1,16 @@
+artifact_dirs:
+  jamshield: /mnt/d/openew_sa_data/processed/jamshield
+  deepsense: /mnt/d/openew_sa_data/processed/deepsense
+  electrosense: /mnt/d/openew_sa_data/processed/electrosense
+
+output_dir: /mnt/d/openew_sa_data/paper3/audits
+
+# This is a hard model-relation whitelist, not a list of every field inspected.
+# The audit fails if the configured whitelist exceeds the reviewed code contract.
+allowed_relation_field_whitelist:
+  jamshield:
+    - rx_id
+  deepsense: []
+  electrosense:
+    - rx_id
+    - source_date_id
