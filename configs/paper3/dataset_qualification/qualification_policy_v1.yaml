@@ -1,0 +1,29 @@
+schema_version: 1
+unknown_policy: FAIL_CLOSED
+performance_metrics_allowed: false
+readiness:
+  minimum_relation_coverage: 0.80
+  minimum_repeated_group_fraction: 0.50
+  minimum_safe_relation_types_for_hypergraph: 2
+  temporal_requires_valid_clock_order_sessions_gaps: true
+  temporal_requires_mixed_target_episodes: true
+download:
+  metadata_max_bytes: 500000000
+  sample_max_bytes: 5000000000
+  free_space_fraction_max: 0.10
+  full_dataset_automatic_download: false
+top_candidate_ranking:
+  scientific_fit: 20
+  metadata_readiness: 20
+  license_clarity: 15
+  current_availability: 15
+  manageable_size: 10
+  relation_diversity: 10
+  temporal_evidence: 5
+  task_distinctness: 5
+authorization_requires:
+  - metadata_readiness_at_least_static_relational
+  - target_proxy_audit_pass
+  - acceptable_license_and_access
+  - frozen_split_protocol
+  - task_distinct_from_paper1_and_paper2
