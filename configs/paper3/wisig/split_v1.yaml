@@ -1,0 +1,15 @@
+schema_version: 1
+converted_manifest_sha256: ffd98dcb8182435c1aaf416c3bb137e6f56f353811e7d1d7a6fc0cc4817ae4b6
+split_freeze_manifest_sha256: 08561f708862c696b4140876abbc7871af257bf38aab1a7e2728a8de9152e449
+receiver_fold_count: 5
+day_fold_count: 4
+secondary_receiver_day_stress_count: 1
+support_thresholds:
+  train_per_class: 100
+  validation_per_class: 20
+  test_per_class: 20
+seeds: [829, 1829, 2829, 3829, 4829]
+relation_whitelist: [receiver_id]
+split_only_fields: [day_id]
+target_annotation: transmitter_id
+target_performance_used_for_split_selection: false
