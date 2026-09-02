@@ -11,6 +11,7 @@ from openew.paper3.wisig.checkpoint import atomic_json, compatible_completion
 from openew.paper3.wisig.data import deterministic_batches, normalize_packet_batch
 from openew.paper3.wisig.metrics import classification_metrics, expected_calibration_error, per_group_macro_f1
 from openew.paper3.wisig.runner import MODEL_STAGES, SEEDS, RunConfig, set_determinism
+from openew.paper3.wisig.suite import deduplicate_plan, full_suite_plan, plan_summary
 
 
 class TestRunConfig(unittest.TestCase):
@@ -68,6 +69,19 @@ class TestCheckpoint(unittest.TestCase):
     def test_incompatible_rejected(self):
         atomic_json({"status":"COMPLETE","hash":"a"},self.path)
         with self.assertRaises(RuntimeError): compatible_completion(self.path,{"hash":"b"})
+
+
+class TestSuitePlan(unittest.TestCase):
+    def test_declared_count(self): self.assertEqual(plan_summary()["declared_condition_runs"],580)
+    def test_unique_count(self): self.assertEqual(plan_summary()["unique_executable_runs"],530)
+    def test_receiver_primary_count(self): self.assertEqual(plan_summary()["phase_counts"]["receiver_primary"],200)
+    def test_day_count(self): self.assertEqual(plan_summary()["phase_counts"]["day_secondary"],160)
+    def test_retention_count(self): self.assertEqual(plan_summary()["phase_counts"]["retention"],125)
+    def test_context_size_count(self): self.assertEqual(plan_summary()["phase_counts"]["context_size"],75)
+    def test_stress_count(self): self.assertEqual(plan_summary()["phase_counts"]["stress_secondary"],20)
+    def test_all_target_eval_true(self): self.assertTrue(all(config.evaluate_target for _,config in full_suite_plan()))
+    def test_all_five_seeds_present(self): self.assertEqual({config.seed for _,config in full_suite_plan()},set(SEEDS))
+    def test_null_retention_zero(self): self.assertTrue(all(config.relation_retention==0 for _,config in full_suite_plan() if config.model_stage=="P2_NULL"))
 
 
 def _stage_test(stage: str):

@@ -1,0 +1,33 @@
+schema_version: 1
+status: FROZEN_BEFORE_TARGET_EVALUATION
+signal_variant: non_equalized
+signal_shape: [256, 2]
+normalization: per_packet_rms
+backbone: compact_residual_1d_cnn
+embedding_dim: 64
+class_count: 10
+models:
+  - P0
+  - P0_WIDE
+  - DG_CORAL
+  - DG_GROUPDRO
+  - P1
+  - P2
+  - P2_SHUFFLED
+  - P2_NULL
+optimizer: AdamW
+learning_rate: 0.0005
+weight_decay: 0.0001
+max_epochs: 30
+early_stopping_patience: 8
+checkpoint_metric: source_validation_macro_f1
+sample_batch_size: 1024
+episode_node_budget: 1024
+primary_context_size: 32
+context_size_sensitivity: [8, 32, 128]
+primary_relation_retention: 1.0
+relation_retention_sensitivity: [1.0, 0.75, 0.5, 0.25, 0.0]
+coral_weight: 0.1
+groupdro_eta: 0.01
+seeds: [829, 1829, 2829, 3829, 4829]
+target_metrics_used_for_configuration: false
