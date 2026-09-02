@@ -1,0 +1,17 @@
+schema_version: 1
+dataset: wisig
+artifact: ManyRx.pkl.zip
+official_page: https://cores.ee.ucla.edu/downloads/datasets/wisig/
+official_view_url: https://drive.google.com/file/d/1TtdydJCuhkvDQ1RWb3PkxakkWo2-X5Uv/view?usp=sharing
+official_download_url: https://drive.usercontent.google.com/download?id=1TtdydJCuhkvDQ1RWb3PkxakkWo2-X5Uv&export=download&confirm=t
+official_reported_size: 1.2 GB
+header_content_length_bytes: 1249528063
+expected_content_type: application/octet-stream
+expected_filename: ManyRx.pkl.zip
+license: CC BY-NC-SA 4.0
+license_authorization: WISIG_LOCAL_RESEARCH_LICENSE_APPROVED=YES
+citation_doi: 10.1109/ACCESS.2022.3154790
+payload_distribution: EXTERNAL_ONLY
+raw_root: /mnt/d/openew_sa_data/paper3/wisig/raw
+minimum_free_bytes: 20000000000
+maximum_automatic_payload_bytes: 5000000000
