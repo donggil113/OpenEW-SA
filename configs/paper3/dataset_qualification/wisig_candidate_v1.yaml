@@ -1,0 +1,89 @@
+candidate:
+  schema_version: 1.0.0
+  candidate_id: wisig_v1
+  dataset_name: WiSig
+  task: transmitter RF fingerprint identification under receiver/day shift
+  official_source: https://cores.ee.ucla.edu/downloads/datasets/wisig/
+  official_paper: https://doi.org/10.1109/ACCESS.2022.3154790
+  license: CC BY-NC-SA 4.0
+  license_verified: 'TRUE'
+  download_size_bytes: 1200000000
+  receiver_count: 41
+  site_count: 1
+  day_count: 4
+  session_count: null
+  timestamp_available: 'FALSE'
+  order_available: 'TRUE'
+  frequency_available: 'TRUE'
+  sample_rate_available: 'TRUE'
+  annotation_separated: 'FALSE'
+  target_field: transmitter_id
+  target_proxy_fields: [transmitter_id, target-bearing raw path]
+  relation_allowed_fields: [receiver_id]
+  temporal_status: TARGET_NESTED_SEQUENCE
+  metadata_readiness: STATIC_RELATIONAL
+  access_status: PUBLIC_DIRECT
+  adoption_status: CONDITIONAL_GO
+  evidence_confidence: VERIFIED
+official_evidence:
+  - requirement: scale and acquisition axes
+    source_title: WiSig official overview
+    url: https://cores.ee.ucla.edu/downloads/datasets/wisig/
+    exact_location: Overview and Compact Subsets
+    evidence: 10 million packets, 174 transmitters, 41 receivers, and four captures over a month
+    primary_source: true
+    official_source: true
+    verified: true
+    accessed_at_utc: '2026-09-02T12:00:00Z'
+  - requirement: capture configuration and task
+    source_title: WiSig peer-reviewed paper
+    url: https://doi.org/10.1109/ACCESS.2022.3154790
+    exact_location: Sections II--III
+    evidence: transmitter identification at 2462 MHz using 25 MS/s USRP captures; receiver and day shifts are evaluated
+    primary_source: true
+    official_source: true
+    verified: true
+    accessed_at_utc: '2026-09-02T12:00:00Z'
+  - requirement: dataset licence
+    source_title: WiSig official download page
+    url: https://cores.ee.ucla.edu/downloads/datasets/wisig/
+    exact_location: Downloads licence notice
+    evidence: dataset payload is offered under CC BY-NC-SA 4.0
+    primary_source: true
+    official_source: true
+    verified: true
+    accessed_at_utc: '2026-09-02T12:00:00Z'
+license_evidence:
+  applies_to_dataset_payload: 'TRUE'
+  permits_research_use: 'TRUE'
+  permits_derived_artifacts: 'TRUE'
+  permits_redistribution: 'TRUE'
+  use_restrictions: [NONCOMMERCIAL, SHAREALIKE, ATTRIBUTION]
+download:
+  kind: SAMPLE
+  secret_required: false
+proxy_evidence:
+  verified_target_neutral: [receiver_id]
+  example_path: receiver-rx03/transmitter-tx007/capture.dat
+  target_tokens: [transmitter, tx007]
+temporal_evidence:
+  explicit_acquisition_timestamp: false
+  physical_order_preserved: true
+  session_boundaries_verified: true
+  clock_reset_semantics_verified: false
+  gap_meaning_verified: false
+  inference_time_available: true
+  coarse_day_only: false
+  filesystem_mtime_only: false
+  container_target_pure: true
+  mixed_target_episode_fraction: 0.0
+relations:
+  - field: receiver_id
+    coverage: 1.0
+    repeated_group_fraction: 1.0
+    target_proxy_rejected: true
+    independently_verified: true
+    true_multi_node_relation: false
+mixed_target_episode_fraction: 0.0
+split_protocol_frozen: false
+task_distinct: true
