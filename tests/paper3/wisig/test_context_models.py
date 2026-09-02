@@ -82,7 +82,7 @@ class TestModels(unittest.TestCase):
     def test_p2_weights_sum_one(self):
         x=self.x.reshape(1,3,256,2); m=torch.ones(1,3,dtype=torch.bool)
         w=ReceiverContextClassifier(10,attention=True)(x,m,m).attention_weights
-        self.assertAlmostEqual(float(w.sum()),1.0,places=5)
+        self.assertAlmostEqual(float(w.detach().sum()),1.0,places=5)
     def test_null_context_finite(self):
         x=self.x.reshape(1,3,256,2); v=torch.ones(1,3,dtype=torch.bool); z=torch.zeros_like(v)
         self.assertTrue(torch.isfinite(ReceiverContextClassifier(10,attention=True)(x,v,z).logits).all())

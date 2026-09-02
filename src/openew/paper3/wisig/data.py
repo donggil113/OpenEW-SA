@@ -82,7 +82,7 @@ def normalize_packet_batch(features: np.ndarray, epsilon: float = 1e-6) -> np.nd
     """Frozen per-packet RMS scaling; no domain or target statistics are used."""
 
     values = np.asarray(features, dtype=np.float32)
-    rms = np.sqrt(np.mean(np.square(values), axis=(1, 2), keepdims=True))
+    rms = np.sqrt(np.mean(np.square(values), axis=(-2, -1), keepdims=True))
     return values / np.maximum(rms, epsilon)
 
 

@@ -36,6 +36,10 @@ class TestDataUtilities(unittest.TestCase):
     def test_rms_normalization_finite(self): self.assertTrue(np.isfinite(normalize_packet_batch(np.zeros((2,4,2),dtype=np.float32))).all())
     def test_rms_normalization_unit(self):
         value=normalize_packet_batch(np.ones((2,4,2),dtype=np.float32)); self.assertAlmostEqual(float(np.sqrt(np.mean(value**2))),1.0)
+    def test_episode_rms_is_per_packet(self):
+        value=np.ones((2,3,4,2),dtype=np.float32); value[:,1] *= 2
+        normalized=normalize_packet_batch(value)
+        np.testing.assert_allclose(np.sqrt(np.mean(normalized**2,axis=(-2,-1))),1.0)
     def test_batches_preserve_nodes(self):
         batches=list(deterministic_batches(np.arange(10),3,829,shuffle=True)); self.assertEqual(sorted(np.concatenate(batches)),list(range(10)))
     def test_batches_deterministic(self):
