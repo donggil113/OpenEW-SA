@@ -6,16 +6,16 @@ The source-only smoke suite used `receiver_loso_00`, seed 829, a stable 16,384-p
 
 | Stage | Source-validation macro-F1 (smoke diagnostic only) | Trainable parameters | Peak allocated GPU bytes | Wall seconds |
 |---|---:|---:|---:|---:|
-| P0 | 0.171184 | 64,774 | 166,521,344 | 2.295 |
-| P0-WIDE | 0.125317 | 74,827 | 166,691,328 | 0.858 |
-| DG-CORAL | 0.172184 | 64,774 | 166,521,344 | 3.103 |
-| DG-GROUPDRO | 0.176118 | 64,774 | 166,521,856 | 1.427 |
-| DG-DANN | 0.176531 | 70,754 | 166,468,096 | 0.842 |
-| SOURCE-NORM | 0.171895 | 64,774 | 166,521,344 | 0.932 |
-| P1 | 0.081404 | 73,030 | 189,601,792 | 5.788 |
-| P2 | 0.047794 | 75,143 | 194,596,864 | 5.919 |
+| P0 | 0.244446 | 64,774 | 166,500,864 | 2.170 |
+| P0-WIDE | 0.232316 | 74,827 | 166,664,704 | 0.796 |
+| DG-CORAL | 0.244109 | 64,774 | 166,500,864 | 2.322 |
+| DG-GROUPDRO | 0.249975 | 64,774 | 166,501,376 | 1.176 |
+| DG-DANN | 0.251505 | 70,754 | 166,447,616 | 0.761 |
+| SOURCE-NORM | 0.243622 | 64,774 | 166,500,864 | 0.941 |
+| P1 | 0.178243 | 73,030 | 189,578,752 | 5.801 |
+| P2 | 0.188606 | 75,143 | 194,573,824 | 5.800 |
 
-The abbreviated smoke scores are not scientific results or tuning outcomes. In particular, P2's low two-epoch source-validation score did not trigger an architecture, context, or optimizer change. Its source training loss fell from 2.056528 to 1.897510. Every configured method will retain the same full budget.
+The abbreviated smoke scores are not scientific results or tuning outcomes. They did not trigger an architecture, context, or optimizer change. Every configured method retains the same full budget. Derived-condition smoke checks also completed: P2-SHUFFLED 0.187469, P2-NULL 0.104671, P2-MISMATCHED-RX 0.188801, RX-NORM 0.243088, and T3A 0.265653. T3A selected `filter_K=20` using source validation only in this smoke diagnostic.
 
 P0-WIDE differs from P2 by 316 trainable parameters, or approximately 0.42% of P2, satisfying the predeclared ±5% capacity criterion. The backbone contains zero BatchNorm modules, confirming that AdaBN and official Tent are not applicable without changing the frozen architecture.
 

@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import random
 import resource
 import subprocess
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator, Sequence
@@ -44,6 +45,23 @@ from .support import SupportQuerySplit, build_query_context_indices, freeze_all_
 TRAINED_STAGES = frozenset({"P0", "P0_WIDE", "DG_CORAL", "DG_GROUPDRO", "DG_DANN", "SOURCE_NORM", "P1", "P2"})
 DERIVED_STAGES = frozenset({"P2_SHUFFLED", "P2_NULL", "P2_MISMATCHED_RX", "RX_NORM", "T3A"})
 T3A_FILTER_CANDIDATES = (1, 5, 20, 50, 100, -1)
+
+
+def remap_bundle_to_split_targets(bundle: ManyRxBundle, split_summary_path: str | Path) -> ManyRxBundle:
+    """Use the support-frozen target set and a split-local contiguous label space."""
+
+    summary = json.loads(Path(split_summary_path).read_text(encoding="utf-8"))
+    eligible = tuple(str(value) for value in summary["eligible_transmitter_ids"])
+    if not eligible or len(set(eligible)) != len(eligible):
+        raise ValueError("split eligible target set is empty or duplicated")
+    global_by_name = {name: index for index, name in enumerate(bundle.transmitter_ids)}
+    if not set(eligible).issubset(global_by_name):
+        raise ValueError("split contains a transmitter absent from the converted bundle")
+    old_to_new = {global_by_name[name]: new_index for new_index, name in enumerate(eligible)}
+    local = np.full_like(bundle.labels, -1)
+    for old_index, new_index in old_to_new.items():
+        local[bundle.labels == old_index] = new_index
+    return replace(bundle, labels=local, transmitter_ids=eligible)
 
 
 @dataclass(frozen=True)
@@ -462,6 +480,7 @@ def run_experiment(
     split_manifest = split_root / config.protocol_id / "split_manifest.csv"
     split_sha = sha256_file(split_manifest); sha = git_sha(repository)
     bundle = bundle or ManyRxBundle.load(converted_root)
+    bundle = remap_bundle_to_split_targets(bundle, split_root / config.protocol_id / "split_summary.json")
     identifier = run_id(config); output = run_root / "runs" / identifier; record_path = output / "run.json"
     compatibility = {"config_hash": config.config_hash, "git_sha": sha, "split_sha256": split_sha, "data_manifest_sha256": bundle.manifest_sha256}
     if resume and (complete := compatible_completion(record_path, compatibility)) is not None:

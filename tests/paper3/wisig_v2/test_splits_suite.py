@@ -4,6 +4,11 @@ import json
 import unittest
 from pathlib import Path
 
+import numpy as np
+
+from openew.paper3.wisig.data import ManyRxBundle
+from openew.paper3.wisig_v2.runner import remap_bundle_to_split_targets
+
 from openew.paper3.wisig_v2.splits import load_hardware_map, select_validation_receivers
 from openew.paper3.wisig_v2.suite import (
     PRIMARY_MODELS,
@@ -93,6 +98,34 @@ class SplitSuiteTests(unittest.TestCase):
     def test_information_matrix_denies_labels(self) -> None:
         text = (REPOSITORY / "papers/paper3_wisig_methods_remediation/information_budget_matrix.md").read_text(encoding="utf-8")
         self.assertNotIn("| Yes | Yes | Yes |", text)
+
+    def test_split_target_remap_is_contiguous(self) -> None:
+        bundle = ManyRxBundle(
+            features=np.zeros((4, 2, 2), dtype=np.float32),
+            sample_ids=np.asarray(["a", "b", "c", "d"]),
+            receiver_ids=np.asarray(["r"] * 4),
+            day_ids=np.asarray(["d"] * 4),
+            labels=np.asarray([0, 1, 2, 1]),
+            transmitter_ids=("t0", "t1", "t2"),
+            sample_index={"a": 0, "b": 1, "c": 2, "d": 3},
+            manifest_sha256="x",
+        )
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "summary.json"
+            path.write_text(json.dumps({"eligible_transmitter_ids": ["t1", "t2"]}), encoding="utf-8")
+            remapped = remap_bundle_to_split_targets(bundle, path)
+        self.assertEqual(remapped.transmitter_ids, ("t1", "t2"))
+        self.assertEqual(remapped.labels.tolist(), [-1, 0, 1, 0])
+
+    def test_split_target_remap_unknown_rejected(self) -> None:
+        bundle = ManyRxBundle(np.zeros((1, 2, 2), dtype=np.float32), np.asarray(["a"]), np.asarray(["r"]), np.asarray(["d"]), np.asarray([0]), ("t0",), {"a": 0}, "x")
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "summary.json"
+            path.write_text(json.dumps({"eligible_transmitter_ids": ["missing"]}), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                remap_bundle_to_split_targets(bundle, path)
 
 
 if __name__ == "__main__":
