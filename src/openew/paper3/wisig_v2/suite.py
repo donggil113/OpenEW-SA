@@ -94,7 +94,6 @@ def smoke_plan() -> list[tuple[str, RunConfig]]:
     return [
         ("source_only_smoke", _config("receiver_loso_00", model, PRIMARY_SEEDS[0], smoke=True))
         for model in PRIMARY_MODELS
-        if model not in {"P2_SHUFFLED", "P2_NULL", "P2_MISMATCHED_RX", "RX_NORM", "T3A"}
     ]
 
 
