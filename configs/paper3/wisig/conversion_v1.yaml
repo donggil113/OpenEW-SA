@@ -1,0 +1,19 @@
+schema_version: 1
+dataset: wisig_manyrx
+source_variant: compact_manyrx
+equalized_index: 0
+equalized_value: 0
+signal_shape: [256, 2]
+source_dtype: float64
+output_dtype: float32
+shard_size: 8192
+center_frequency_hz: 2462000000
+bandwidth_hz: 20000000
+sample_rate_hz: 25000000
+sample_id_namespace: openew-sa:paper3:wisig-manyrx:v1
+relation_whitelist: [receiver_id]
+split_only_fields: [day_id]
+annotation_only_fields: [transmitter_id]
+temporal_status: TARGET_NESTED_SEQUENCE
+raw_payload_policy: EXTERNAL_ONLY
+converted_payload_policy: EXTERNAL_ONLY
