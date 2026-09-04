@@ -34,7 +34,7 @@ Unknowns fail closed.
 | Receiver IDs | `rtl_1`--`rtl_9`, `pluto_1`--`pluto_2`, `b200_1`--`b200_2`, `b200mini_1`--`b200mini_2`, `b210_1`--`b210_2`, `n210_1`--`n210_3` | VERIFIED | Split/audit identity; never embedded |
 | Transmitter hardware | Five LoPy4; five SX1261 | VERIFIED | Transmitter identity is the target annotation |
 | Collection environment | Typical residential room, line of sight, approximately 1 m, fixed locations, SNR above 50 dB | VERIFIED | Paper experimental setup |
-| Sites/days/campaigns | No explicit site, day, or campaign identifiers in released loader schema | UNKNOWN | Cannot infer from filesystem times |
+| Sites/days/campaigns | The official code contains `Location_A_*` test paths and commented `drift/*_day1`--`day4` paths for selected receivers | PARTIALLY VERIFIED | These path tokens establish that the authors contemplated location/day variants, but not that those files are in the canonical payload, nor their acquisition semantics or completeness; filesystem times remain inadmissible |
 | Capture/session identifiers | Receiver train/test containers exist; no target-neutral acquisition-session semantics documented | PARTIALLY VERIFIED | File role is not an acquired calibration episode |
 | Packets per transmitter/receiver | 800 training and 100 testing packets per device-receiver pair are reported/used | VERIFIED | 200 device-receiver pairs |
 | Packet count | At least the reported 10 x 20 x (800 + 100) experiment subset | PARTIALLY VERIFIED | Exact payload rows require access and reconciliation |
@@ -58,6 +58,11 @@ Unknowns fail closed.
 | Access | Author links to `pan.seu.edu.cn`; host did not resolve during audit | PARTIALLY VERIFIED | DataPort landing page is official but automated payload access unavailable |
 | Payload size | No size in DataCite record | UNKNOWN | A non-primary report says 27.67 GB; not used as verified fact |
 | Official checksums | None located | UNKNOWN | Would be generated locally after lawful acquisition |
+
+The location/drift path evidence is deliberately bounded. It does not establish
+a target-neutral session, a timestamped sequence, a complete day-by-receiver
+crossing, or current payload availability. Consequently it does not reopen the
+acquired-calibration or temporal gates.
 
 ## Qualification conclusion
 

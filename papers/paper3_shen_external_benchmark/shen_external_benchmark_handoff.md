@@ -29,6 +29,10 @@ No Shen target metric exists.
   complex samples are reconstructed from real/imaginary halves.
 - Timestamps and synchronized receiver semantics are not documented.
 - Packet indexing is transmitter-nested and is not temporal context.
+- Official code contains `Location_A_*` paths and commented day1--day4 drift
+  paths for selected receivers. Their payload availability, acquisition
+  semantics, and coverage are unverified, so they are provenance clues only
+  and do not establish sessions, timestamps, or acquired calibration.
 
 ## VERIFIED SOURCE ACQUISITION
 
