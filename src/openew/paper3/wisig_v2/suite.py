@@ -29,6 +29,12 @@ PRIMARY_MODELS = (
     "T3A",
 )
 
+FATAL_FAILURE_TOKENS = ("split", "manifest", "leak", "overlap", "annotation", "unknown sample", "target metrics", "non-finite")
+
+
+def is_fatal_failure(message: str) -> bool:
+    return any(token in message.lower() for token in FATAL_FAILURE_TOKENS)
+
 
 def _config(protocol: str, model: str, seed: int, *, budget: int = PRIMARY_SUPPORT_BUDGET, k: int = PRIMARY_CONTEXT_K, smoke: bool = False, variant: str = "raw") -> RunConfig:
     return RunConfig(
@@ -143,6 +149,12 @@ def execute_suite(
     smoke: bool = False,
 ) -> dict[str, Any]:
     run_root = Path(run_root)
+    if not smoke and not phases:
+        raise ValueError("non-smoke execution requires an explicit phase")
+    if not smoke and phases - {"primary_loso", "day_secondary"}:
+        raise ValueError("support-budget and context-k conditions must reuse primary P2 checkpoints via post-unblinding diagnostics")
+    if smoke and phases:
+        raise ValueError("smoke execution cannot select a full-suite phase")
     rows = smoke_plan() if smoke else full_plan(phases)
     unique = deduplicate_plan(rows)
     plan_payload = {
@@ -153,7 +165,6 @@ def execute_suite(
     atomic_json(plan_payload, run_root / ("smoke_plan.json" if smoke else "frozen_run_plan.json"))
     bundle = ManyRxBundle.load(converted_root)
     results: list[dict[str, Any]] = []
-    fatal_tokens = ("split", "manifest", "leak", "overlap", "annotation", "unknown sample", "target metrics", "non-finite")
     for number, (phase_labels, config) in enumerate(unique, start=1):
         try:
             record = run_experiment(repository, converted_root, split_root, run_root, config, bundle=bundle, resume=True)
@@ -163,7 +174,7 @@ def execute_suite(
             result = {"run_number": number, "phases": phase_labels, "config_hash": config.config_hash, "status": "FAILED", "failure_reason": message}
             results.append(result)
             atomic_json({"status": "RUNNING_WITH_FAILURES", "entries": results}, run_root / "suite_status.json")
-            if any(token in message.lower() for token in fatal_tokens):
+            if is_fatal_failure(message):
                 raise
             continue
         results.append(result)

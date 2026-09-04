@@ -14,7 +14,7 @@ def stable_digest(*parts: object, namespace: str) -> str:
 
 
 def canonical_json_bytes(value: Any) -> bytes:
-    return (json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n").encode("utf-8")
+    return (json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
 
 
 def sha256_file(path: str | Path, block_size: int = 8 * 1024 * 1024) -> str:

@@ -248,6 +248,93 @@ def build_v2_splits(
     return freeze
 
 
+def build_grouped_secondary_splits(
+    converted_root: str | Path,
+    primary_split_root: str | Path,
+    output_root: str | Path,
+    hardware_by_receiver: Mapping[str, str],
+    *,
+    thresholds: SupportThresholds | None = None,
+) -> dict[str, Any]:
+    """Materialize the already-frozen 4-fold x 3-repeat secondary design."""
+
+    output_root, primary_split_root = Path(output_root), Path(primary_split_root)
+    if output_root.exists():
+        raise FileExistsError(f"grouped split freeze root exists: {output_root}")
+    output_root.mkdir(parents=True)
+    thresholds = thresholds or SupportThresholds()
+    primary = json.loads((primary_split_root / "split_freeze_manifest.json").read_text(encoding="utf-8"))
+    acquisition, annotations = load_converted_tables(converted_root)
+    joined = acquisition[["sample_id", "receiver_id", "day_id"]].merge(
+        annotations[["sample_id", "transmitter_id"]], on="sample_id", validate="one_to_one"
+    )
+    for column in ("sample_id", "receiver_id", "day_id", "transmitter_id"):
+        joined[column] = joined[column].astype(str)
+    receivers = tuple(sorted(joined["receiver_id"].unique()))
+    if set(hardware_by_receiver) != set(receivers):
+        raise ValueError("hardware map must cover grouped-secondary receivers exactly")
+    eligible = tuple(map(str, primary["common_primary_eligible_transmitter_ids"]))
+    protocols: list[dict[str, Any]] = []
+    for repeat_name, folds in sorted(primary["secondary_grouped_receiver_design"].items()):
+        repeat = int(str(repeat_name).split("_")[-1])
+        seen = [str(receiver) for fold in folds for receiver in fold]
+        if sorted(seen) != list(receivers) or len(set(seen)) != len(receivers):
+            raise ValueError(f"invalid grouped receiver assignment in {repeat_name}")
+        for fold_index, fold in enumerate(folds):
+            test_receivers = tuple(sorted(map(str, fold)))
+            candidates = sorted(set(receivers) - set(test_receivers))
+            selected: list[str] = []
+            key = f"repeat={repeat};fold={fold_index}"
+            for family in sorted(set(hardware_by_receiver.values())):
+                family_candidates = [receiver for receiver in candidates if hardware_by_receiver[receiver] == family]
+                if family_candidates:
+                    selected.append(min(family_candidates, key=lambda receiver: stable_digest(key, receiver, namespace="wisig-v2-grouped-val-family")))
+            remaining = sorted(set(candidates) - set(selected), key=lambda receiver: stable_digest(key, receiver, namespace="wisig-v2-grouped-val-fill"))
+            selected.extend(remaining[: max(0, 3 - len(selected))])
+            validation = tuple(sorted(selected[:3]))
+            assignment = pd.Series("train", index=joined.index, dtype="string")
+            assignment.loc[joined["receiver_id"].isin(validation)] = "validation"
+            assignment.loc[joined["receiver_id"].isin(test_receivers)] = "test"
+            protocol_id = f"grouped_receiver_r{repeat}_f{fold_index}"
+            protocols.append(
+                _write_protocol(
+                    output_root,
+                    protocol_id,
+                    joined,
+                    assignment,
+                    {
+                        "protocol_type": "repeated_grouped_receiver_secondary",
+                        "repeat": repeat,
+                        "fold": fold_index,
+                        "test_receivers": list(test_receivers),
+                        "test_receiver": "MULTIPLE",
+                        "test_receiver_hardware": "MULTIPLE",
+                        "validation_receivers": list(validation),
+                        "train_receivers": sorted(set(receivers) - set(test_receivers) - set(validation)),
+                        "selection_rule": "frozen balanced grouping and stable hardware-covering source validation; no model metrics",
+                    },
+                    thresholds,
+                    fixed_eligible=eligible,
+                )
+            )
+    freeze = {
+        "schema_version": 1,
+        "status": "FROZEN_BEFORE_TARGET_METRICS",
+        "protocol_type": "repeated_grouped_receiver_secondary",
+        "repeat_count": 3,
+        "folds_per_repeat": 4,
+        "protocol_count": len(protocols),
+        "models": ["P0", "P2", "P2_SHUFFLED"],
+        "seeds": [829, 1829, 2829, 3829, 4829],
+        "eligible_transmitter_ids": list(eligible),
+        "protocols": protocols,
+        "target_metrics_observed": False,
+    }
+    path = output_root / "grouped_split_freeze_manifest.json"
+    path.write_bytes(canonical_json_bytes(freeze)); freeze["sha256"] = sha256_file(path)
+    return freeze
+
+
 def load_hardware_map(path: str | Path) -> dict[str, str]:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     mapping = payload.get("receiver_hardware", payload)

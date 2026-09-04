@@ -35,10 +35,13 @@ class MethodSpec:
     batch_stat_updates: bool
     prototype_updates: bool
     extra_parameters: bool
+    source_validation_donor_support_count: int = 0
     status: str = "IMPLEMENTED"
     note: str = ""
 
     def validate(self) -> "MethodSpec":
+        if self.target_support_count < 0 or self.source_validation_donor_support_count < 0:
+            raise ValueError(f"support counts must be nonnegative for {self.code}")
         if self.target_labels and self.regime is not MethodRegime.DIAGNOSTIC_ORACLE:
             raise ValueError(f"deployable method {self.code} cannot receive target labels")
         if self.query_samples_used_as_support:
@@ -63,9 +66,9 @@ def method_registry() -> dict[str, MethodSpec]:
         MethodSpec("DG_DANN", "Source-Receiver Domain-Adversarial Training", MethodRegime.R0_PURE_INDUCTIVE, True, True, 0, False, False, False, False, False, True),
         MethodSpec("P1", "Mean Receiver-Context Conditioning", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, support, False, False, False, False, False, True),
         MethodSpec("P2", "Attentive Receiver-Context Conditioning", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, support, False, False, False, False, False, True),
-        MethodSpec("P2_SHUFFLED", "Attentive Shuffled-Receiver Support", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, support, False, False, False, False, False, True),
-        MethodSpec("P2_NULL", "Attentive Null Context", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, support, False, False, False, False, False, True),
-        MethodSpec("P2_MISMATCHED_RX", "Attentive Mismatched-Receiver Support", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, support, False, False, False, False, False, True),
+        MethodSpec("P2_SHUFFLED", "Attentive Shuffled-Receiver Support", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, 0, False, False, False, False, False, True, source_validation_donor_support_count=support),
+        MethodSpec("P2_NULL", "Attentive Null Context", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, 0, False, False, False, False, False, True),
+        MethodSpec("P2_MISMATCHED_RX", "Attentive Mismatched-Receiver Support", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, 0, False, False, False, False, False, True, source_validation_donor_support_count=support),
         MethodSpec("RX_NORM", "Target-Receiver Input Normalization", MethodRegime.R1_RECEIVER_CALIBRATION, True, True, support, False, False, False, False, False, False),
         MethodSpec("SOURCE_NORM", "Source-Only Input Normalization", MethodRegime.R0_PURE_INDUCTIVE, True, True, 0, False, False, False, False, False, False),
         MethodSpec("T3A", "Test-Time Template Adjustment", MethodRegime.R2_TEST_TIME_ADAPTATION, True, True, support, False, False, False, False, True, False),

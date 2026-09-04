@@ -25,6 +25,17 @@ class ContractTests(unittest.TestCase):
     def test_t3a_is_tta(self) -> None:
         self.assertEqual(method_registry()["T3A"].regime, MethodRegime.R2_TEST_TIME_ADAPTATION)
 
+    def test_shuffled_and_mismatched_support_is_not_target_receiver_support(self) -> None:
+        registry = method_registry()
+        for model in ("P2_SHUFFLED", "P2_MISMATCHED_RX"):
+            self.assertEqual(registry[model].target_support_count, 0)
+            self.assertEqual(registry[model].source_validation_donor_support_count, 128)
+
+    def test_null_context_has_zero_support(self) -> None:
+        spec = method_registry()["P2_NULL"]
+        self.assertEqual(spec.target_support_count, 0)
+        self.assertEqual(spec.source_validation_donor_support_count, 0)
+
     def test_p0_is_pure_inductive(self) -> None:
         self.assertEqual(method_registry()["P0"].regime, MethodRegime.R0_PURE_INDUCTIVE)
 

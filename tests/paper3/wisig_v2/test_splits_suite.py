@@ -9,7 +9,7 @@ import numpy as np
 from openew.paper3.wisig.data import ManyRxBundle
 from openew.paper3.wisig_v2.runner import remap_bundle_to_split_targets
 
-from openew.paper3.wisig_v2.splits import load_hardware_map, select_validation_receivers
+from openew.paper3.wisig_v2.splits import _balanced_receiver_groups, load_hardware_map, select_validation_receivers
 from openew.paper3.wisig_v2.suite import (
     PRIMARY_MODELS,
     context_k_plan,
@@ -18,6 +18,7 @@ from openew.paper3.wisig_v2.suite import (
     plan_summary,
     primary_loso_plan,
     support_budget_plan,
+    is_fatal_failure,
 )
 
 
@@ -98,6 +99,59 @@ class SplitSuiteTests(unittest.TestCase):
     def test_information_matrix_denies_labels(self) -> None:
         text = (REPOSITORY / "papers/paper3_wisig_methods_remediation/information_budget_matrix.md").read_text(encoding="utf-8")
         self.assertNotIn("| Yes | Yes | Yes |", text)
+
+    def test_runner_exposes_explicit_blind_flag(self) -> None:
+        text = (REPOSITORY / "scripts/paper3/wisig_v2/run_v2_suite.py").read_text(encoding="utf-8")
+        self.assertIn("--blind-target-metrics", text)
+
+    def test_full_execution_requires_an_explicit_phase(self) -> None:
+        from openew.paper3.wisig_v2.suite import execute_suite
+
+        with self.assertRaisesRegex(ValueError, "explicit phase"):
+            execute_suite(".", ".", ".", ".", phases=None, smoke=False)
+
+    def test_sensitivities_cannot_retrain_p2(self) -> None:
+        from openew.paper3.wisig_v2.suite import execute_suite
+
+        for phase in ({"support_budget"}, {"context_k"}):
+            with self.assertRaisesRegex(ValueError, "reuse primary P2 checkpoints"):
+                execute_suite(".", ".", ".", ".", phases=phase, smoke=False)
+
+    def test_grouped_secondary_has_four_equal_folds(self) -> None:
+        import pandas as pd
+        receivers = tuple(f"rx{index:02d}" for index in range(32))
+        frame = pd.DataFrame({"receiver_id": list(receivers) * 2, "transmitter_id": ["a"] * 32 + ["b"] * 32})
+        hardware = {receiver: ("A", "B", "C")[index % 3] for index, receiver in enumerate(receivers)}
+        folds = _balanced_receiver_groups(frame, receivers, hardware, repeat=0)
+        self.assertEqual([len(fold) for fold in folds], [8, 8, 8, 8])
+
+    def test_grouped_secondary_covers_each_receiver_once(self) -> None:
+        import pandas as pd
+        receivers = tuple(f"rx{index:02d}" for index in range(32))
+        frame = pd.DataFrame({"receiver_id": receivers, "transmitter_id": ["a"] * 32})
+        hardware = {receiver: "A" for receiver in receivers}
+        values = [value for fold in _balanced_receiver_groups(frame, receivers, hardware, repeat=1) for value in fold]
+        self.assertEqual(sorted(values), list(receivers)); self.assertEqual(len(values), len(set(values)))
+
+    def test_grouped_secondary_is_deterministic(self) -> None:
+        import pandas as pd
+        receivers = tuple(f"rx{index:02d}" for index in range(32))
+        frame = pd.DataFrame({"receiver_id": receivers, "transmitter_id": ["a"] * 32})
+        hardware = {receiver: "A" for receiver in receivers}
+        self.assertEqual(_balanced_receiver_groups(frame, receivers, hardware, 2), _balanced_receiver_groups(frame, receivers, hardware, 2))
+
+    def test_grouped_secondary_protocol_is_declared_secondary(self) -> None:
+        text = (REPOSITORY / "papers/paper3_wisig_methods_remediation/grouped_receiver_secondary_protocol.md").read_text(encoding="utf-8")
+        self.assertIn("secondary", text.lower()); self.assertIn("180", text)
+
+    def test_grouped_runner_requires_blind_flag(self) -> None:
+        text = (REPOSITORY / "scripts/paper3/wisig_v2/run_grouped_secondary.py").read_text(encoding="utf-8")
+        self.assertIn("--blind-target-metrics", text); self.assertNotIn("held_out_metrics", text)
+
+    def test_integrity_failures_abort_suites(self) -> None:
+        for message in ("split mismatch", "target metrics exposed", "annotation leak", "non-finite output"):
+            self.assertTrue(is_fatal_failure(message))
+        self.assertFalse(is_fatal_failure("CUDA out of memory"))
 
     def test_split_target_remap_is_contiguous(self) -> None:
         bundle = ManyRxBundle(
