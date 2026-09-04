@@ -1,6 +1,6 @@
 # Compute-budget fairness protocol
 
-Status: **FROZEN BEFORE TARGET-METRIC UNBLINDING**
+Status: **COMPLETE — PROTOCOL FROZEN BEFORE TARGET-METRIC UNBLINDING**
 
 This audit accompanies the information-budget matrix. Accuracy comparisons do not imply equal deployment cost: receiver-context and adaptation methods encode an unlabeled support bank before classifying disjoint queries.
 
@@ -51,3 +51,24 @@ and is represented in the measured standardized latency.
 ## Interpretation boundary
 
 No method is declared compute-matched merely because its parameter count is similar. Final interpretation must jointly report predictive results, target information access, support-processing cost, adaptation state, latency, and memory. Missing independent-model inference instrumentation is labeled missing rather than imputed from a favorable method.
+
+## VERIFIED RESULT
+
+The standardized seed-829 benchmark reproduced all 416 blind receiver-by-model probability archives with maximum absolute error 0.0 and did not read target labels. Median timings include support encoding or adaptation but exclude checkpoint loading.
+
+| Method | Parameters | Median latency (s) | Median throughput (samples/s) | Median peak GPU allocation (MiB) |
+|---|---:|---:|---:|---:|
+| P0 | 64,774 | 0.020513 | 227,196 | 158.79 |
+| P0-WIDE | 74,827 | 0.020529 | 222,468 | 158.94 |
+| P1 | 73,030 | 0.544335 | 8,572 | 173.04 |
+| P2 | 75,143 | 0.557081 | 8,373 | 177.20 |
+| RX-NORM | 64,774 | 0.023858 | 194,298 | 68.34 |
+| T3A | 64,774 | 0.024697 | 186,983 | 70.33 |
+
+P2's median standardized latency was approximately 27.2 times P0 and 22.6 times T3A. Its approximate full-query test cost was 22.110 billion counted operations, including 577.765 million support-encoding operations, versus 21.402 billion for T3A. These are transparent comparative estimates under the exclusions above.
+
+Across 160 P2 training records, mean total run wall time was 98.296 s, compared with 30.992 s for P0. Derived controls reuse checkpoints, so their recorded run wall time is not a substitute for source-training cost. Median label-free context-index assembly over 160 receiver-by-seed banks was 0.478204 s (range 0.403421--0.492423) across five repeats.
+
+## INTERPRETATION
+
+P2's receiver-matched support is more useful than shuffled or mismatched support to the same architecture, but its near-zero advantage over P0 is obtained at materially higher test-time cost. T3A is both more accurate and much faster under the same 128-packet target-receiver information budget. Compute therefore reinforces, rather than rescues, the `NOT_READY` publication assessment.

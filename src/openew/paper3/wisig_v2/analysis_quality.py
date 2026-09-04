@@ -18,6 +18,18 @@ UNIT_METRICS = ("macro_f1", "accuracy", "balanced_accuracy", "ece")
 EXPECTED_COMPARISONS = (*DESCRIPTIVE_COMPARISONS, "P2_MINUS_BEST_SOURCE_DG")
 
 
+def json_compatible(value: Any) -> Any:
+    """Convert NumPy scalar audit values to canonical-JSON primitives."""
+
+    if isinstance(value, dict):
+        return {str(key): json_compatible(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_compatible(item) for item in value]
+    if isinstance(value, np.generic):
+        return value.item()
+    return value
+
+
 def finite_unit_interval(frame: pd.DataFrame, columns: Sequence[str]) -> bool:
     for column in columns:
         if column not in frame:
@@ -299,6 +311,7 @@ def validate_analysis_outputs(
         "inferential_grain": "one five-seed-averaged paired difference per held-out receiver",
         "packet_level_inference_used": False,
     }
+    payload = json_compatible(payload)
     destination = Path(destination); destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_bytes(canonical_json_bytes(payload))
     if payload["status"] != "PASS":

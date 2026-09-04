@@ -9,11 +9,16 @@ import numpy as np
 import pandas as pd
 
 from openew.paper3.wisig_v2.analysis import DESCRIPTIVE_COMPARISONS, PRIMARY_COMPARISONS
-from openew.paper3.wisig_v2.analysis_quality import boolean_column_equals, day_receiver_detail_contract, finite_unit_interval, frame_contract, inference_benchmark_contract, sensitivity_contract, unique_key, validate_analysis_outputs
+from openew.paper3.wisig_v2.analysis_quality import boolean_column_equals, day_receiver_detail_contract, finite_unit_interval, frame_contract, inference_benchmark_contract, json_compatible, sensitivity_contract, unique_key, validate_analysis_outputs
 from openew.paper3.wisig_v2.suite import PRIMARY_MODELS
 
 
 class AnalysisQualityTests(unittest.TestCase):
+    def test_json_compatible_normalizes_numpy_scalars(self) -> None:
+        value = json_compatible({"ok": np.bool_(True), "count": np.int64(2), "nested": [np.float64(0.5)]})
+        self.assertEqual(value, {"ok": True, "count": 2, "nested": [0.5]})
+        self.assertEqual(json.loads(json.dumps(value, allow_nan=False)), value)
+
     def test_unit_interval_accepts_bounds(self) -> None:
         self.assertTrue(finite_unit_interval(pd.DataFrame({"metric": [0.0, 0.5, 1.0]}), ["metric"]))
 

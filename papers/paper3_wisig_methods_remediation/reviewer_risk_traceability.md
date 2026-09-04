@@ -1,6 +1,6 @@
 # Reviewer-risk traceability for WiSig V2
 
-Status: **FROZEN BEFORE TARGET-METRIC UNBLINDING**
+Status: **COMPLETE — DESIGN FROZEN BEFORE TARGET-METRIC UNBLINDING**
 
 This matrix records how V2 addresses the adversarial methods review of PR #84. It is a design trace, not a claim that the eventual result is positive.
 
@@ -24,3 +24,19 @@ This matrix records how V2 addresses the adversarial methods review of PR #84. I
 ## Interpretation boundary
 
 Regardless of performance, V2 supports no temporal, dynamic, graph, hypergraph, or neuro-symbolic claim. A positive result would concern bounded test-time receiver-context conditioning under unseen-receiver shift. A negative or attenuated result remains valid evidence about PR #84's sensitivity to test-time information and support composition.
+
+## Post-unblinding disposition
+
+| Review issue | Verified V2 outcome | Residual reviewer risk |
+|---|---|---|
+| Information-regime conflation | R0, R1, and R2 remained separate in code, tables, and reporting. P2 is described only as test-time receiver-context conditioning. | The unseen-receiver protocol is a domain-shift evaluation, not evidence that P2 is a source-only DG method. |
+| Query-query coupling | All 2,080 primary records passed disjoint 128-support/query verification; no query entered another query's support. | The support pool is still a constructed calibration abstraction rather than a verified acquisition episode. |
+| Target-composition confounding | All natural banks contained six classes; same-class-excluded support retained full coverage and exceeded P0 by +0.020237, while same-class-only and transmitter-pure support were harmful. | Oracle conditions are label-dependent, post-hoc, and nondeployable. |
+| Missing same-information TTA | T3A used the identical support bank and reached 0.833692 macro-F1 versus P2 at 0.806726. | No faithful additional RF-specific baseline was implemented where source/code details were insufficient. |
+| Packet-level inference | Five seeds were averaged within each of 32 receivers before the fixed receiver bootstrap/sign flip. | Hardware-family sensitivity has only three clusters and remains secondary. |
+
+The frozen decision returned `CONDITIONAL_GO`, but publication readiness is `NOT_READY`: P2-minus-P0 was +0.001047 with an interval crossing zero, only 15/32 receiver differences were positive, only one hardware-family mean was positive, and P2 was 0.026966 below T3A.
+
+## Recovery trace
+
+The power-loss recovery did not rerun any blinded condition. A final read-only reconciliation reproduced the pre-unblinding primary, day, and grouped prediction/checkpoint/history manifest hashes. The immutable pre-unblinding freeze was created from clean commit `da07219a018d4c10eb365e9cd2a847fe59520eda`, followed by one primary unblinding event at `2026-09-04T12:49:29.489216+00:00`.
