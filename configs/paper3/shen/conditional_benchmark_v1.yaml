@@ -1,0 +1,26 @@
+study: shen_bounded_unlabeled_receiver_support_benchmark
+execution_status: not_authorized
+dataset_doi: 10.21227/D6VX-R538
+paper_doi: 10.1109/TMC.2023.3340039
+receiver_count_expected_but_payload_unverified: 20
+transmitter_count_expected_but_payload_unverified: 10
+input_shape: [256, 2]
+support_budget: 128
+context_k: 32
+seeds: [829, 1829, 2829, 3829, 4829]
+methods: [P0, T3A, P2, P2-SHUFFLED, P0-WIDE, P2-NULL, P2-MISMATCHED-RX]
+source_validation_receivers: 3
+bootstrap_replicates: 10000
+sign_flip_replicates: 100000
+holm_family: [T3A-P0, P2-P0, P2-T3A, P2-P2-SHUFFLED]
+gates:
+  license_and_provenance: fail_conflicting_official_metadata
+  official_access: fail_unavailable_author_host
+  raw_iq_256_conversion: unresolved
+  target_proxy: not_run_no_payload
+  split_integrity: not_run_no_payload
+  method_freeze: pass_pr86_ledger
+  analysis_and_blinding: design_frozen
+external_root: /mnt/d/openew_sa_data/paper3/shen
+payload_download_authorized: false
+training_authorized: false
