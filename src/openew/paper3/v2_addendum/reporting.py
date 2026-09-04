@@ -122,7 +122,7 @@ def build_addendum_analysis(
     t3a_budget = pd.read_csv(root / "t3a_support_budget_receiver_seed_results.csv")
     p2_budget = pd.read_csv(frozen / "support_budget_results.csv").assign(method="P2")
     t3a_budget = t3a_budget.assign(method="T3A")
-    budgets = pd.concat([p2_budget[t3a_budget.columns], t3a_budget], ignore_index=True)
+    budgets = pd.concat([p2_budget, t3a_budget], ignore_index=True, sort=False)
     composition_tta = pd.read_csv(root / "tta_rxnorm_composition_receiver_seed_results.csv")
     p2_oracle = pd.read_csv(frozen / "composition_oracle_results.csv").assign(method="P2", evidence_category="ORACLE_DIAGNOSTIC")
     common = [value for value in composition_tta.columns if value in p2_oracle.columns]
@@ -138,7 +138,8 @@ def build_addendum_analysis(
     hardware.to_csv(root / "analysis_hardware_family.csv", index=False, lineterminator="\n")
 
     query_summary = _condition_summary(query, group="condition")
-    budget_summary = _condition_summary(budgets.rename(columns={"support_budget":"condition"}), group="condition")
+    budget_receiver = budgets.groupby(["method", "support_budget", "receiver_id"], as_index=False).macro_f1.mean()
+    budget_summary = budget_receiver.groupby(["method", "support_budget"]).macro_f1.agg(["count", "mean", "std", "median", "min", "max"]).reset_index()
     composition_summary = composition.groupby(["method", "condition", "receiver_id"], as_index=False).macro_f1.mean().groupby(["method", "condition"]).macro_f1.agg(["count","mean","std","median","min","max"]).reset_index()
     shuffled_summary = _condition_summary(shuffled, group="condition")
     query_summary.to_csv(root / "summary_query_coupling.csv", index=False, lineterminator="\n")
