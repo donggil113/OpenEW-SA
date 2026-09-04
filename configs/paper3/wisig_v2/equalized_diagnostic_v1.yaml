@@ -1,0 +1,13 @@
+schema_version: 1
+status: FROZEN_BEFORE_TARGET_METRICS
+source: official WiSig ManyRx compact pickle
+equalized_index: 1
+conversion_passes: 2
+protocol: 32 receiver LOSO
+models: [P0, P2, P2_SHUFFLED]
+seeds: [829]
+support_budget: 128
+context_k: 32
+target_blinding: true
+primary: false
+interpretation: RF preprocessing diagnostic only

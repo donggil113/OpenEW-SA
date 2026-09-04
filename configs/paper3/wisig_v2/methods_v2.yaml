@@ -1,0 +1,31 @@
+schema_version: 2
+status: FROZEN_BEFORE_TARGET_METRICS
+seeds: [829, 1829, 2829, 3829, 4829]
+primary_support_budget: 128
+primary_context_k: 32
+support_budgets: [16, 32, 64, 128, 256]
+context_k_values: [8, 16, 32, 64]
+models:
+  r0: [P0, P0_WIDE, DG_CORAL, DG_GROUPDRO, DG_DANN, SOURCE_NORM]
+  r1: [P1, P2, P2_SHUFFLED, P2_NULL, P2_MISMATCHED_RX, RX_NORM]
+  r2: [T3A]
+not_applicable: [ADABN, TENT]
+optimizer:
+  name: AdamW
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  max_epochs: 30
+  patience: 8
+  sample_batch_size: 1024
+  episode_node_budget: 1056
+losses:
+  coral_weight: 0.1
+  groupdro_eta: 0.01
+  dann_reversal: 0.1
+target_blinding: true
+primary_evaluation_unit: receiver
+statistics:
+  bootstrap_replicates: 10000
+  sign_flip_permutations: 100000
+  rng_seed: 20260903
+  multiplicity: Holm
