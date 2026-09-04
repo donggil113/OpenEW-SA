@@ -116,4 +116,4 @@ The external analysis root is `/mnt/d/openew_sa_data/paper3/wisig_v2/analysis/co
 
 Final test status: **PASS** — V2 304/304; root Paper 3 6/6; static-relational 19/19; metadata 84/84; dataset qualification 93/93; PR #84 WiSig 152/152; Paper 2 17/17. Python `compileall` and `git diff --check` passed. The legacy suites were invoked from their own discovery roots because a monolithic `tests/paper3` discovery does not satisfy their historical local-import layout.
 
-Final analysis-manifest SHA-256: `a7489420a82e04bf4a14e34e2056f1428e235b2803c703a24637d7616a9fe796` (64 files, 6,704,149 bytes).
+Final analysis-manifest SHA-256: `10ecae25fec123be839b11ea9c44334e41877dfa1eb261665c4d437870172d43` (64 files, 6,704,293 bytes).
