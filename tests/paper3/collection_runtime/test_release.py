@@ -67,3 +67,7 @@ def test_real_process_exit_recovery(tmp_path):
     assert result.returncode==73
     audit=Collector(root).recover()
     assert audit["status"]=="PASS" and audit["actions"]==["replayed_revision_1"]
+
+def test_dry_run_counts_durable_revisions(tmp_path):
+    result=dry_campaign(tmp_path/"dry",events=5)
+    assert result["events"]==Collector(tmp_path/"dry"/"campaign").status()["revision"]==14

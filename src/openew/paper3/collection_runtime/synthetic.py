@@ -55,4 +55,4 @@ def dry_campaign(root,*,events=1000):
     c.capture_register(capture(root/"incoming",n=events,session_n=1,seconds=events+6))
     c.session_close({"session_uuid":uid("session-1"),"end_utc":stamp(events+7),"sample_counter_end":32})
     audit=c.validate(); c.freeze_day("2026-09-01"); c.campaign_close()
-    return {**audit,"events":events+8,"hardware_validated":False,"synthetic":True}
+    return {**c.validate(),"events":c.status()["revision"],"hardware_validated":False,"synthetic":True}
