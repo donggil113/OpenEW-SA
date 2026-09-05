@@ -1,0 +1,31 @@
+study: wisig_v2_posthoc_mechanism_addendum
+status: posthoc_frozen_before_execution
+prior_merge_sha: 48cec06645736bd45c455a64841f3f50e0368b40
+seeds: [829, 1829, 2829, 3829, 4829]
+receiver_count: 32
+primary_support_budget: 128
+primary_context_k: 32
+support_budgets: [16, 32, 64, 128, 256]
+bootstrap_replicates: 10000
+bootstrap_seed: 20260903
+diagnostics:
+  query_coupling:
+    modes: [disjoint, query_coupled_chunk, full_receiver_partition]
+    retrain: false
+  shuffled_source_training:
+    train_context: shuffled_receiver
+    eval_contexts: [natural, shuffled, null]
+  composition:
+    methods: [P2, T3A, RX-NORM]
+    supports: [natural, same_class_excluded, same_class_only, transmitter_pure]
+    oracle_supports: [same_class_excluded, same_class_only, transmitter_pure]
+  equalized_intersection:
+    methods: [P0, T3A, P2]
+    min_receiver_query_coverage: 0.80
+    required_receivers: 32
+    required_classes: 6
+    required_support: 128
+  support_budget:
+    methods: [T3A, P2]
+output_root: /mnt/d/openew_sa_data/paper3/v2_addendum
+frozen_v2_root: /mnt/d/openew_sa_data/paper3/wisig_v2
