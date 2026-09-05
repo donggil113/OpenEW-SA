@@ -1,0 +1,26 @@
+\documentclass[10pt,landscape]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=0.65in]{geometry}
+\usepackage{graphicx,booktabs,longtable,array,microtype,url}
+\usepackage[hidelinks]{hyperref}
+\emergencystretch=1em
+\title{Receiver Adaptation Under Unseen-Receiver Shift\\Supplementary Evidence v0}
+\author{OpenEW-SA internal-review draft}\date{}
+\begin{document}\maketitle
+\section{Scope and Reading Rules}
+All rows derive from the frozen six-class WiSig V2 receiver-LOSO protocol. Receivers receive equal weight after averaging five seeds. The evidence CSV retains secondary metrics and other controls. The manuscript distinguishes source-only (R0), unlabeled support (R1), and labeled-support oracle (R2). No packet-level inferential resampling is performed. Later T3A inference is not independent confirmation because prior WiSig findings were known.
+\section{Hardware-Family Descriptions}
+\setcounter{figure}{6}
+\begin{figure}[ht]\centering\includegraphics[width=.72\textwidth]{figures/fig07_hardware}\caption{Descriptive hardware-family differences; no family-level inferential claim.}\end{figure}
+T3A's mean improvement appears in each observed family; P2 differences are smaller and mixed. Three families cannot establish population-level family generality.
+\section{Evidence Progression}
+\begin{figure}[ht]\centering\includegraphics[width=.85\textwidth]{figures/fig08_progression}\caption{Evidence progression, not independent cross-dataset replication.}\end{figure}
+These stages are not independent replications. Initial and V2 class sets differ. Query-coupling inference cannot reconstruct every difference between studies.
+\section{Post-Hoc Mechanism Findings}
+The addendum CSVs retain natural, query-coupled, full-partition context, shuffled-context training, oracle composition, and all support budgets. Same-class-excluded, same-class-only, and transmitter-pure support is label-dependent and non-deployable. The condition NULL remains a string, not a missing value. Equalized matched-ID analysis was ineligible; no performance is manufactured.
+\section{Probability and Compute Caveats}
+ECE, NLL, and entropy are separate, target-untuned diagnostics. Compute records distinguish source training from reused-checkpoint evaluation; missing isolated components remain missing.
+\section{Full Receiver--Seed Lookup}
+\input{supplementary/receiver_seed_table}
+\end{document}

@@ -1,0 +1,117 @@
+{
+  "additional_passing_subtests": 7,
+  "all_paper3": 1449,
+  "atomic_small_manifest_ms_mean": 6.814033189875772,
+  "base_test_count": 1466,
+  "checksum_mib_per_second": 380.6228069299678,
+  "csv_seconds": 0.015921156998956576,
+  "durable_state_transitions": 2036,
+  "fresh_clone_passed": true,
+  "fuzz_cases": 10000,
+  "hardware_validated": false,
+  "junit": {
+    "path": "/mnt/d/openew_sa_data/paper3/manuscript_v1/final_fresh_clone_tests.xml",
+    "sha256": "2be2d5f2e9777d094b7290b929c18fe058d13d728d4b53bb37f66c5dda99c602"
+  },
+  "note": "Initial event counter omitted day-freeze commits; corrected counter reads persisted revision. Earlier validation outputs preserved; consolidation_v3 is authoritative.",
+  "parquet_seconds": 0.032338791992515326,
+  "pdfs": {
+    "collection_checklist": {
+      "all_fonts_embedded": true,
+      "overfull": 0,
+      "page_size": "612 x 792 pts (letter)",
+      "pages": 1,
+      "sha256": "6444546e9856d546792794949b5da657ff0de872a52853f8c294a841a8fb4b66",
+      "type3_fonts": 0,
+      "undefined": 0,
+      "underfull": 0
+    },
+    "main": {
+      "all_fonts_embedded": true,
+      "overfull": 0,
+      "page_size": "612 x 792 pts (letter)",
+      "pages": 9,
+      "sha256": "8397ba4a338dda852625f8f0d87b45223b37022035c654c0e94a3b709bf651d4",
+      "type3_fonts": 0,
+      "undefined": 0,
+      "underfull": 1
+    },
+    "supplementary": {
+      "all_fonts_embedded": true,
+      "overfull": 0,
+      "page_size": "792 x 612 pts (letter)",
+      "pages": 6,
+      "sha256": "222cddfeddcedf2aa26153a5aff58554ca1b4739c1fb168bb43fbba861328738",
+      "type3_fonts": 0,
+      "undefined": 0,
+      "underfull": 0
+    }
+  },
+  "scientific_training_runs": 0,
+  "shen_mock": {
+    "byte_identical": true,
+    "hardware_families": 6,
+    "passes": 2,
+    "receivers": 20,
+    "rows": 800,
+    "scientific_authorization": false,
+    "status": "PASS",
+    "synthetic": true
+  },
+  "small_tier": {
+    "captures": 64,
+    "days": 1,
+    "events": 150,
+    "hardware_families": 4,
+    "hardware_validated": false,
+    "receivers": 8,
+    "recovery_seconds": 0.5024876079987735,
+    "sites": 2,
+    "status": "PASS",
+    "synthetic": true,
+    "training_authorized": false,
+    "validation_seconds": 0.9237625550013036
+  },
+  "source_reports": {
+    "converted": {
+      "path": "/mnt/d/openew_sa_data/paper3/manuscript_v1/frozen_conversion_secondary_audit.json",
+      "sha256": "7ab85437b8a579655dc57c5647d44abb1037ff0e6241a6cb997ae1daaecf24e5"
+    },
+    "fresh": {
+      "path": "/mnt/d/openew_sa_data/paper3/collection_runtime_validation/final_fresh_clone/release_validation.json",
+      "sha256": "e17eaf1fdc70af573eb3b60ab902c5ac1e23cfabd46997acf1936741a15b2c44"
+    },
+    "frozen": {
+      "path": "/mnt/d/openew_sa_data/paper3/manuscript_v1/final_frozen_source_audit.json",
+      "sha256": "64eb14971e49e5459feabc7bbec6862da8943800a240d02e8af6e0415731a4fc"
+    },
+    "fuzz": {
+      "path": "/mnt/d/openew_sa_data/paper3/collection_runtime_validation/consolidation_v3/fuzz_report.json",
+      "sha256": "341c097eaffeb01edc933c8a57d801a08a3d450a26f9ed6cb6cb1706f61c5f34"
+    },
+    "manuscript": {
+      "path": "/mnt/d/openew_sa_data/paper3/manuscript_v1/fresh_clone_manuscript_audit.json",
+      "sha256": "65f609671b2617e78d48ebea2e46448a2111dc1da6f0dfa95279d433679f1c5a"
+    },
+    "shen": {
+      "path": "/mnt/d/openew_sa_data/paper3/collection_runtime_validation/consolidation_v3/shen_mock_conversion.json",
+      "sha256": "f38a189193167b88d48c5320580bfe409b6d574a76c20b61a333b006d2302ef6"
+    },
+    "small": {
+      "path": "/mnt/d/openew_sa_data/paper3/collection_runtime_validation/small_tier_v1/small_tier_validation.json",
+      "sha256": "cff129862d10565347418d094317b48f69b9d8f570eaf4ae5b8ceaa5917a4fd9"
+    },
+    "stress": {
+      "path": "/mnt/d/openew_sa_data/paper3/collection_runtime_validation/consolidation_v3/release_validation.json",
+      "sha256": "ebeac938ad8d77726211acb98ec52197733efdbc40f85e64fc150447ceee5a36"
+    }
+  },
+  "status": "PASS",
+  "stress_seconds": 269.8798141050065,
+  "tested_code_commit": "734b11e9c0972199a41ce1b8ec5df6e0f4f062c9",
+  "tests": {
+    "existing_paper3": 1093,
+    "new": 356,
+    "paper2": 17
+  }
+}

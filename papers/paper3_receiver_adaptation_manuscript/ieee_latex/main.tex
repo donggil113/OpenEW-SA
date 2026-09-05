@@ -1,0 +1,23 @@
+\documentclass[journal]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,graphicx,booktabs,tabularx,array,microtype,url}
+\usepackage[hidelinks]{hyperref}
+\emergencystretch=1em
+\graphicspath{{figures/}}
+\input{numbers}
+\title{Receiver Adaptation for RF Fingerprinting Under Unseen-Receiver Shift}
+\author{OpenEW-SA Research Manuscript\\Internal-review draft v0: authors and affiliations to be confirmed}
+\begin{document}\maketitle
+\input{sections/abstract}
+\begin{IEEEkeywords}Radio frequency fingerprinting, receiver shift, test-time adaptation, prototype adaptation, information-matched evaluation.\end{IEEEkeywords}
+\input{sections/introduction}
+\input{sections/related}
+\input{sections/methods}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/limitations}
+\input{sections/conclusion}
+\section*{Data and Artifact Availability}
+WiSig and ORBIT are attributed to their original creators~\cite{wisig,orbit}. WiSig RF payloads are subject to CC BY-NC-SA 4.0 and are not redistributed in this manuscript package. Code, frozen protocol definitions, hashes, small result summaries, and rendering sources accompany this draft. Shen payload access remains blocked; no Shen result or prospective RF collection is reported. Companion software validation uses synthetic fixtures only.
+\bibliographystyle{IEEEtran}\bibliography{references}
+\end{document}
