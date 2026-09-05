@@ -35,6 +35,8 @@ SMALL, MEDIUM, and FULL synthetic trees pass schema, episode, proxy/path, annota
 - Shen mock: mock/shen_contract_v1/
 - Collection dry runs: mock/collection_small_v1, collection_medium_v1, and collection_full_v1
 
+The sealed external analysis package contains 32 files. Its canonical package SHA-256 is `0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431`; the `analysis_manifest.json` file SHA-256 is `4ddd9026316ca89986a0946d9a869fc347ffaab26579fe81b365ecc707002de9`.
+
 ## Integrity and limitations
 
 Paper 1, Paper 2, PR #80–#87 packages, WiSig raw/conversion/splits, and frozen V2 predictions/analysis were not edited. Target metrics were hidden until the exact new grid completed. There was no P2 tuning, receiver/seed removal, target-driven baseline addition, or external-data experiment.
