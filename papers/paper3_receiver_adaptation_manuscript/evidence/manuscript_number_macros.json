@@ -1,0 +1,387 @@
+{
+  "sources": {
+    "NDGCORALAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "DG_CORAL"
+      }
+    },
+    "NDGCORALEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "DG_CORAL"
+      }
+    },
+    "NDGCORALMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "DG_CORAL"
+      }
+    },
+    "NDGDANNAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "DG_DANN"
+      }
+    },
+    "NDGDANNEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "DG_DANN"
+      }
+    },
+    "NDGDANNMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "DG_DANN"
+      }
+    },
+    "NDGGROUPDROAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "DG_GROUPDRO"
+      }
+    },
+    "NDGGROUPDROEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "DG_GROUPDRO"
+      }
+    },
+    "NDGGROUPDROMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "DG_GROUPDRO"
+      }
+    },
+    "NPOneAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "P1"
+      }
+    },
+    "NPOneEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "P1"
+      }
+    },
+    "NPOneMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "P1"
+      }
+    },
+    "NPTwoAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "P2"
+      }
+    },
+    "NPTwoEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "P2"
+      }
+    },
+    "NPTwoMISMATCHEDRXAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "P2_MISMATCHED_RX"
+      }
+    },
+    "NPTwoMISMATCHEDRXEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "P2_MISMATCHED_RX"
+      }
+    },
+    "NPTwoMISMATCHEDRXMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "P2_MISMATCHED_RX"
+      }
+    },
+    "NPTwoMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "P2"
+      }
+    },
+    "NPTwoNULLAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "P2_NULL"
+      }
+    },
+    "NPTwoNULLEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "P2_NULL"
+      }
+    },
+    "NPTwoNULLMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "P2_NULL"
+      }
+    },
+    "NPTwoSHUFFLEDAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "P2_SHUFFLED"
+      }
+    },
+    "NPTwoSHUFFLEDEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "P2_SHUFFLED"
+      }
+    },
+    "NPTwoSHUFFLEDMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "P2_SHUFFLED"
+      }
+    },
+    "NPZeroAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "P0"
+      }
+    },
+    "NPZeroEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "P0"
+      }
+    },
+    "NPZeroMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "P0"
+      }
+    },
+    "NPZeroWIDEAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "P0_WIDE"
+      }
+    },
+    "NPZeroWIDEEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "P0_WIDE"
+      }
+    },
+    "NPZeroWIDEMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "P0_WIDE"
+      }
+    },
+    "NRXNORMAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "RX_NORM"
+      }
+    },
+    "NRXNORMEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "RX_NORM"
+      }
+    },
+    "NRXNORMMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "RX_NORM"
+      }
+    },
+    "NSUPFTOneTwoEightAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "SUP_FT_128"
+      }
+    },
+    "NSUPFTOneTwoEightEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "SUP_FT_128"
+      }
+    },
+    "NSUPFTOneTwoEightMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "SUP_FT_128"
+      }
+    },
+    "NTThreeAAccuracy": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "accuracy",
+        "model": "T3A"
+      }
+    },
+    "NTThreeAEce": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "ece",
+        "model": "T3A"
+      }
+    },
+    "NTThreeAMacroFOne": {
+      "column": "mean",
+      "file": "benchmark_summary.csv",
+      "key": {
+        "metric": "macro_f1",
+        "model": "T3A"
+      }
+    },
+    "PGain": {
+      "calculation": "frozen value or difference of receiver means",
+      "file": "benchmark_summary.csv",
+      "key": "PGain"
+    },
+    "PvsT": {
+      "calculation": "frozen value or difference of receiver means",
+      "file": "benchmark_summary.csv",
+      "key": "PvsT"
+    },
+    "TGain": {
+      "calculation": "frozen value or difference of receiver means",
+      "file": "receiver_level_inference.json",
+      "key": "TGain"
+    },
+    "TLower": {
+      "calculation": "frozen value or difference of receiver means",
+      "file": "receiver_level_inference.json",
+      "key": "TLower"
+    },
+    "TUpper": {
+      "calculation": "frozen value or difference of receiver means",
+      "file": "receiver_level_inference.json",
+      "key": "TUpper"
+    }
+  },
+  "values": {
+    "NDGCORALAccuracy": "0.818802",
+    "NDGCORALEce": "0.085345",
+    "NDGCORALMacroFOne": "0.805071",
+    "NDGDANNAccuracy": "0.814236",
+    "NDGDANNEce": "0.082895",
+    "NDGDANNMacroFOne": "0.800926",
+    "NDGGROUPDROAccuracy": "0.777513",
+    "NDGGROUPDROEce": "0.084448",
+    "NDGGROUPDROMacroFOne": "0.761754",
+    "NPOneAccuracy": "0.821183",
+    "NPOneEce": "0.103895",
+    "NPOneMacroFOne": "0.809384",
+    "NPTwoAccuracy": "0.817941",
+    "NPTwoEce": "0.108310",
+    "NPTwoMISMATCHEDRXAccuracy": "0.802328",
+    "NPTwoMISMATCHEDRXEce": "0.122491",
+    "NPTwoMISMATCHEDRXMacroFOne": "0.787088",
+    "NPTwoMacroFOne": "0.806726",
+    "NPTwoNULLAccuracy": "0.797957",
+    "NPTwoNULLEce": "0.106905",
+    "NPTwoNULLMacroFOne": "0.782610",
+    "NPTwoSHUFFLEDAccuracy": "0.803866",
+    "NPTwoSHUFFLEDEce": "0.121645",
+    "NPTwoSHUFFLEDMacroFOne": "0.788362",
+    "NPZeroAccuracy": "0.818769",
+    "NPZeroEce": "0.088851",
+    "NPZeroMacroFOne": "0.805679",
+    "NPZeroWIDEAccuracy": "0.815770",
+    "NPZeroWIDEEce": "0.099712",
+    "NPZeroWIDEMacroFOne": "0.801535",
+    "NRXNORMAccuracy": "0.814900",
+    "NRXNORMEce": "0.091891",
+    "NRXNORMMacroFOne": "0.800769",
+    "NSUPFTOneTwoEightAccuracy": "0.845057",
+    "NSUPFTOneTwoEightEce": "0.064833",
+    "NSUPFTOneTwoEightMacroFOne": "0.838081",
+    "NTThreeAAccuracy": "0.842459",
+    "NTThreeAEce": "0.102950",
+    "NTThreeAMacroFOne": "0.833692",
+    "PGain": "0.001047",
+    "PvsT": "-0.026966",
+    "TGain": "0.028014",
+    "TLower": "0.022011",
+    "TUpper": "0.034661"
+  }
+}

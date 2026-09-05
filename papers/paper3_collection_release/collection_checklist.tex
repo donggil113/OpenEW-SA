@@ -1,0 +1,41 @@
+\documentclass[10pt]{article}
+\usepackage[T1]{fontenc}\usepackage{lmodern}
+\usepackage[margin=0.7in]{geometry}\usepackage{amssymb}
+\newcommand{\checkitem}[1]{\noindent$\square$\quad #1\par\smallskip}
+\begin{document}
+\begin{center}\Large Receiver Collection: Operator Checklist\\
+\normalsize Software-only release; supervised hardware validation required\end{center}
+\noindent Campaign/site: \hrulefill\quad Operator pseudonym: \hrulefill
+
+\subsection*{Before campaign}
+\checkitem{Operating, institutional, privacy and dataset permissions confirmed.}
+\checkitem{Tier inventory verified: physical receivers, families, sites and days.}
+\checkitem{Disk reserve and independent backup checked; no sole-copy deletion.}
+\checkitem{Clock authority, uncertainty and reset semantics measured and recorded.}
+\checkitem{Frequency, sample rate, format, antenna and driver verified.}
+
+\subsection*{Acquisition}
+\checkitem{Campaign initialized; each approved receiver UUID registered.}
+\checkitem{Target-neutral CALIBRATION session opened before collection.}
+\checkitem{Mixed activity follows fixed acquisition design, not target-selected support.}
+\checkitem{Opaque UUID filenames only; no class/transmitter folders.}
+\checkitem{External SDR file closed; counters, UTC and size verified before register.}
+\checkitem{Registration JSON/exit code and capture checksums checked.}
+\checkitem{Calibration closed; physically separate QUERY session opened and closed.}
+
+\subsection*{Annotation and end-of-day freeze}
+\checkitem{Labels recorded separately with source and annotation UTC.}
+\checkitem{Mix QA includes target-pure/incomplete failures; no boundary rebuilding.}
+\checkitem{Validate PASS; no partial/orphan file or unclosed session.}
+\checkitem{Create-once day freeze completed; backup SHA256 compared.}
+\checkitem{Campaign status and remaining approved receivers/roles reviewed.}
+
+\subsection*{Failure or power loss}
+\checkitem{Stop writes; preserve original, partial and journal evidence.}
+\checkitem{Run recover; read every issue; never promote partial captures.}
+\checkitem{Quarantine/recapture under new IDs with operator incident record.}
+\checkitem{Human physical/provenance review before any scientific training gate.}
+
+\noindent Day/freeze hash: \hrulefill\\[8pt]
+Reviewer / unresolved issue: \hrulefill
+\end{document}

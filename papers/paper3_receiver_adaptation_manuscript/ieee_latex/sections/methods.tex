@@ -1,0 +1,51 @@
+\section{Data, Protocol, and Frozen Methods}
+\subsection{Data and Target Definition}
+We use the non-equalized ManyRx compact WiSig artifact. The converted artifact contains 256 complex I/Q samples per packet. Conversion creates opaque sample identifiers, separates acquisition fields from transmitter annotations, and quarantines target-bearing source paths. The V2 class-support gate retains six transmitter identities with adequate support across the evaluated receivers. It does not use target performance to select classes. Acquisition day is a coarse domain or diagnostic variable, never a context feature or a timestamp. Packet order is nested within transmitter-specific captures and provides no valid temporal interpretation.
+
+P0 and the context models use per-packet root-mean-square scaling of the two real I/Q channels, with the frozen numerical safeguard for near-zero power. SOURCE-NORM and RX-NORM are separate normalization conditions; they must not be conflated with P0's preprocessing. Conversion, split, method, checkpoint, and prediction hashes are recorded in the frozen packages. This manuscript consumes their immutable summaries.
+\input{tables/protocol}
+
+\subsection{Receiver Holdout and Information Regimes}
+For each physical receiver, one receiver is held out for testing, three other receivers form deterministic source validation, and the remainder form source training. Receiver identities do not cross these roles within a protocol. Validation receiver selection uses metadata and class support, not target metrics. Five seeds are retained without replacement.
+
+Within each held-out receiver, stable hashing of opaque sample IDs, receiver ID, and seed selects a support bank. The remaining eligible packets form the query pool. Support labels are not used for bank selection. A query cannot become another query's support. P1/P2 select peers deterministically from the bank using the query identifier, with no transmitter labels and no receiver-value embedding. The bank is an unordered benchmark construct, not a verified physical session.
+
+\begin{figure*}[t]\centering\includegraphics[width=.98\textwidth]{fig01_design}
+\caption{Information access in the primary receiver-LOSO design. Support and query samples are disjoint; the acquisition itself did not create these calibration episodes.}\label{fig:design}\end{figure*}
+Figure~\ref{fig:design} distinguishes evaluation domains from target information access. R0 methods use source data and the individual query only. R1 methods additionally receive unlabeled receiver support. The supervised R2 oracle receives labels for the same support packets and is not a deployable, information-matched comparator (Table~\ref{tab:info}).
+\input{tables/information}
+
+\subsection{Independent Encoder and Source-Only Objectives}
+The shared residual one-dimensional CNN maps I/Q to a 64-dimensional embedding. A two-channel convolution first produces 16 channels. Residual blocks progress through 32 and 64 channels, followed by global average pooling. GroupNorm and ReLU are used throughout. P0 has a linear transmitter head. P0-WIDE replaces the head with a wider multilayer classifier to approximate P2's parameter count, without receiving support.
+
+Source-only CORAL-style training penalizes covariance differences between source receiver features. GroupDRO updates source-group weights to emphasize source receiver losses. DANN adds a source receiver discriminator behind gradient reversal; receiver IDs supervise that discriminator but are not query features. The frozen coefficients, implementation hashes, and source-validation policy are retained. These baselines are not retuned during consolidation.
+
+\subsection{Bounded T3A and Receiver Normalization}
+Let $z=f(x)$ be an embedding, $W$ the source linear classifier, and $S$ the unlabeled receiver support. T3A initializes its support list with the rows of $W$, appends $f(S)$, and obtains pseudo-labels and entropies from the source classifier. For each predicted class it retains the prescribed lowest-entropy items. The retained embeddings are individually normalized, summed by pseudo-class, and the resulting prototype columns are normalized. Query scores are the dot product of query embeddings and these columns. The frozen implementation does not additionally normalize query embeddings at this final step. Softmax scores are used for probability diagnostics without target-temperature fitting.
+
+The entropy-filter size is selected from a fixed source-validation grid. T3A updates no backbone parameter and sees no query packet during adjustment. RX-NORM instead estimates I/Q means and RMS scale from the same receiver support bank and applies them using the source-normalized model. It updates neither classifier weights nor prototypes. SOURCE-NORM retains source-only statistics.
+
+\subsection{Mean and Attentive Context Conditioning}
+P1 averages peer embeddings. P2 assigns each peer a scalar score using a shared multilayer scoring function, applies a masked softmax, and forms a weighted sum. The anchor and context embeddings are concatenated and classified by a small fusion network. The scorer is permutation invariant over the support set and is not conditioned on the anchor embedding. There is no position encoding, receiver-value embedding, transmitter grouping, or time signal.
+
+During source training, each receiver episode supplies anchors and other episode members as peers, excluding self. At test time, peers come only from the disjoint bank. P2-SHUFFLED and P2-MISMATCHED use frozen donor constructions; because a LOSO test partition contains only one receiver, these controls draw on source-validation donor receivers. This differs from drawing a second held-out receiver and is an acknowledged donor-domain confound. P2-NULL removes peer information while retaining the architecture. We use these controls to assess sensitivity, not to infer causal explanations from attention weights.
+
+\subsection{Supervised Oracle and Training Budget}
+SUP-FT-128 copies the source P0 linear head and adapts only that head to labeled support. It uses AdamW with zero weight decay and a source-validation-selected learning rate and step count. The backbone stays fixed. Its labels place it in a different information regime; its result is an empirical diagnostic comparator, not a mathematical upper bound.
+
+The source models use the frozen AdamW budget~\cite{adamw}: learning rate $5\cdot10^{-4}$, weight decay $10^{-4}$, maximum 30 epochs, and early-stopping patience 8. Source-validation macro-F1 chooses checkpoints. Full configuration and implementation details are distributed with the artifact. No target-visible architecture, support-budget, peer-count, seed, or receiver selection occurs in this manuscript phase.
+
+\subsection{Metrics, Inference, and Evidence Timing}
+For receiver $r$, method $m$, and seed $s$, let $F_{rms}$ be query macro-F1. The reported primary mean is
+\begin{equation}
+ \overline F_m=\frac{1}{R}\sum_{r=1}^{R}\frac{1}{K}\sum_{s=1}^{K}F_{rms},
+ \qquad R=32,\quad K=5.
+\end{equation}
+For a paired comparison, seeds are averaged within each receiver before inference. Receiver differences, not packets, are resampled in the frozen 10,000-replicate percentile bootstrap. The sign-flip analysis uses 100,000 two-sided Monte Carlo draws with fixed randomness. Holm adjustment~\cite{holm} applies only to the comparison family frozen for that analysis.
+
+Evidence timing limits the inferential claim. The original V2 analysis had a small P2-focused comparison family. The later adaptation benchmark froze a one-comparison T3A--P0 family after earlier WiSig findings were known. Its interval and adjusted value quantify the stored receiver differences, but do not constitute a fresh independent confirmation of a previously unseen T3A effect. We do not pool those families or invent an omnibus significance claim.
+
+Accuracy, balanced accuracy, 15-bin ECE, negative log-likelihood (NLL), and entropy are secondary. ECE and NLL are computed from actual frozen score normalization, not target-optimized calibration. The descriptive failure threshold is a receiver--seed macro-F1 degradation greater than 0.05 relative to P0.
+
+\subsection{Blinding, Annotation Residency, and Integrity}
+Prediction archives were frozen before explicit target metric joins. The shared data bundle nevertheless held annotation bytes in memory for source training: the precise audited claim is that blind target support, adaptation, context, and prediction paths did not index held-out labels, not that labels were physically absent from the process. Label-permutation tests checked invariant prediction paths. Oracle conditions intentionally reveal support labels and are labeled separately. This consolidation adds no model run, modifies no frozen package, and regenerates manuscript tables and figures from hash-verified result summaries.

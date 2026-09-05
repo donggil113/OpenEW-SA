@@ -1,0 +1,14 @@
+{
+  "tier": "FULL",
+  "physical_receivers": 20,
+  "minimum_hardware_families": 4,
+  "sites": 3,
+  "days": 2,
+  "minimum_sessions": 240,
+  "roles": [
+    "CALIBRATION",
+    "QUERY"
+  ],
+  "status": "TEMPLATE_NOT_COLLECTED",
+  "training_authorized": false
+}

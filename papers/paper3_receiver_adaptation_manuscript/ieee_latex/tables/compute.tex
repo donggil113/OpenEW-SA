@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Logged cost boundaries differ. Adapt/eval records reuse source checkpoints; timings are not isolated per-packet latency.}
+\label{tab:compute}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Method & Parameters & Seconds & Scope\\
+\midrule
+P0 & 64774 & 30.992 & Source train\\
+P2 & 75143 & 98.296 & Source train\\
+T3A & 64774 & 0.671 & Adapt/eval\\
+RX-NORM & 64774 & 0.492 & Adapt/eval\\
+SUP-FT & 64774 & 0.689 & Adapt/eval\\
+\bottomrule
+\end{tabular}
+\end{table}

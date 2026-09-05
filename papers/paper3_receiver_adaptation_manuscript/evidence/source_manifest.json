@@ -1,0 +1,145 @@
+{
+  "baseline_merge": "7cc9a27a6cf049690c881068d9163b942c6a2110",
+  "frozen_package_manifest_file_sha256": "4ddd9026316ca89986a0946d9a869fc347ffaab26579fe81b365ecc707002de9",
+  "note": "No packet features, packet annotations, original target-bearing paths, or prediction arrays. Aggregate provenance includes source-summary paths.",
+  "schema_version": 1,
+  "scientific_new_runs": 0,
+  "sources": {
+    "addendum_summary_composition_stress.csv": {
+      "analysis_sha": "62e9e7e3ee44a356f978841b3d599d6ece0d3e73bcb8c11a6bcc94672677c678",
+      "evidence_type": "POST-HOC",
+      "export_sha256": "762252641144b17f6164f2b72b7928b0d412e4743b5e4262c690e71ada377266",
+      "git_sha": "494378fc3a9b305f395becc9630bb7498f99e3a1",
+      "sha256": "ad1156dc1c66181f500e31a0ad4c5dba67c3281f6ad061c081f1a69f6cc8155b",
+      "source_file": "/mnt/d/openew_sa_data/paper3/v2_addendum/summary_composition_stress.csv",
+      "unit": "receiver; five seeds averaged"
+    },
+    "addendum_summary_query_coupling.csv": {
+      "analysis_sha": "62e9e7e3ee44a356f978841b3d599d6ece0d3e73bcb8c11a6bcc94672677c678",
+      "evidence_type": "POST-HOC",
+      "export_sha256": "b7df10ed9a5df6898640bd3a4f7dd7bf9da2682474791d3b349aefcb14e3096f",
+      "git_sha": "494378fc3a9b305f395becc9630bb7498f99e3a1",
+      "sha256": "02be58ca68221dc02ffb060d5c8f6e1797ed7415d980da60007562955a19a59e",
+      "source_file": "/mnt/d/openew_sa_data/paper3/v2_addendum/summary_query_coupling.csv",
+      "unit": "receiver; five seeds averaged"
+    },
+    "addendum_summary_shuffled_training.csv": {
+      "analysis_sha": "62e9e7e3ee44a356f978841b3d599d6ece0d3e73bcb8c11a6bcc94672677c678",
+      "evidence_type": "POST-HOC",
+      "export_sha256": "0328dde7e0d3bd45dec7fdb5dea7c675ab552d410b390412853482766dd2ffb4",
+      "git_sha": "494378fc3a9b305f395becc9630bb7498f99e3a1",
+      "sha256": "ab89891c9d658a01629cb072f1a8aea105ed6f8aadb0fa84a3d6eff0f45a4dfb",
+      "source_file": "/mnt/d/openew_sa_data/paper3/v2_addendum/summary_shuffled_training.csv",
+      "unit": "receiver; five seeds averaged"
+    },
+    "addendum_summary_support_budget.csv": {
+      "analysis_sha": "62e9e7e3ee44a356f978841b3d599d6ece0d3e73bcb8c11a6bcc94672677c678",
+      "evidence_type": "POST-HOC",
+      "export_sha256": "85051906a6debc434ffafbfd39895af5214c9d00177788f0a6398c3daf65ae40",
+      "git_sha": "494378fc3a9b305f395becc9630bb7498f99e3a1",
+      "sha256": "8a1f6c11d927aef84f84300611b676807f316c6b69ffdd38a16447bea71f4790",
+      "source_file": "/mnt/d/openew_sa_data/paper3/v2_addendum/summary_support_budget.csv",
+      "unit": "receiver; five seeds averaged"
+    },
+    "benchmark_receiver_averaged_results.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "f52ab7351d7addf598c275bbffa119a78828ed4a4dee769d7a6f3e1f8bdea0cc",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 448,
+      "sha256": "7fa20c10910deccfee3813022cbd51eea71cc2fb5fdd582ee7698bee9cc8d929",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/benchmark_receiver_averaged_results.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    },
+    "benchmark_receiver_seed_results.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "d050cd643ce36bb3dfd6c1ecf06cc99623adc212843c6d20312a0d61813eb19d",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 2240,
+      "sha256": "74740e77d1894b9d4c4b6b76fca06c6d08df10c92695752892c8ead3cab1cc3a",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/benchmark_receiver_seed_results.csv",
+      "unit": "receiver x seed"
+    },
+    "benchmark_summary.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "d17bdd71987cbed25f88654af0cc0f10fdb01286c4c2e8e319db023745d80a61",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 56,
+      "sha256": "e2e56805a7218e7ea0f921d8c770218e94dd95e6b262468d30e0fbdfdff96a25",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/benchmark_summary.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    },
+    "calibration_quality_summary.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "04b1f95a58379c840c617ef9b15eb6bbee6f88be8afe2bf5770c36cac9428fb5",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 4,
+      "sha256": "00f84624f803f60b48bf113e867a8ff767164f717720d3ba8e34386805572f87",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/calibration_quality_summary.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    },
+    "catastrophic_failure_summary.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "ee57206a1477eacb03bb80419511100aeb7947ae74c1910fd9c4ff11aa8ed986",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 13,
+      "sha256": "023199d150847aa79e2c896909782027cbe988d6da0431d02f00ff3f480b1512",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/catastrophic_failure_summary.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    },
+    "compute_fairness_summary.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "181e487c4b1fffa7468f825e04b65bf91e14dce11790421e94ebcb2a7a3b430e",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 15,
+      "sha256": "0b64f85bb0c39103246763ea12cad0317469ce6e0d3b38958a48c414c13cba0a",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/compute_fairness_summary.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    },
+    "hardware_family_summary.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "99cf31feb5ac56b7cb37a77c11ff78fea080af4d56976f80a190421b95090b94",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 27,
+      "sha256": "69f890ef0fae1735819409e8c0d00ab87d59bb4ea55b1aa6dfc6befc50dbc777",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/hardware_family_summary.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    },
+    "primary_receiver_summary.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "a6bda10c6c635ac7e36969844e371a6da24c42d7f460af4b06ce7232a220fc36",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 36,
+      "sha256": "92212d4e9664dd640124f846ef33fbfeed190a9a4655c8c716b577c8bfa04f55",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/primary_receiver_summary.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    },
+    "receiver_level_inference.json": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "9192d0bf6bbac352bf8eccf6b8e61776df897615f21915da8b1136072ce0e8ce",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "sha256": "9192d0bf6bbac352bf8eccf6b8e61776df897615f21915da8b1136072ce0e8ce",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/receiver_level_inference.json",
+      "unit": "receiver-level paired difference after within-receiver five-seed averaging"
+    },
+    "support_budget_summary.csv": {
+      "analysis_sha": "0ab9308eda21c7f6f4f2a449d13c28a97032cc8c91266b81b5007c4441b89431",
+      "export_sha256": "7c3493e9a236d48ce323fcbc8a576ff0d6b05a0e23d181353651861c6212584a",
+      "git_sha": "9ed8dc8b89b6dbaf11191e4932320f857ec0817a",
+      "protocol": "WiSig V2 32-receiver LOSO; support-budget query reserves 256",
+      "row_count": 17,
+      "sha256": "3cf5058a3ee2a3b437f622ee0707de34c97dfbfac7a6df4277ebaa59d8c36036",
+      "source_file": "/mnt/d/openew_sa_data/paper3/receiver_adaptation_benchmark/analysis/support_budget_summary.csv",
+      "unit": "receiver; five seeds averaged within receiver"
+    }
+  },
+  "validated_receivers": 32,
+  "validated_rows": 2240
+}

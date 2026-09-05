@@ -1,0 +1,15 @@
+{
+  "baseline_merge": "7cc9a27a6cf049690c881068d9163b942c6a2110",
+  "files": {
+    "configs/paper3/wisig_v2/methods_v2.yaml": "2a224d4f25ee6f98a01a92dbec5b5c972f2097d2db07114d4559d0390cb872d0",
+    "src/openew/paper3/receiver_adaptation/oracle.py": "18f8d7190e5c0b65613c5c897f2bf971a4773e3ec035baddd8d907ec4c963a25",
+    "src/openew/paper3/receiver_adaptation/shen_adapter.py": "931edc3a394be59073165b0c5d732bb31780713b497403b7aa7dd850e03a4448",
+    "src/openew/paper3/wisig/data.py": "c5f5a254f807e27e95c8e1ff482e7aa5f3d1dc1c029f8fe306a566c6bf1e51ed",
+    "src/openew/paper3/wisig/models.py": "6c8a851b33d2f2fd4d215af09576a5a1567c6c145edd3109f93db79ac9eb40ae",
+    "src/openew/paper3/wisig_v2/models.py": "37fa646b20c6468c473e020e9ec8884e0bc0d28ceb38458a955992d3140d9eeb",
+    "src/openew/paper3/wisig_v2/runner.py": "641e5db271c38876de58f57c1894d49b0658912cf3bcb76ce28cc42a9f2a1e35",
+    "src/openew/paper3/wisig_v2/statistics.py": "75daf4128076b51f4f7d487cf3c98b8371c87765814652467aaa1cae49b407fd",
+    "src/openew/paper3/wisig_v2/support.py": "3511fe806a12a311173fdc21be52700bbfa75f66056aec723820c68a55b24c2d"
+  },
+  "method_changes": 0
+}
