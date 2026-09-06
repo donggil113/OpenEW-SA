@@ -1,0 +1,41 @@
+\documentclass[11pt]{article}
+\usepackage[margin=.65in]{geometry}
+\usepackage{lmodern}
+\input{shared/preamble}
+\title{Receiver Adaptation: Reviewer-Remediation Supplement}
+\author{OpenEW-SA Internal Review}
+\date{}
+\begin{document}\maketitle
+\section{Evidence status and complete receiver coverage}
+This is a post-hoc baseline-completeness addendum, not the original confirmatory family. The primary V2 result is unchanged. Raw receiver-by-seed metrics and predictions remain in the immutable external analysis package; the portable release includes all receiver averages and complete reliability bin summaries without RF payloads. The full external metric file contains every frozen method, receiver and seed, with no best-seed filtering.
+\begin{center}\small\input{tables/receiver_means}\end{center}
+\section{Exploratory paired estimates}
+Five seeds are averaged within receiver. Bootstrap and sign-flip settings are fixed. No new Holm family is introduced. The full-network method is a label-dependent diagnostic, not an unlabeled competitor.
+\begin{center}\small\input{tables/paired}\end{center}
+\section{Information and implementation details}
+P0/P0-WIDE/DG use source labels; T3A and P2 use the frozen unlabeled support bank. SAR-GN updates only GroupNorm affine parameters. EMB-STD uses source-training and target-support moments, retaining the classifier. Full-network supervised FT uses support labels. No query packet participates in adaptation. Transmitter labels are opened only for metrics except in the explicitly labeled oracle branch.
+
+SAR fidelity was checked against official code on a synthetic noncollapse path; empty-filter handling and optimizer recovery are disclosed technical differences. At reference budget two batches are processed, and source resets are frequent. This short-support result does not exhaust SAR settings. Source-only recipe selection and temperature-fitting artifacts are hashed separately.
+
+The timing replay uses seed 829, all receivers and three repeats. Its total-throughput column is query count divided by total wall time; the legacy internal samples-per-second field has method-specific scopes and is not used for cross-method throughput. Resident models contribute to peak memory. T3A prototype construction is not isolated from query scoring in the total measurement. No timing result replaces a frozen scientific prediction.
+
+\section{All-receiver reliability}
+The following pages cover all 32 receivers for both raw and source-temperature probabilities, always in the same receiver order. Five seed prediction populations are combined within a receiver for descriptive bins. Main-text scalar metrics first average seeds and then receivers. Curves with little bin mass should not be overinterpreted; exact bin mass accompanies the release.
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_raw_1}
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_raw_2}
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_raw_3}
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_raw_4}
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_source_temperature_1}
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_source_temperature_2}
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_source_temperature_3}
+\clearpage
+\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_source_temperature_4}
+\clearpage
+\end{document}

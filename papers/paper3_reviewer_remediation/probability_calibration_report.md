@@ -1,0 +1,7 @@
+# Probability-quality interpretation
+VERIFIED RESULT: receiver-equal scalar metrics come from evidence/primary_summary.csv, five seeds averaged inside each receiver. Detailed adaptive ECE, NLL, multiclass Brier (sum, not class average), entropy and confidence gap are preserved.
+Raw T3A mean confidence 0.753708 is below mean correctness 0.842459; its gap is -0.088751. Thus average underconfidence is supported directly. The reliability curve also shows shape deviations, so the evidence does not prove a pure scalar-temperature generative explanation.
+T3A ECE 0.102950 exceeds P0 0.088851, whereas NLL 0.501963 and Brier 0.236342 are lower than P0 (0.630793, 0.274186). Calling this simply degraded calibration is misleading.
+Source-validation-only temperatures reduce T3A ECE to 0.047688; residual nonzero error remains. No target-label temperature fit or post-fit classification replacement occurred.
+Equal-width reliability bins use 15 common bins, including explicit sample mass. Adaptive ECE uses 15 equal-count top-label groups with stable confidence ordering, not a claim to reproduce every published ACE definition. Empty bins are omitted, not assigned zero correctness.
+All 32 receiver panels, raw and source-temperature, are provided. Aggregate bin curves pool repeated seed predictions descriptively; they are never used for packet-level inference. All newly recomputed probability diagnostics are POST-HOC.

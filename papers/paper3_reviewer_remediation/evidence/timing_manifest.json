@@ -1,0 +1,14 @@
+{
+  "cuda": "12.8",
+  "hardware": "NVIDIA GeForce RTX 4090",
+  "kind": "TIMING_ONLY_REPLAY_NO_NEW_METRICS",
+  "limitations": "One seed for timing only; three repeats; no isolated prototype/query split for T3A; GPU peak includes resident models.",
+  "receivers": 32,
+  "records": 576,
+  "repeats": 3,
+  "scope": "Resident converted data; P0 and P2 resident; includes support selection and CPU context assembly for old methods; excludes checkpoint IO.",
+  "seed": 829,
+  "sha256": "94d21dbe0610c776b12912875c56a25ff440653ffd1dc6c2b686cf233bdb0dc6",
+  "status": "PASS",
+  "torch": "2.11.0+cu128"
+}

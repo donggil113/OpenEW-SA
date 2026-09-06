@@ -1,0 +1,202 @@
+{
+  "durable": {
+    "abrupt_subprocess_exits": 6,
+    "actual_fault_transactions": 25,
+    "corrupt_journal_rejected": true,
+    "hardware_validated": false,
+    "label": "SYNTHETIC_POSIX_DURABILITY",
+    "outcomes": [
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "after_journal",
+        "recovered": true
+      },
+      {
+        "actions": [],
+        "mode": "after_state",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "quarantined_partial_state",
+          "replayed_revision_2"
+        ],
+        "mode": "disk_full",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "process_exit",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "after_journal",
+        "recovered": true
+      },
+      {
+        "actions": [],
+        "mode": "after_state",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "quarantined_partial_state",
+          "replayed_revision_2"
+        ],
+        "mode": "disk_full",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "process_exit",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "after_journal",
+        "recovered": true
+      },
+      {
+        "actions": [],
+        "mode": "after_state",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "quarantined_partial_state",
+          "replayed_revision_2"
+        ],
+        "mode": "disk_full",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "process_exit",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "after_journal",
+        "recovered": true
+      },
+      {
+        "actions": [],
+        "mode": "after_state",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "quarantined_partial_state",
+          "replayed_revision_2"
+        ],
+        "mode": "disk_full",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "process_exit",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "after_journal",
+        "recovered": true
+      },
+      {
+        "actions": [],
+        "mode": "after_state",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "quarantined_partial_state",
+          "replayed_revision_2"
+        ],
+        "mode": "disk_full",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "process_exit",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "after_journal",
+        "recovered": true
+      },
+      {
+        "actions": [],
+        "mode": "after_state",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "quarantined_partial_state",
+          "replayed_revision_2"
+        ],
+        "mode": "disk_full",
+        "recovered": true
+      },
+      {
+        "actions": [
+          "replayed_revision_2"
+        ],
+        "mode": "process_exit",
+        "recovered": true
+      }
+    ]
+  },
+  "generated": {
+    "counts": {
+      "abrupt_termination": 562,
+      "begin": 9747,
+      "checksum_failure": 553,
+      "clock_reset": 580,
+      "close": 539,
+      "corrupt_journal": 550,
+      "disk_full": 549,
+      "duplicate_uuid": 556,
+      "finalize": 5318,
+      "metadata_payload_mismatch": 529,
+      "open": 540,
+      "partial_capture": 549,
+      "recover": 4428
+    },
+    "final_state": {
+      "complete": 5318,
+      "phase": "WRITING",
+      "quarantine": 4428,
+      "transitions": 25000
+    },
+    "generated_transitions": 25000,
+    "hardware_validated": false,
+    "label": "SYNTHETIC_STATE_TRANSITIONS_NOT_HARDWARE",
+    "trace_sha256": "281664e89087d89721bb695fecf56564d88878da7fd678d73d6bb5f6beddebb9"
+  },
+  "physical_hardware_tested": false,
+  "wall_seconds": 4.231691263004905
+}

@@ -1,0 +1,13 @@
+% Local draft-only presentation fixes; official IEEE template is not modified.
+\usepackage{etoolbox}
+\makeatletter
+\newdimen\accessabstractwidth
+\accessabstractwidth=\dimexpr\titlewidth-12pt\relax
+\let\abstractwidth\accessabstractwidth
+\newcommand{\draftfooters}{%
+\def\@oddfoot{\hbox to\textwidth{\footnotesize Internal-review draft --- not published\hfil\thepage}}%
+\let\@evenfoot\@oddfoot}
+\appto\ps@titlepage{\draftfooters}
+\appto\ps@headings{\draftfooters}
+\pagestyle{headings}
+\makeatother
