@@ -1,0 +1,141 @@
+\section{Introduction}
+Radio-frequency fingerprint identification (RFFI) seeks to distinguish transmitters using signal characteristics associated with their physical implementation. It is a closed-set recognition task here, not a claim of cryptographic authentication. Surveys and methodological studies describe both the opportunities of learned representations and the difficulty of separating transmitter characteristics from channel and receiver effects~\cite{rffsurvey,rfmethodology,rfchallenges}. Receiver transfer is therefore an evaluation question in its own right.
+
+Two information regimes are often conflated. A source-only model predicts from an individual query after training on source receivers. A test-time method additionally observes unlabeled packets from the held-out receiver. The latter is not pure domain generalization, even when both methods are evaluated under an unseen-receiver split. A fair comparison must state how much target information is available and prevent evaluation queries from becoming one another's support.
+
+This study asks which source-only and unlabeled receiver-adaptation procedures improve transmitter recognition under a fixed target-information budget. P2, an attentive receiver-context model, is a benchmark entry, not a proposed superior method. We retain its neutral outcome rather than changing its architecture after observing WiSig results. T3A~\cite{t3a} is the strongest frozen same-information reference.
+
+The contribution is a traceable comparison of information regimes, receiver-level uncertainty analysis, and reviewer-driven completeness checks on one dataset. It is not a new general adaptation algorithm. The addendum was motivated after prior WiSig outcomes were known; freezing it before its own execution does not make it independent confirmation. This distinction is carried through all new tables, figures and interpretation.
+
+\section{Related Work and Applicability Boundaries}
+\subsection{RF fingerprinting and receiver dependence}
+ORACLE~\cite{oracle} and WiSig~\cite{wisig} provide important precedents for learned RF identification and receiver/channel variation. ORBIT is the acquisition platform underlying WiSig~\cite{orbit}. LoRa identification~\cite{shenlora}, receiver-agnostic collaborative identification~\cite{shen}, and GAN-RXA~\cite{ganrxa} address relevant receiver or channel effects. Their existence prevents a claim that studying receiver shift itself is new.
+
+Faithful reproduction requires the input semantics as well as a recognizable loss name. The inspected Shen implementation consumes a long LoRa signal-derived time-frequency representation. The compact WiSig input is a short WiFi I/Q packet. We do not concatenate packets, invent chirp semantics, or relabel a generic gradient-reversal network as the Shen baseline. Consequently Shen-GRL is excluded from this addendum, with a representation-bridge audit rather than fabricated comparison results.
+
+\subsection{Source generalization and adaptation}
+CORAL~\cite{coral}, domain-adversarial training~\cite{dann}, and GroupDRO~\cite{groupdro} represent alignment, adversarial and robust source-training families in the frozen benchmark. Their source-only implementations use source receiver labels, not target support labels. Protocol and selection choices matter substantially in domain generalization~\cite{domainbed}; benchmark design under distribution shift has broader precedents such as WILDS~\cite{wilds}. These works motivate careful scope, not cross-dataset evidence for the present task.
+
+Tent~\cite{tent} adapts normalization parameters through entropy minimization under its original normalization contract. The frozen RF encoder uses GroupNorm~\cite{groupnorm}; adding BatchNorm to make an otherwise inapplicable baseline run would change the source model. SAR~\cite{sar} explicitly studies batch-agnostic normalization and provides a suitable gradient-adaptation family, subject to its detailed update and reset rules. EATA~\cite{eata} and work on TTA pitfalls~\cite{ttapitfalls} emphasize that adaptation stability and the target stream are consequential. We do not add every cited method to inflate the benchmark.
+
+T3A modifies a classifier from unlabeled support features~\cite{t3a}. SHOT~\cite{shot} freezes a source classifier while adapting a feature representation, but its official source-training pipeline also uses a learned bottleneck, BatchNorm, weight-normalized classifier and label smoothing. Those components are absent from the frozen P0 checkpoint. We therefore do not label a loosely related bounded-support implementation SHOT. This is a compatibility exclusion for this checkpoint-transfer contract, not a claim that SHOT cannot work on RF data. Better-practice studies further motivate explicit source-selection and adaptation details~\cite{betterda}.
+
+\subsection{Probability calibration}
+Classification accuracy, proper scoring rules and probability calibration answer different questions~\cite{calibration,evalcal,gneiting,brier}. ECE alone neither establishes overconfidence nor summarizes all probability quality. Dataset shift can change uncertainty behavior~\cite{ovadia}, while more structured calibration approaches exist~\cite{verifiedcal,dirichlet}. We use a deliberately limited source-validation temperature diagnostic; we do not fit a richer calibrator on target labels.
+
+\section{Frozen Task and Information Contract}
+\subsection{Data and splits}
+The compact ManyRx conversion contains 249,666 packets from 10 transmitters, 32 receivers and four acquisition days; the frozen V2 support-eligible task contains six transmitter classes. These are not the full WiSig corpus counts. Each input contains 256 complex I/Q samples, represented as two real channels and normalized by packet RMS without mean removal. Radio context is 2462~MHz center frequency, 20~MHz WiFi bandwidth and 25~MS/s. These are source metadata, not inferred from filesystem timestamps.
+
+The 32 physical receivers form leave-one-receiver-out protocols. Each protocol assigns one receiver to test, three deterministically chosen source receivers to validation, and the remaining 28 to training. The five fixed seeds are 829, 1829, 2829, 3829 and 4829. No receiver, seed, transmitter or split is removed after observing performance.
+
+Within each test receiver, stable opaque sample-ID hashing selects 128 unlabeled support packets. Query packets are disjoint; a query never supplies support to another query. Receiver equality is the only support relation. Transmitter labels and target-bearing source paths are excluded from model-visible metadata. Day remains split/audit information. This is a bounded support benchmark, not evidence of physically acquired, target-neutral calibration sessions.
+
+\begin{table}[t]\centering\small
+\caption{Information regimes. Query inputs are used only for prediction; query labels only for metrics.}
+\begin{tabularx}{\columnwidth}{lXcc}
+\toprule Regime & Methods & Support & Labels\\\midrule
+R0 & P0, P0-WIDE, source DG & 0 & No\\
+R1 & T3A, P2, RX-NORM & 128 & No\\
+R1 addendum & SAR-GN, EMB-STD & 128 & No\\
+R2 diagnostic & Head/full supervised FT & 128 & Yes\\\bottomrule
+\end{tabularx}\label{tab:information}
+\end{table}
+
+\subsection{Frozen reference implementations}
+P0 is a compact one-dimensional residual CNN with GroupNorm, global pooling and a linear six-class head. P2 shares the encoder architecture and learns permutation-invariant attentive fusion of anchor and support embeddings, with 32 peers drawn from the fixed support bank. It has no receiver-value embedding, time encoding or target label. P0-WIDE is the frozen capacity control. P2 weights, loss, context construction and training are unchanged.
+
+Source training uses the frozen AdamW implementation~\cite{adamw}, source-validation checkpoint selection, maximum 30 epochs and patience eight. The frozen T3A implementation initializes supports from classifier weights, uses source classifier pseudo-labels and entropy filtering, and forms normalized class prototypes. Its filter is selected from source validation only. It receives the same support bank as P2. RX-NORM uses receiver-specific input statistics with its own frozen source-normalized checkpoint lineage. No reference model is retrained in this addendum.
+
+\section{Reviewer-Driven Baseline-Completeness Addendum}
+\subsection{Status, blinding and selection}
+This entire section is post-hoc. Its applicability decisions, methods, source-only selection rules, statistical estimands and metrics were committed before new target evaluation. The completed grid contains 480 reference-budget records and 1,920 budget-control records. Target predictions were blinded until all 2,400 records, query IDs, support disjointness, checkpoints, split hashes and method hashes passed preflight. A create-once manifest records the single unblinding. Failed records numbered zero. Oracle support labels enter only the labeled branch; unlabeled adapters do not accept them.
+
+\subsection{SAR-GN}
+We apply the official SAR normalization-affine selection and sharpness-aware entropy objective to the frozen GroupNorm CNN~\cite{sar}. Each receiver starts from the source checkpoint. Support is processed once in stable order with batches up to 64, SAM radius 0.05, SGD momentum 0.9, entropy threshold $0.4\log C$, EMA coefficient 0.9, and recovery threshold 0.2. The official GroupNorm learning-rate policy is used: 0.00025 for batch sizes at least 32, with the official small-batch scaling below that size. Query samples never update parameters.
+
+Two technical corner behaviors are disclosed: an empty reliable subset is skipped with perturbations restored, and recovery resets optimizer momentum consistently with the intended source-state reset. The EMA is retained as in the official wrapper. A synthetic noncollapse fidelity check matched ten official update steps exactly. This verifies the tested update path, not universal numerical equivalence or the original image benchmark. No target-based recipe search was conducted.
+
+\subsection{Embedding standardization}
+EMB-STD is an explicit simple control, not a claimed published method. Directly z-scoring an embedding before an unchanged source classifier changes its coordinate system. Instead, we estimate source-training population moments $(\mu_s,\sigma_s)$ and support moments $(\mu_t,\sigma_t)$, then transport a query embedding:
+\[
+z'=(z-\mu_t)\odot
+\frac{\max(\sigma_s,\epsilon)}{\max(\sigma_t,\epsilon)}+\mu_s,\qquad \epsilon=10^{-6}.
+\]
+Moments use float64 population estimates; transformed features are float32. The classifier is frozen. No label, blending coefficient or target-selected clipping rule is used. Source moment estimation is an additional offline requirement disclosed in the information ledger.
+
+\subsection{Labeled diagnostics}
+The frozen head-only supervised adaptation result is retained but no longer called a strong ceiling. Full-network supervised adaptation uses the exact same 128 support packets with their labels revealed. All P0 parameters can update. A fixed grid of learning rates $\{10^{-5},10^{-4},5\cdot10^{-4}\}$ and steps $\{5,20\}$ is selected using equal-weight performance across the three source-validation receivers, with deterministic tie-breaking. AdamW has zero weight decay for this diagnostic. Query labels never select the recipe. A separate larger in-receiver labeled training regime is excluded because it would require a new information/query contract. Neither diagnostic is a deployable comparator or a mathematical upper bound.
+
+\subsection{Probability metrics and inference}
+We report accuracy, macro-F1, balanced accuracy, 15-bin equal-width top-label ECE, 15-bin equal-count adaptive top-label ECE, NLL, multiclass Brier score summed over classes, mean confidence, confidence-minus-accuracy gap and predictive entropy. NLL clips probabilities at $10^{-12}$. Reliability plots include bin mass; empty bins are not treated as zero-accuracy observations.
+
+Temperature fitting minimizes receiver-equal NLL on source-validation predictions only, with positive scalar temperature bounded to $[0.05,20]$. It is fitted separately per method, protocol and seed. Raw decisions remain the classification result; the implementation verifies temperature scaling leaves their argmax unchanged.
+
+The receiver is the inferential unit. Paired differences are first averaged across five seeds within each receiver. New exploratory comparisons use 10,000 receiver-bootstrap replicates and 100,000 two-sided receiver sign flips with fixed RNG seed 20260906. There is no packet bootstrap and no new Holm family. The earlier T3A comparison retains its historical one-comparison Holm report~\cite{holm}, but that retrospective benchmark evidence is not independent confirmation. A macro-F1 drop strictly greater than 0.05 from P0 defines catastrophic degradation before unblinding.
+
+\section{Results}
+\subsection{Which unlabeled methods improve recognition?}
+Table~\ref{tab:benchmark} retains source-only and target-support methods separately identified by Table~\ref{tab:information}. T3A has the highest receiver-equal mean among the evaluated unlabeled reference-budget methods. Its frozen gain over P0 is \dval{T3A_MINUS_P0}{mean_difference}, positive on \dval{T3A_MINUS_P0}{positive} receivers. P2 remains approximately equal to P0; its mean is \val{P2}{macro_f1}{raw}, versus \val{P0}{macro_f1}{raw} for P0.
+
+EMB-STD reaches \val{EMB_STD}{macro_f1}{raw}, improving all \dval{EMB_STD_MINUS_P0}{positive} receiver averages relative to P0. Its mean difference from T3A is \dval{EMB_STD_MINUS_T3A}{mean_difference}. The bootstrap interval narrowly excludes zero, while the unadjusted sign-flip value is \dval{EMB_STD_MINUS_T3A}{p_value}. These different summaries should not be selectively presented as decisive superiority of either procedure. T3A is the higher-mean method, not a universal winner on every receiver or information budget.
+
+SAR-GN reaches \val{SAR_GN}{macro_f1}{raw}, effectively P0. At the reference budget every record performs two adaptation steps; frequent source-state recovery explains why little change persists. This is an observation under the frozen short-support recipe, not proof that all gradient-based adaptation fails. No recovery threshold or learning rate is changed in response.
+
+\begin{table*}[t]\centering\small\caption{Receiver-equal benchmark at support 128. SAR-GN and EMB-STD are post-hoc additions; other rows are frozen references.}\input{tables/benchmark}\label{tab:benchmark}\end{table*}
+\begin{figure*}[t]\centering\includegraphics[width=.9\textwidth]{benchmark}\caption{All receiver averages and grand means. No receiver is selected or removed.}\label{fig:benchmark}\end{figure*}
+
+\subsection{Receiver heterogeneity and labeled headroom}
+Figure~\ref{fig:delta} shows the full receiver set. EMB-STD has no catastrophic receiver or receiver-seed record. SAR-GN likewise has none. The frozen P2 comparison contains 22 catastrophic receiver-seed records but none after seed averaging at receiver level; these counts measure different units and are not interchangeable.
+
+Full-network labeled adaptation reaches \val{SUP_FT_FULL_128}{macro_f1}{raw}, compared with \val{SUP_FT_HEAD_128}{macro_f1}{raw} for the head-only diagnostic. Its mean gain over T3A is \dval{SUP_FT_FULL_128_MINUS_T3A}{mean_difference}. This substantial labeled headroom contradicts any claim that T3A has nearly exhausted all adaptation opportunity. Full adaptation still has one catastrophic receiver-seed record, despite improvements at every seed-averaged receiver versus P0.
+
+\begin{table}[t]\centering\small\caption{Label-dependent diagnostics, not deployable competitors.}\input{tables/oracle}\end{table}
+\begin{figure*}[t]\centering\includegraphics[width=.95\textwidth]{receiver_deltas}\caption{Paired receiver differences after seed averaging. Receiver order is fixed, not sorted by gain.}\label{fig:delta}\end{figure*}
+
+\subsection{Support-budget dependence}
+Table~\ref{tab:budget} and Fig.~\ref{fig:budget} use a common query universe that reserves 256 packets for every budget. Their 128-packet means therefore need not equal the reference table, which reserves only 128. T3A is poor with the smallest support bank and improves strongly with more support. EMB-STD is competitive at small budgets and changes less over the curve. The reference remains 128; no favorable budget is selected. Zero-support controls retain their documented implementation meaning rather than implying an identical architecture across methods.
+
+\begin{table}[t]\centering\small\caption{Full prescribed nonzero support curve; common query universe. Descriptive/post-hoc.}\input{tables/budget}\label{tab:budget}\end{table}
+\begin{figure*}[t]\centering\includegraphics[width=.9\textwidth]{support_budget}\caption{Support efficiency, including available zero-support controls. No target-based budget selection.}\label{fig:budget}\end{figure*}
+
+\subsection{Probability quality is not summarized by ECE alone}
+Raw T3A has mean confidence \val{T3A}{mean_confidence}{raw} and confidence-minus-accuracy gap \val{T3A}{confidence_accuracy_gap}{raw}. It is underconfident on average. Its raw ECE is higher than P0's, yet NLL and Brier are lower. Thus a blanket assertion that T3A degrades probability quality is unsupported.
+
+Source-only temperature fitting reduces T3A ECE from \val{T3A}{ece}{raw} to \val{T3A}{ece}{source_temperature} and NLL from \val{T3A}{nll}{raw} to \val{T3A}{nll}{source_temperature}. It also improves aggregate proper scores for the other evaluated methods. The remaining nonzero ECE and receiver-specific reliability shapes prevent a claim of perfect probability calibration. Average underconfidence does not imply every bin or receiver is underconfident.
+
+\begin{table*}[t]\centering\small\caption{Probability diagnostics. TS fits only source-validation receivers. Gap is confidence minus accuracy; negative denotes average underconfidence.}\input{tables/probability}\end{table*}
+\begin{figure*}[t]\centering\includegraphics[width=.95\textwidth]{probability_quality}\caption{Raw and source-temperature probability quality, without changing classification decisions.}\end{figure*}
+\begin{figure*}[t]\centering\includegraphics[width=.9\textwidth]{reliability_aggregate}\caption{Pooled descriptive reliability and sample mass. These bin counts are not the inferential unit; scalar summaries remain receiver-equal.}\end{figure*}
+
+\subsection{Computational cost}
+Table~\ref{tab:compute} measures the same GPU with resident converted data, seed 829, every receiver and three timing repeats. Predictions are checked against frozen archives; no new accuracy result is produced by replay. P2's CPU context assembly makes this implementation much slower than prototype or moment adaptation. SAR incurs gradient and reset costs without a material gain here. The timing is implementation-specific and does not prove an asymptotic or hardware-independent ranking. Checkpoint I/O, full source training and one-time source-moment estimation are excluded from these test-time totals and disclosed separately.
+
+\begin{table}[t]\centering\small\caption{Timing-only replay. Total includes support processing and query prediction, not source training. Peak includes resident models.}\input{tables/compute}\label{tab:compute}\end{table}
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{compute}\caption{Measured total inference path, not an isolated GPU kernel comparison.}\end{figure}
+
+\section{Discussion}
+The strongest current evidence favors simple adaptation procedures over the learned attentive context mechanism on this task. EMB-STD closes much of the P0-to-T3A gap without target labels, suggesting receiver-specific feature moments are a useful control. It does not demonstrate a causal explanation of every T3A or P2 effect. T3A remains higher on average at the reference budget, while its small-bank weakness rules out a claim of budget-independent reliability.
+
+The new full-network oracle materially changes the interpretation of the prior head-level result. Label access and the parameter subset both matter; closeness to a weak oracle is not closeness to a true ceiling. The oracle is intentionally separated from unlabeled methods in both prose and tables.
+
+Prior mechanistic addenda remain visible: query coupling did not materially explain the V1/V2 gap; shuffled-context-trained P2 remained below P0; composition sensitivity affected multiple methods; and matched-ID equalization was ineligible under frozen identifiers. These post-hoc observations do not retrospectively alter the V2 decision. In particular, receiver-matched versus mismatched support sensitivity is not equivalent to a useful accuracy gain over P0.
+
+A useful benchmark paper can report attenuation and failed hypotheses, but adding baselines alone does not establish publication novelty. The manuscript remains a conditional, single-dataset contribution. Independent lawful multi-receiver data and physically separated, target-neutral support/query acquisition remain the most important next evidence.
+
+\section{Limitations and Reproducibility}
+This study uses one WiSig subset, six classes, and 32 receivers from three hardware families. Hardware-family diagnostics are descriptive, not adequately powered inference over a population of hardware families. All methods share source receivers across overlapping LOSO training sets; receiver-level resampling avoids packet pseudoreplication but does not eliminate every dependence induced by overlapping training data.
+
+The support bank is deterministically partitioned after acquisition. It is not a verified deployment episode. WiSig captures are transmitter-specific, and oracle composition controls expose sensitivity to support composition. No temporal semantics, acquired calibration realism or cross-dataset generality is claimed. No Shen RF payload or prospective scientific collection exists in this package.
+
+SAR-GN is a bounded-support application of a verified GroupNorm-compatible method, with disclosed corner-case fixes. Its conservative, short update schedule can reset frequently. SHOT and Shen exclusions leave baseline coverage incomplete in a broader representation-changing benchmark. Their exclusions are not evidence that those methods are ineffective. EMB-STD is a simple prespecified control, not a novel algorithm.
+
+The new p-values are exploratory, unadjusted and post-hoc. Historical T3A inference is preserved with its original provenance and is not repeatedly relabeled confirmatory. Reliability bin pooling is descriptive; no packet-level inferential bootstrap is used. Temperature fitting is source-only but still assumes source validation is informative about target score scaling.
+
+Code, exact protocol and method hashes, small derived summaries, rendering sources and build instructions form a payload-absent release. WiSig is attributed to its creators~\cite{wisig,orbit}; its CC BY-NC-SA terms do not authorize unrestricted payload redistribution. RF payloads, checkpoints and prediction archives remain external. Third-party Access template files are obtained from IEEE for building, not vendored into the repository. Authors must verify all release and venue obligations before submission.
+
+\section{Conclusion}
+On the frozen unseen-receiver WiSig task, T3A has the highest mean among evaluated unlabeled reference-budget methods, P2 remains neutral relative to P0, and simple source-aligned embedding standardization is a strong post-hoc control. The GroupNorm SAR application changes little under its frozen bounded-support recipe. Full-network labeled adaptation reveals substantial remaining headroom. Probability calibration requires richer interpretation than ECE: raw T3A is underconfident on average and benefits from source-only temperature scaling. These are bounded benchmark findings, not evidence of universal adaptation superiority or an externally replicated method.
+
+\section*{AI-Assisted Drafting and Human Review}
+OpenAI Codex assisted code, analysis tooling, figures and drafting throughout this internal-review revision.\footnote{\url{https://openai.com/codex/}} This disclosure does not assign authorship to an AI system. Human authors must verify scientific accuracy, citations, authorship, funding, institutional obligations and the venue-specific disclosure before submission. No cover letter or manuscript has been submitted.

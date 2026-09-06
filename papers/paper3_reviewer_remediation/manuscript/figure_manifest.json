@@ -1,0 +1,37 @@
+{
+  "analysis_sha256": "b3989f7dad6b561957d7de887c100d7fe90f7baedf3119e5c7fb55c045568953",
+  "evidence": "POST_HOC",
+  "figures": [
+    "benchmark",
+    "receiver_deltas",
+    "support_budget",
+    "probability_quality",
+    "reliability_aggregate",
+    "compute",
+    "reliability_raw_1",
+    "reliability_raw_2",
+    "reliability_raw_3",
+    "reliability_raw_4",
+    "reliability_source_temperature_1",
+    "reliability_source_temperature_2",
+    "reliability_source_temperature_3",
+    "reliability_source_temperature_4"
+  ],
+  "pdf_sha256": {
+    "benchmark": "9369f95ff62752bcaea00b74a6492136768b9b038c9113f25de9a4154c68ae0d",
+    "compute": "4ca48ce3326c247ab6f58f431c1a009458c04cfd13f74f0a77d10bff42c2e766",
+    "probability_quality": "830f9c5a6b65f56d7108cf7de6628080fd9a7298b3dd8c392c5224c28f306c34",
+    "receiver_deltas": "ef3121e68c8528484302653afc6e5430153eb266de9db9450e5638a76a0e3fa1",
+    "reliability_aggregate": "1d93df2fa86edd4a9fdc9cbcd7e63a2a926917ac82953c68ebf4bb66780e84da",
+    "reliability_raw_1": "41505d10f2c10cd70a710071306ca3f77db0e4c89e568067d08b8370d70665ac",
+    "reliability_raw_2": "36cef0ecbb794ed9a2a45da15bfb8fcd392c81f62d87f1c4059ff1a9daf770d7",
+    "reliability_raw_3": "a4e84878a651224781ff3891bdb6fe1cea5b9aa671402d8348da1709fc4b49c0",
+    "reliability_raw_4": "00438242c2d71a55e5c2f0bf603f1789efdf1d010b2b9f8d72228b79ca311397",
+    "reliability_source_temperature_1": "36fbcab9f2f0f1c8e5f00d8478ca1fdf1e605c14d6412b18a8df6f654071a8a7",
+    "reliability_source_temperature_2": "cd7a6a17ffa6a101dd2842ed40ae34f378b00b0bcf3c348919fb8e3e9f8651d0",
+    "reliability_source_temperature_3": "1c0673eb1aae85b7a2321029d3696b01d6cf249b7c2b808e43db7095674fbd43",
+    "reliability_source_temperature_4": "96d5e3b3420ddc766268d4af062542326fd18af84cb7b74abbbcb5aae5c2cfb2",
+    "support_budget": "3f2d14b840b392b7211daeffba36511efdbe1bc42ebf145c0d9911d98fb02a81"
+  },
+  "receiver_count": 32
+}

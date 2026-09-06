@@ -1,0 +1,39 @@
+{
+  "analysis_git_sha": "20613ae3107044162b865e3ce214ea8dddfe8562",
+  "analysis_sha256": "b3989f7dad6b561957d7de887c100d7fe90f7baedf3119e5c7fb55c045568953",
+  "core_manifest_sha256": "1ad8ab8670797f680b1f3ecba3da3db532127c2be7327ee5973e1d37866dde30",
+  "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+  "exports": {
+    "analysis_validation.json": "7844ffd2501c4cb72f233bdb99bde58ae2a9ddbf43075614c01406b09b085784",
+    "catastrophic_adaptation.csv": "e2b163fc1272e5721b3c4c34db30b7acf10d2934d61150c0e6f24d19496bc684",
+    "collection_stress.json": "782d815fc84502a9f30f5b37b37d5f810b2923ff803eecca39837e37151f62f4",
+    "execution_cost_summary.csv": "eeb2337a7720f1acdca5d51e945c1bf1905598e50c1c069f293f9d45ed8bf148",
+    "execution_freeze.json": "9c828588b3a340fb2c6db1e54521587d0e67fb168ed4c70ff8c6ff832942ada7",
+    "new_budget_summary.csv": "d1c0d5d5f951ff53b6029c36052f79c9831151b6c3848f1758f3f2130fd10f28",
+    "oracle_recipe_counts.csv": "7cc5320c57d4aef4bde89e1bec3c6828ede5b5ca83608bef1d94f8a8ec570b53",
+    "primary_summary.csv": "a7c0203a80c18ea27388eb99312eae5953cabc510f32fadc7f534af4f2a15c09",
+    "prior_hardware_family_summary.csv": "99cf31feb5ac56b7cb37a77c11ff78fea080af4d56976f80a190421b95090b94",
+    "prior_receiver_inference.json": "9192d0bf6bbac352bf8eccf6b8e61776df897615f21915da8b1136072ce0e8ce",
+    "prior_support_budget_summary.csv": "7c3493e9a236d48ce323fcbc8a576ff0d6b05a0e23d181353651861c6212584a",
+    "receiver_averages.csv": "5823ec7c1f98326109b4d86cb5b7b83f4db8af4434583701eba7129ea6d84853",
+    "receiver_inference.json": "63933d1947e0f132259023df495df65a003d52df74bb0b5b986a52a3d3308792",
+    "reliability_receiver_bins.csv": "2f5cb8f7097573a5dc7e999d3a7d6f1b8a0ffe2b359b3ef50797f43df69819c2",
+    "source_temperatures.csv": "7609cfbdb9ea684f50ec0471cf334832a2d27d387d0e1c0026d86abe96bbfbee",
+    "timing_manifest.json": "57a1e78846f1546c5295b2842a46e14b9b0f06e5432a9ddd7ffdede5821f4641",
+    "timing_summary.csv": "606edd14e433065e571dec85450b61abc8c4fee1f55481da14b6316a2785a8e8",
+    "unblinding_manifest.json": "450bcb94af0fb7f1f9db4ab5b3f28543c6ba904a9e5de8dd0461ae602b195c1c"
+  },
+  "prior_evidence_manifest_sha256": "340d732de004bd9a03cbb5f9955f45c0e80c60be3df1b0355333e4a685550aca",
+  "source_files": {
+    "analysis_validation.json": "7844ffd2501c4cb72f233bdb99bde58ae2a9ddbf43075614c01406b09b085784",
+    "catastrophic_adaptation.csv": "e2b163fc1272e5721b3c4c34db30b7acf10d2934d61150c0e6f24d19496bc684",
+    "compute_records.csv": "e732d905bee1719299c8fda8b3c2671c4ea40c3ceaaea39c8e64e9c8d3d50387",
+    "paired_receiver_seed_deltas.csv": "be03616d47210e3fd960ae5a28567e82e7b959d41041f7925d8b8d940ad6ed28",
+    "receiver_averaged_metrics.csv": "c8b4cf3c5c5be7fe57098eb951d0d5633ac5250bbc73fc7f0032dfa38a2c7bc4",
+    "receiver_inference.json": "63933d1947e0f132259023df495df65a003d52df74bb0b5b986a52a3d3308792",
+    "receiver_seed_metrics.csv": "c78cf7eccc80eea736dd37b0c3612acebb3e0dba9aca3aa2322123f0513817f5",
+    "reliability_bins.csv": "9d5d05a7af8258946a0960cbfbfc5e1d58638f344a622cd3455d9fcd72c65fdd",
+    "source_temperatures.csv": "7609cfbdb9ea684f50ec0471cf334832a2d27d387d0e1c0026d86abe96bbfbee",
+    "summary.csv": "fedd47581329c2ef0c6acd695e18315124cfeaf450e10c053dfc1e8c1eb01a5c"
+  }
+}
