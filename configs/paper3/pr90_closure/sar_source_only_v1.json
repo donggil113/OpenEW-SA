@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_SOURCE_ONLY_DIAGNOSTIC",
+  "evidence_class": "POST_HOC_SOURCE_ONLY_OPERATIONAL_SENSITIVITY",
+  "protocols": "receiver_loso_00..31",
+  "seeds": [829, 1829, 2829, 3829, 4829],
+  "validation_receivers": "three frozen source-validation receivers within each LOSO fold",
+  "target_receiver_excluded": true,
+  "support_selection": "frozen label-free receiver sample-ID hash",
+  "support_budget": 128,
+  "validation_query": "remaining source-validation receiver samples, disjoint from support",
+  "class_count": 6,
+  "thresholds": [
+    {"id": "A_OFFICIAL_DEFAULT", "value": 0.2},
+    {"id": "B_NORMALIZED_HYPOTHESIS", "value_formula": "0.2 * log(C) / log(1000)"}
+  ],
+  "passes": [1, 5, 20],
+  "learning_rate": 0.00025,
+  "rho": 0.05,
+  "momentum": 0.9,
+  "batch_size": 64,
+  "margin": "0.4 * log(C)",
+  "criterion": "highest mean macro-F1 across three source-validation receivers within each fold-seed; ties by declared candidate order A1,A5,A20,B1,B5,B20",
+  "reported_metrics": ["macro_f1", "accuracy", "ece", "nll", "brier", "reset_count", "final_parameter_change", "adaptation_seconds", "prediction_seconds"],
+  "heldout_target_predictions": false,
+  "heldout_target_metrics": false,
+  "future_target_evaluation_authorized": false
+}

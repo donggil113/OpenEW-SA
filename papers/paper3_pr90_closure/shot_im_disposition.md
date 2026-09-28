@@ -1,0 +1,23 @@
+# SHOT-IM disposition for PR #90 closure
+
+Evidence check: 2026-09-28 UTC. Status: PARTIAL baseline coverage; no WiSig target evaluation in this closure.
+
+## Decision
+
+**Technically applicable to the frozen WiSig P0 feature/head split, but the source-training recipe differs from the original SHOT paper. Intentionally excluded from the PR #90 result grid.** This is not a statement that SHOT-IM cannot run on a GroupNorm RF encoder or that SHOT-IM fails on WiSig. It remains a possible separately registered baseline study, not evidence for the current manuscript.
+
+| Question | Finding | Evidence |
+|---|---|---|
+| What is original SHOT? | A source-trained feature extractor, learned bottleneck and frozen classification hypothesis; target adaptation updates feature/bottleneck and may add pseudo-label transfer. | [ICML paper](https://proceedings.mlr.press/v119/liang20a.html); [official source trainer](https://github.com/tim-learn/SHOT/blob/f7d555a0d53b525b885e5ef2a887a267a5be3c36/object/image_source.py); [official target trainer](https://github.com/tim-learn/SHOT/blob/f7d555a0d53b525b885e5ef2a887a267a5be3c36/object/image_target.py) |
+| What is SHOT-IM? | With pseudo-label coefficient set to zero, target loss is conditional prediction entropy plus a marginal-diversity term; the classifier stays frozen while representation parameters update. This is a distinct ablation of the SHOT pipeline, not the full pseudo-label method. | [Official README, SHOT-IM invocation](https://github.com/tim-learn/SHOT/blob/f7d555a0d53b525b885e5ef2a887a267a5be3c36/readme.md); [target loss around lines 190–211](https://github.com/tim-learn/SHOT/blob/f7d555a0d53b525b885e5ef2a887a267a5be3c36/object/image_target.py) |
+| Can a generic source-trained model run an SHOT-IM objective? | Yes, mechanically. The official T3A companion repository includes SHOT and SHOTIM adapter classes. Its SHOTIM class applies entropy plus diversity, freezes the classifier and optimizes the featurizer; it does not require that the checkpoint was produced by the original SHOT image-source script. | [Official T3A adapter, classes SHOT/SHOTIM](https://github.com/matsuolab/T3A/blob/ff8cde5f06f61035c957720c6275c33893e0f564/domainbed/adapt_algorithms.py), lines 376–482; [T3A paper](https://papers.neurips.cc/paper/2021/hash/1415fe9fea0fa1e45dddcff5682239a0-Abstract.html) |
+| Does WiSig P0 expose suitable parameters? | Yes. IndependentClassifier has a trainable RFBackbone and separate linear classifier. A synthetic CPU batch of 8 random 256-IQ inputs and 6 classes produced finite entropy-plus-diversity loss and a nonzero backbone gradient; one optimizer step left the frozen classifier exactly unchanged. This verifies a forward/backward path only. | [Frozen P0 model](../../src/openew/paper3/wisig/models.py); synthetic-only smoke in this closure, no target packets or metric |
+| Why is exact SHOT paper reproduction absent? | Frozen P0 lacks the original paper's source bottleneck, BatchNorm/weight-normalized head and label-smoothing source recipe. Replacing or retraining these would change the source model and scientific comparison. | [PR #90 applicability audit](../paper3_reviewer_remediation/baseline_applicability_audit.md); original source/target scripts above |
+
+The T3A adapter is not a direct drop-in: it expects an algorithm.featurizer attribute while frozen P0 exposes backbone plus classifier. A transparent weight-preserving wrapper would be needed for that adapter. The synthetic smoke used a random P0 initialized with seed 17, froze its classifier, computed entropy plus diversity from one eight-row batch, and made one Adam update to the backbone. It checked finite loss, positive backbone gradient and unchanged classifier state. It did **not** test adaptation quality, target support, P0 checkpoint fidelity, online versus offline behavior, hyperparameter selection or a full SHOT objective sequence.
+
+## Scope consequence
+
+The existing manuscript may say that **exact original SHOT source-and-target reproduction** was excluded. It should not say SHOT-IM is technically impossible with the frozen checkpoint. If considered later, the method name must be precise, for example “SHOT-IM objective on the frozen WiSig P0 checkpoint,” with the source-recipe mismatch disclosed.
+
+A future test would require a new frozen record of feature-parameter subset, target-support-only batch schedule, diversity-loss computation at each batch, optimizer/learning-rate rule selected on source receivers only, receiver resets, query separation, checkpoint lineage and blinded target reporting. No such WiSig training, target prediction or performance claim was made here.

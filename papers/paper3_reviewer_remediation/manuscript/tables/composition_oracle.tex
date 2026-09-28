@@ -1,0 +1,13 @@
+\begingroup\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{lrrrccXccc}
+\toprule
+Condition & T3A & P2 & RX-NORM & Rx & Seeds & Support & Coverage & Same Q & Labels\\
+\midrule
+Natural & 0.8337 & 0.8067 & 0.8008 & 32 & 5 & 128 bank; P2 $k=32$ & 100\% & Yes & No\\
+Same-class excluded & 0.3384 & 0.8259 & 0.7843 & 32 & 5 & 128 bank; $\leq32$ selected & 100\% & Yes & Yes\\
+Same-class only & 0.8355 & 0.6084 & 0.7936 & 32 & 5 & 128 bank; $\leq32$ selected & 100\% & Yes & Yes\\
+Transmitter pure & 0.4057 & 0.7632 & 0.7857 & 32 & 5 & 128 bank; $\leq32$ selected & 100\% & Yes & Yes\\
+\midrule
+\multicolumn{10}{l}{EMB-STD and SAR-GN: NOT EVALUATED under oracle composition.}\\
+\bottomrule
+\end{tabularx}\endgroup
