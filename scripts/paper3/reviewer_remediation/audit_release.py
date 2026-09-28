@@ -8,7 +8,7 @@ bib=(doc/"references_verified.bib").read_text();keys=set(re.findall(r"@\w+\{([^,
 text="\n".join(x.read_text() for x in (doc/"manuscript").rglob("*.tex"))
 cited={k for group in re.findall(r"\\cite\{([^}]+)\}",text) for k in group.split(",")}
 assert not cited-keys,(cited-keys)
-assert len(keys)==31
+assert len(keys)==32  # One publisher-verified direct receiver-adaptation antecedent.
 bad=[]
 for path in release.rglob("*"):
  if not path.is_file():continue

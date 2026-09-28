@@ -16,7 +16,8 @@ def test_all_receiver_reliability_present(method):
 def test_reference_integrity():
  bib=(DOC/"references_verified.bib").read_text()
  keys=re.findall(r"@\w+\{([^,]+),",bib)
- assert len(keys)==len(set(keys))==31
+ # One directly relevant, publisher-verified receiver-adaptation citation was added.
+ assert len(keys)==len(set(keys))==32
  body=(DOC/"manuscript/shared/body.tex").read_text()
  cites={x for group in re.findall(r"\\cite\{([^}]+)\}",body) for x in group.split(",")}
  assert cites<=set(keys)

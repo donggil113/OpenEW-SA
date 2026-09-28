@@ -1,0 +1,16 @@
+% Submission presentation fix only; official IEEE Access template is external.
+% No internal-review footer or scientific text is introduced here.
+\usepackage{etoolbox}
+\makeatletter
+\newdimen\accessabstractwidth
+\accessabstractwidth=\dimexpr\titlewidth-12pt\relax
+\let\abstractwidth\accessabstractwidth
+% The official class carries example "VOLUME 11, 2023" footer metadata.
+% Omit example publication metadata in a pre-submission package.
+\newcommand{\submissionfooters}{%
+\def\@oddfoot{\hfil\thepage\hfil}%
+\let\@evenfoot\@oddfoot}
+\appto\ps@titlepage{\submissionfooters}
+\appto\ps@headings{\submissionfooters}
+\pagestyle{headings}
+\makeatother

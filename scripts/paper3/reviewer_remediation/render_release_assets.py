@@ -6,8 +6,16 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from openew.paper3.reviewer_remediation.contracts import file_sha
-p=argparse.ArgumentParser();p.add_argument("--repository",type=Path,default=Path.cwd());p.add_argument("--png-output",type=Path,required=True);a=p.parse_args()
-doc=a.repository/"papers/paper3_reviewer_remediation";e=doc/"evidence";m=doc/"manuscript"
+p=argparse.ArgumentParser();p.add_argument("--repository",type=Path,default=Path.cwd());p.add_argument("--png-output",type=Path,required=True)
+p.add_argument("--presentation-output",type=Path,help="New, separate staging tree for journal-title figures; never modifies the frozen manuscript assets")
+a=p.parse_args()
+doc=a.repository/"papers/paper3_reviewer_remediation";e=doc/"evidence"
+if a.presentation_output is not None:
+ if a.presentation_output.exists():raise FileExistsError("presentation output must be a new directory")
+ frozen_manuscript=(doc/"manuscript").resolve()
+ if frozen_manuscript in (a.presentation_output.resolve(),*a.presentation_output.resolve().parents):raise ValueError("cannot write presentation output inside frozen manuscript assets")
+ if frozen_manuscript in (a.png_output.resolve(),*a.png_output.resolve().parents):raise ValueError("cannot write presentation PNGs inside frozen manuscript assets")
+m=a.presentation_output if a.presentation_output is not None else doc/"manuscript"
 for d in (m/"figures",m/"tables",a.png_output):d.mkdir(parents=True,exist_ok=True)
 lineage=json.loads((e/"source_manifest.json").read_text())
 for name,sha in lineage["exports"].items():
@@ -24,7 +32,8 @@ def save(fig,name):
  fig.savefig(m/"figures"/(name+".pdf"),bbox_inches="tight",metadata={"CreationDate":None,"ModDate":None,"Creator":"OpenEW-SA frozen-summary renderer"})
  fig.savefig(a.png_output/(name+".png"),bbox_inches="tight")
  plt.close(fig);figures.append(name)
-def title(ax,text):ax.set_title(text+"\nPost-hoc addendum; frozen references retained",fontsize=9)
+def title(ax,text):
+ ax.set_title(text if a.presentation_output is not None else text+"\nPost-hoc addendum; frozen references retained",fontsize=9)
 def esc(x):return str(x).replace("_",r"\_").replace("%",r"\%")
 def table(name,headers,rows):
  text=r"\begin{tabular}{l"+"r"*(len(headers)-1)+"}\n"+r"\toprule"+"\n"+" & ".join(headers)+r" \\"+"\n"+r"\midrule"+"\n"
@@ -71,23 +80,23 @@ table("compute",["Method","Total ms","Total query/s","Peak MiB"],
 for method,r in cost.iterrows():
  for metric in ["total_seconds","total_samples_per_second","peak_gpu_memory_bytes"]:
   trace.append(f"| timing_summary.csv | {method}/{metric} | {r[metric]:.12g} | TIMING ONLY; seed 829; 3 repeats; 32 receivers |")
-(doc/"numerical_traceability_matrix.md").write_text("\n".join(trace)+"\n")
+(m/"numerical_traceability_matrix.md" if a.presentation_output is not None else doc/"numerical_traceability_matrix.md").write_text("\n".join(trace)+"\n")
 fig,ax=plt.subplots(figsize=(7.2,3.8));x=np.arange(len(methods))
 for i,method in enumerate(methods):
  values=rr[rr.method==method].macro_f1.to_numpy()
  ax.scatter(np.full(len(values),i)+np.linspace(-.12,.12,len(values)),values,s=10,alpha=.5,color=palette[i])
  ax.plot(i,values.mean(),marker="_",markersize=23,color="black",mew=2)
-ax.set_xticks(x,[labels[x] for x in methods]);ax.set_ylim(0,1);ax.set_ylabel("Receiver macro-F1");title(ax,"Unlabeled benchmark: all receiver means and grand means");save(fig,"benchmark")
+ax.set_xticks(x,[labels[x] for x in methods]);ax.set_ylim(0,1);ax.set_ylabel("Receiver macro-F1");title(ax,"Receiver-level macro-F1" if a.presentation_output is not None else "Unlabeled benchmark: all receiver means and grand means");save(fig,"benchmark")
 pivot=rr.pivot(index="receiver",columns="method",values="macro_f1").sort_index()
 fig,ax=plt.subplots(figsize=(7.2,3.8))
 for i,meth in enumerate(["T3A","P2","SAR_GN","EMB_STD"]):
  ax.plot(np.arange(32),pivot[meth]-pivot.P0,label=labels[meth],marker=["o","s","^","D"][i],ms=3,lw=.8,color=palette[i+1])
 ax.axhline(0,color="black",lw=.8);ax.set_xticks(np.arange(32),pivot.index,rotation=90,fontsize=7)
-ax.set_ylabel("Receiver macro-F1 difference from P0");title(ax,"Receiver heterogeneity; fixed receiver order");ax.legend(ncol=4,fontsize=8);save(fig,"receiver_deltas")
+ax.set_ylabel("Receiver macro-F1 difference from P0");title(ax,"Receiver-level differences from P0" if a.presentation_output is not None else "Receiver heterogeneity; fixed receiver order");ax.legend(ncol=4,fontsize=8);save(fig,"receiver_deltas")
 fig,ax=plt.subplots(figsize=(7.2,3.8))
 for i,meth in enumerate(["T3A","P2","SAR_GN","EMB_STD"]):
  b=budget[budget.method==meth].sort_values("budget");ax.plot(b.budget,b.macro_f1,label=labels[meth],marker=["o","s","^","D"][i],color=palette[i+1])
-ax.set_ylim(0,1);ax.set_xticks([0,16,32,64,128,256]);ax.set_xlabel("Unlabeled support packets");ax.set_ylabel("Receiver-equal macro-F1");ax.legend(ncol=4,fontsize=8);title(ax,"Support budgets: common 256-reserve query set");save(fig,"support_budget")
+ax.set_ylim(0,1);ax.set_xticks([0,16,32,64,128,256]);ax.set_xlabel("Unlabeled support packets");ax.set_ylabel("Receiver-equal macro-F1");ax.legend(ncol=4,fontsize=8);title(ax,"Unlabeled support budget" if a.presentation_output is not None else "Support budgets: common 256-reserve query set");save(fig,"support_budget")
 fig,axes=plt.subplots(1,3,figsize=(7.2,3))
 for ax,metric in zip(axes,["ece","nll","brier"]):
  for i,method in enumerate(methods):
@@ -96,7 +105,7 @@ for ax,metric in zip(axes,["ece","nll","brier"]):
   ax.scatter(i-.12,v.loc["raw",metric],marker="o",color=palette[i],s=20)
   ax.scatter(i+.12,v.loc["source_temperature",metric],marker="s",facecolor="white",edgecolor=palette[i],s=20)
  ax.set_xticks(range(5),[labels[x] for x in methods],rotation=65,fontsize=7);ax.set_ylim(bottom=0);ax.set_title(metric.upper()+" (lower is better)",fontsize=9)
-fig.suptitle("Post-hoc probability quality: filled = raw; hollow = source temperature",fontsize=9);fig.tight_layout();save(fig,"probability_quality")
+fig.suptitle("Probability quality: filled = raw; hollow = source temperature" if a.presentation_output is not None else "Post-hoc probability quality: filled = raw; hollow = source temperature",fontsize=9);fig.tight_layout();save(fig,"probability_quality")
 bins=pd.read_csv(e/"reliability_receiver_bins.csv")
 fig,(ax,mass)=plt.subplots(2,1,figsize=(7.2,4.5),gridspec_kw={"height_ratios":[3,1]},sharex=True)
 for i,meth in enumerate(methods):
@@ -104,12 +113,12 @@ for i,meth in enumerate(methods):
  b=b[b["count"]>0];ax.plot(b.confidence_sum/b["count"],b.correct_sum/b["count"],marker=["o","s","^","D","v"][i],ms=3,label=labels[meth],color=palette[i])
  mass.plot((b.index+.5)/15,b["count"]/b["count"].sum(),color=palette[i],marker=["o","s","^","D","v"][i],ms=3)
 ax.plot([0,1],[0,1],"k--",lw=.7);ax.set_ylim(0,1);ax.set_xlim(0,1);ax.set_ylabel("Empirical accuracy");ax.legend(ncol=5,fontsize=7)
-title(ax,"Raw reliability: pooled descriptive bin counts (not packet inference)")
+title(ax,"Receiver-pooled reliability" if a.presentation_output is not None else "Raw reliability: pooled descriptive bin counts (not packet inference)")
 mass.set_xlabel("Confidence");mass.set_ylabel("Mass");mass.set_ylim(0,1);fig.tight_layout();save(fig,"reliability_aggregate")
 fig,ax=plt.subplots(figsize=(3.5,2.8))
 for i,meth in enumerate(methods):
  ax.bar(i,cost.loc[meth,"total_seconds"]*1000,color=palette[i],hatch=["","//","..","xx","++"][i],edgecolor="black",lw=.4)
-ax.set_xticks(range(5),[labels[x] for x in methods],fontsize=8);ax.set_ylim(bottom=0);ax.set_ylabel("Total wall time (ms)");ax.set_title("Post-hoc timing replay\n32 receivers; seed 829; three repeats",fontsize=8);save(fig,"compute")
+ax.set_xticks(range(5),[labels[x] for x in methods],fontsize=8);ax.set_ylim(bottom=0);ax.set_ylabel("Total wall time (ms)");ax.set_title("Test-time computation\n32 receivers; seed 829; three repeats" if a.presentation_output is not None else "Post-hoc timing replay\n32 receivers; seed 829; three repeats",fontsize=8);save(fig,"compute")
 # Full receiver reliability coverage, with no selected receiver panels.
 receivers=sorted(bins.receiver.unique())
 for variant in ["raw","source_temperature"]:
@@ -121,11 +130,19 @@ for variant in ["raw","source_temperature"]:
     b=b[b["count"]>0];ax.plot(b.confidence_sum/b["count"],b.correct_sum/b["count"],color=palette[i],marker=["o","s","^","D","v"][i],ms=2,lw=.7,label=labels[meth])
    ax.plot([0,1],[0,1],"k--",lw=.5);ax.set(xlim=(0,1),ylim=(0,1),title="Receiver "+receiver)
   handles,ls=axes.flat[0].get_legend_handles_labels();fig.legend(handles,ls,ncol=5,loc="lower center",bbox_to_anchor=(.5,.005),fontsize=8)
-  fig.suptitle("Post-hoc reliability — "+variant.replace("_"," ")+" — all receivers",fontsize=10)
+  fig.suptitle(
+   f"Receiver reliability: {variant.replace('_',' ')} (panel {page+1}/4)"
+   if a.presentation_output is not None
+   else "Post-hoc reliability — "+variant.replace("_"," ")+" — all receivers",
+   fontsize=10)
   fig.supxlabel("Confidence",y=.052);fig.supylabel("Empirical accuracy");fig.tight_layout(rect=[.02,.10,1,.96]);save(fig,f"reliability_{variant}_{page+1}")
 # Supplementary receiver means, keeps all methods rather than selected receivers.
 table("receiver_means",["Receiver"]+[labels[x] for x in methods],
  [[r]+[f"{pivot.loc[r,x]:.4f}" for x in methods] for r in pivot.index])
-(m/"figure_manifest.json").write_text(json.dumps({"figures":figures,"pdf_sha256":{x:file_sha(m/"figures"/(x+".pdf")) for x in figures},
- "analysis_sha256":lineage["analysis_sha256"],"receiver_count":32,"evidence":"POST_HOC"},indent=2,sort_keys=True)+"\n")
+figure_manifest={"figures":figures,"pdf_sha256":{x:file_sha(m/"figures"/(x+".pdf")) for x in figures},
+ "analysis_sha256":lineage["analysis_sha256"],"receiver_count":32,"evidence":"POST_HOC"}
+if a.presentation_output is not None:
+ figure_manifest.update({"render_variant":"PRESENTATION_TITLES_ONLY",
+  "frozen_plot_input_manifest_sha256":file_sha(e/"source_manifest.json")})
+(m/"figure_manifest.json").write_text(json.dumps(figure_manifest,indent=2,sort_keys=True)+"\n")
 print(json.dumps({"figures":len(figures),"tables":8,"traceability_rows":len(trace)-7}))
