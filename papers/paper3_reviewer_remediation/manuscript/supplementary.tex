@@ -2,16 +2,26 @@
 \usepackage[margin=.65in]{geometry}
 \usepackage{lmodern}
 \input{shared/preamble}
-\title{Receiver Adaptation: Reviewer-Remediation Supplement}
+\title{Supplementary Material: Unlabeled Receiver Adaptation Under Unseen-Receiver Shift}
 \author{OpenEW-SA Internal Review}
 \date{}
 \begin{document}\maketitle
 \section{Evidence status and complete receiver coverage}
 This is a post-hoc baseline-completeness addendum, not the original confirmatory family. The primary V2 result is unchanged. Raw receiver-by-seed metrics and predictions remain in the immutable external analysis package; the portable release includes all receiver averages and complete reliability bin summaries without RF payloads. The full external metric file contains every frozen method, receiver and seed, with no best-seed filtering.
 \begin{center}\small\input{tables/receiver_means}\end{center}
+\section{Study provenance and analysis chronology}
+The first WiSig receiver-context study was merged on 3 September 2026 (PR \#84, commit \texttt{53bcf414}). The disjoint-support receiver-level V2 analysis and its P2-versus-T3A comparison followed on 5 September (PR \#85, \texttt{48cec066}). The receiver-adaptation benchmark was preregistered on 5 September (\texttt{cdfc2d8}) and merged on 6 September (PR \#88, \texttt{7cc9a27a}). The baseline-completeness addendum was preregistered on 6 September (\texttt{f30b658}) after those target results were known; its later freeze before its own execution does not make it independent confirmation. Dates here describe repository provenance, not separate dataset replications.
 \section{Exploratory paired estimates}
 Five seeds are averaged within receiver. Bootstrap and sign-flip settings are fixed. No new Holm family is introduced. The full-network method is a label-dependent diagnostic, not an unlabeled competitor.
 \begin{center}\small\input{tables/paired}\end{center}
+\section{Full receiver-level paired-delta display}
+Figure~\ref{fig:all_receiver_deltas} preserves the original physical-receiver order; receivers were not sorted by gain or selected after observing outcomes. It combines frozen receiver-level reference comparisons with the explicitly post-hoc baseline-completeness conditions. The plot is descriptive and does not create a new confirmatory comparison family.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth,height=.58\textheight,keepaspectratio]{receiver_deltas}
+\caption{All 32 held-out receivers in fixed identity order, without performance sorting. Each paired macro-F1 difference averages five seeds within a receiver before plotting. T3A and P2 are frozen reference comparisons; SAR-GN and EMB-STD are later post-hoc baseline-completeness comparisons. Neither the plot nor its display order changes the preregistered V2 inference.}
+\label{fig:all_receiver_deltas}
+\end{figure}
 \section{Information and implementation details}
 P0/P0-WIDE/DG use source labels; T3A and P2 use the frozen unlabeled support bank. SAR-GN updates only GroupNorm affine parameters. EMB-STD uses source-training and target-support moments, retaining the classifier. Full-network supervised FT uses support labels. No query packet participates in adaptation. Transmitter labels are opened only for metrics except in the explicitly labeled oracle branch.
 
@@ -26,10 +36,40 @@ For each method and condition, five seed macro-F1 values are first averaged insi
 
 Natural T3A and RX-NORM use the full 128-packet bank, while natural P2 uses 32 peers drawn from it. Every oracle condition selects at most 32 peers from that same bank. Same-class-excluded and same-class-only select different support for each query using its true transmitter label. Transmitter-pure selects one labeled support class by a fixed hash without consulting test performance. Same-class-only has roughly 21--25 mean peers per receiver-seed record; transmitter-pure can have as few as one. Thus natural-to-oracle differences mix class composition with support amount for T3A/RX-NORM. Oracle conditions are nondeployable, post-hoc diagnostics. Neither EMB-STD nor SAR-GN was evaluated with these oracle supports.
 
+\section{Full probability-quality diagnostics}
+Tables~\ref{tab:prob_full_raw} and~\ref{tab:prob_full_ts} expand the compact main-text table for its five named methods. Values are receiver-equal means: each metric is averaged over five seeds within each of 32 held-out receivers, then averaged equally over receivers. Source-validation-only positive temperature scaling changes probability scores but not the top-1 prediction; no target label was used to fit a temperature. ECE uses 15 equal-width top-label bins; adaptive ECE (aECE) uses 15 equal-count groups in stable confidence order. Multiclass Brier is the sum over six classes, not a class average. Gap is mean confidence minus mean correctness, so a negative gap indicates average underconfidence. These probability diagnostics are post-hoc, not a second accuracy experiment.
+
+\begin{table}[!ht]\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Complete raw-probability diagnostics for the five main-text probability methods. SAR-GN$^{\dagger}$ denotes the bounded, recovery-heavy post-hoc application, not SAR generally.}
+\label{tab:prob_full_raw}
+\begin{tabular}{lrrrrrr}\toprule
+Method & ECE & aECE & NLL & Brier & Mean conf. & Gap \\
+\midrule
+P0 & \val{P0}{ece}{raw} & \val{P0}{adaptive_ece}{raw} & \val{P0}{nll}{raw} & \val{P0}{brier}{raw} & \val{P0}{mean_confidence}{raw} & \val{P0}{confidence_accuracy_gap}{raw} \\
+T3A & \val{T3A}{ece}{raw} & \val{T3A}{adaptive_ece}{raw} & \val{T3A}{nll}{raw} & \val{T3A}{brier}{raw} & \val{T3A}{mean_confidence}{raw} & \val{T3A}{confidence_accuracy_gap}{raw} \\
+P2 & \val{P2}{ece}{raw} & \val{P2}{adaptive_ece}{raw} & \val{P2}{nll}{raw} & \val{P2}{brier}{raw} & \val{P2}{mean_confidence}{raw} & \val{P2}{confidence_accuracy_gap}{raw} \\
+EMB-STD & \val{EMB_STD}{ece}{raw} & \val{EMB_STD}{adaptive_ece}{raw} & \val{EMB_STD}{nll}{raw} & \val{EMB_STD}{brier}{raw} & \val{EMB_STD}{mean_confidence}{raw} & \val{EMB_STD}{confidence_accuracy_gap}{raw} \\
+SAR-GN$^{\dagger}$ & \val{SAR_GN}{ece}{raw} & \val{SAR_GN}{adaptive_ece}{raw} & \val{SAR_GN}{nll}{raw} & \val{SAR_GN}{brier}{raw} & \val{SAR_GN}{mean_confidence}{raw} & \val{SAR_GN}{confidence_accuracy_gap}{raw} \\
+\bottomrule\end{tabular}
+\par\medskip
+\caption{The same metrics after temperature fitting on source-validation receivers only. The mean correctness and macro-F1 of each method remain unchanged because positive temperature scaling preserves the winning class.}
+\label{tab:prob_full_ts}
+\begin{tabular}{lrrrrrr}\toprule
+Method & ECE & aECE & NLL & Brier & Mean conf. & Gap \\
+\midrule
+P0 & \val{P0}{ece}{source_temperature} & \val{P0}{adaptive_ece}{source_temperature} & \val{P0}{nll}{source_temperature} & \val{P0}{brier}{source_temperature} & \val{P0}{mean_confidence}{source_temperature} & \val{P0}{confidence_accuracy_gap}{source_temperature} \\
+T3A & \val{T3A}{ece}{source_temperature} & \val{T3A}{adaptive_ece}{source_temperature} & \val{T3A}{nll}{source_temperature} & \val{T3A}{brier}{source_temperature} & \val{T3A}{mean_confidence}{source_temperature} & \val{T3A}{confidence_accuracy_gap}{source_temperature} \\
+P2 & \val{P2}{ece}{source_temperature} & \val{P2}{adaptive_ece}{source_temperature} & \val{P2}{nll}{source_temperature} & \val{P2}{brier}{source_temperature} & \val{P2}{mean_confidence}{source_temperature} & \val{P2}{confidence_accuracy_gap}{source_temperature} \\
+EMB-STD & \val{EMB_STD}{ece}{source_temperature} & \val{EMB_STD}{adaptive_ece}{source_temperature} & \val{EMB_STD}{nll}{source_temperature} & \val{EMB_STD}{brier}{source_temperature} & \val{EMB_STD}{mean_confidence}{source_temperature} & \val{EMB_STD}{confidence_accuracy_gap}{source_temperature} \\
+SAR-GN$^{\dagger}$ & \val{SAR_GN}{ece}{source_temperature} & \val{SAR_GN}{adaptive_ece}{source_temperature} & \val{SAR_GN}{nll}{source_temperature} & \val{SAR_GN}{brier}{source_temperature} & \val{SAR_GN}{mean_confidence}{source_temperature} & \val{SAR_GN}{confidence_accuracy_gap}{source_temperature} \\
+\bottomrule\end{tabular}
+\end{table}
+
+\clearpage
 \section{All-receiver reliability}
 The following pages cover all 32 receivers for both raw and source-temperature probabilities, always in the same receiver order. Five seed prediction populations are combined within a receiver for descriptive bins. Main-text scalar metrics first average seeds and then receivers. Curves with little bin mass should not be overinterpreted; exact bin mass accompanies the release.
-\clearpage
-\noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_raw_1}
+\par\medskip
+\noindent\includegraphics[width=\textwidth,height=.72\textheight,keepaspectratio]{reliability_raw_1}
 \clearpage
 \noindent\includegraphics[width=\textwidth,height=.92\textheight,keepaspectratio]{reliability_raw_2}
 \clearpage
