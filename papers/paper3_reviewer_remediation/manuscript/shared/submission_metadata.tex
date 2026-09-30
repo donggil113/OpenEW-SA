@@ -1,0 +1,26 @@
+% Human-edited submission metadata. This file is not used by internal builds.
+% Unresolved fields are deliberately explicit here and must never appear in a
+% submission PDF. The builder suppresses these sentinel values in staged PDFs.
+% Obtain human approval before using any staged PDF for journal submission.
+\newcommand{\SubmissionAuthors}{AUTHOR_1}
+\newcommand{\SubmissionAffiliations}{AFFILIATION_1}
+\newcommand{\SubmissionORCIDs}{ORCID_1}
+\newcommand{\SubmissionCorrespondingAuthor}{CORRESPONDING_AUTHOR}
+\newcommand{\SubmissionCorrespondingEmail}{CORRESPONDING_EMAIL}
+\newcommand{\SubmissionFunding}{FUNDING_STATEMENT_HUMAN_REQUIRED}
+\newcommand{\SubmissionCOI}{COI_STATEMENT_HUMAN_REQUIRED}
+\newcommand{\SubmissionCodeReleaseURL}{HUMAN_RELEASE_URL_REQUIRED}
+
+% Draft only: the authors must verify the exact tools, roles, and journal policy.
+% No unverified model/version information is asserted in the PDF text.
+\newcommand{\SubmissionAIDisclosure}{OpenAI Codex assisted with analysis software, figure and table preparation, and manuscript drafting and editing. Claude assisted with independent methodological and manuscript critique. The authors retain responsibility for the article.}
+
+% Submission-facing availability language is kept separate from frozen science.
+% Public-release decisions, including any eventual URL or DOI, require approval.
+\newcommand{\SubmissionCodeAvailability}{Source code for the analysis, configurations, protocols, tests, and manuscript build is maintained in the OpenEW-SA project. Split and support-bank reconstruction rules and their hashes, as well as small derived receiver-level summaries, are distinct from the original RF data. Public release of exact split/support manifests and derived artifacts remains subject to provenance and licence review. No archival DOI or public release URL is asserted here.}
+\newcommand{\SubmissionDataAvailability}{The original WiSig RF payload is provided by its official source and is not redistributed with this article or code. WiSig is attributed to its creators~\cite{wisig,orbit}; its CC BY-NC-SA 4.0 licence and applicable provider terms govern use. Converted RF tensors, model checkpoints, sample-level prediction archives, and opaque-ID/source-record mappings remain outside the public package pending separate release approval. The payload-absent package can reproduce released tables and figures but cannot independently reproduce model training without lawful access to the original data.}
+\newcommand{\SubmissionDataCodeAvailability}{%
+\subsection{Data and Code Availability}
+\SubmissionCodeAvailability
+
+\SubmissionDataAvailability}
