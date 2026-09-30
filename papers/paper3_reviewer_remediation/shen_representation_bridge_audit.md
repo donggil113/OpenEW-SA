@@ -1,0 +1,4 @@
+# Shen representation bridge: NO-GO
+The existing ManyRx conversion preserves256 complex samples per packet. This is not a longer continuous WiFi capture. The official Shen preprocessing uses boxcar STFT window128, overlap64, no boundary/padding, adjacent frame division and frequency crop .3. Its network expects52x126. At256 IQ, only3 STFT frames and2 ratio columns exist, not126;8192 IQ yields127 frames and126 ratios.
+No reshaping, repeating, zero-padding or concatenating packets creates a physically meaningful LoRa preamble. A new raw acquisition/representation and task would be needed. Therefore no source smoke or full Shen-GRL addendum is authorized.
+The source code and existing manifests were inspected read-only; no unlicensed Shen payload was downloaded. Future lawful Shen full-preamble/chirp transfer remains a separately frozen representation problem, not evidence in this manuscript.

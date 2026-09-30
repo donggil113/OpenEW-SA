@@ -1,0 +1,16 @@
+{
+  "kind": "frozen_v2_receiver_bootstrap_snapshot",
+  "comparison": "P2_MINUS_P0",
+  "source_relative_to_external_data_root": "paper3/wisig_v2/analysis/confirmatory_v2/receiver_level_inference.json",
+  "source_sha256": "c2ab75dfad6fe9817f04df37f567dd0ce54ead1767d1fe90632b888c384b14a1",
+  "source_git_phase": "merged PR #85 WiSig V2 confirmatory receiver-level analysis",
+  "bootstrap": {
+    "ci95_lower": -0.006660153577247822,
+    "ci95_upper": 0.00885749025574811,
+    "mean_difference": 0.0010472954468500459,
+    "receiver_count": 32,
+    "replicates": 10000,
+    "rng_seed": 20260903
+  },
+  "note": "Exact key copied from the frozen source for RF-payload-absent figure regeneration; this snapshot is not a new estimate."
+}

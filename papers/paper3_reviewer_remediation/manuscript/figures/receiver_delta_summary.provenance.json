@@ -1,0 +1,60 @@
+{
+  "external_v2_original_verified": true,
+  "figure_status": "publication-layout-only; no new inferential computation",
+  "fixed_method_order": [
+    "T3A",
+    "P2",
+    "EMB-STD",
+    "SAR-GN"
+  ],
+  "inference_unit": "receiver; five seeds averaged within receiver in original analyses",
+  "interval": "original 95% receiver bootstrap interval, 10,000 replicates",
+  "output_sha256": {
+    "pdf": "760df7ad002abdafb11e283ae2d74362bc19b42e3e72be0e2a21f698915ed576",
+    "png": "82d867e4729658172ece085155c7e98192af01cfb7a7759e07d655551c9355b9"
+  },
+  "rows": [
+    {
+      "lower": 0.022010842840553903,
+      "mean": 0.028013737907748887,
+      "method": "T3A",
+      "origin": "earlier frozen analysis",
+      "receivers": 32,
+      "replicates": 10000,
+      "upper": 0.034661295520003
+    },
+    {
+      "lower": -0.006660153577247822,
+      "mean": 0.0010472954468500459,
+      "method": "P2",
+      "origin": "earlier frozen analysis",
+      "receivers": 32,
+      "replicates": 10000,
+      "upper": 0.00885749025574811
+    },
+    {
+      "lower": 0.01746640135077357,
+      "mean": 0.022811516470818638,
+      "method": "EMB-STD",
+      "origin": "post-hoc addendum",
+      "receivers": 32,
+      "replicates": 10000,
+      "upper": 0.028405899251059415
+    },
+    {
+      "lower": -1.2680630590365671e-05,
+      "mean": 5.631621270527076e-06,
+      "method": "SAR-GN",
+      "origin": "post-hoc addendum",
+      "receivers": 32,
+      "replicates": 10000,
+      "upper": 2.76832082433392e-05
+    }
+  ],
+  "source_sha256": {
+    "PR90_prior_receiver_inference.json": "9192d0bf6bbac352bf8eccf6b8e61776df897615f21915da8b1136072ce0e8ce",
+    "PR90_receiver_inference.json": "63933d1947e0f132259023df495df65a003d52df74bb0b5b986a52a3d3308792",
+    "V2_receiver_level_inference.json": "c2ab75dfad6fe9817f04df37f567dd0ce54ead1767d1fe90632b888c384b14a1",
+    "frozen_p2_receiver_delta.json": "a5d21be336afc3db304866c8cd3c0dc02f3b1928c7d6cb5059d85202075a24ec"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "evidence_status": "POST_HOC_BASELINE_COMPLETENESS",
+  "seeds": [
+    829,
+    1829,
+    2829,
+    3829,
+    4829
+  ],
+  "receiver_count": 32,
+  "primary_support": 128,
+  "context_k": 32,
+  "new_methods": [
+    "SAR_GN",
+    "EMB_STD",
+    "SUP_FT_FULL_128"
+  ],
+  "budget_methods": [
+    "SAR_GN",
+    "EMB_STD"
+  ],
+  "budgets": [
+    0,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "primary_count": 480,
+  "secondary_count": 1920,
+  "total_count": 2400,
+  "bootstrap_replicates": 10000,
+  "sign_flips": 100000,
+  "rng_seed": 20260906,
+  "catastrophic_drop": 0.05,
+  "ece_bins": 15,
+  "temperature_bounds": [
+    0.05,
+    20
+  ],
+  "holm_family": [],
+  "sar": {
+    "batch_size": 64,
+    "steps_per_batch": 1,
+    "rho": 0.05,
+    "lr": 0.00025,
+    "momentum": 0.9,
+    "entropy_margin_fraction": 0.4,
+    "recovery_threshold": 0.2
+  },
+  "full_oracle": {
+    "learning_rates": [
+      0.00001,
+      0.0001,
+      0.0005
+    ],
+    "steps": [
+      5,
+      20
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "bootstrap": 10000,
+  "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+  "holm": [],
+  "new_budget": 1920,
+  "new_primary": 480,
+  "primary_methods": 17,
+  "query_decisions_unchanged_by_temperature": true,
+  "receivers": 32,
+  "seeds": 5,
+  "sign_flips": 100000,
+  "source_temperature_only": true,
+  "status": "PASS",
+  "unblinding_manifest_sha256": "450bcb94af0fb7f1f9db4ab5b3f28543c6ba904a9e5de8dd0461ae602b195c1c",
+  "unit": "receiver"
+}

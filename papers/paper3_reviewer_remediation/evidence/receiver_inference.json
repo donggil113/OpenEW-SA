@@ -1,0 +1,164 @@
+{
+  "EMB_STD_MINUS_P0": {
+    "bootstrap": {
+      "ci95_lower": 0.01746640135077357,
+      "ci95_upper": 0.028405899251059415,
+      "mean_difference": 0.022811516470818638,
+      "receiver_count": 32,
+      "replicates": 10000,
+      "rng_seed": 20260906
+    },
+    "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+    "holm_family": [],
+    "median": 0.018846065458355765,
+    "negative": 0,
+    "p_value_status": "EXPLORATORY_POST_HOC_UNADJUSTED",
+    "positive": 32,
+    "seed_handling": "five-seed mean within receiver",
+    "sign_flip": {
+      "method": "two-sided Monte Carlo receiver sign flip",
+      "observed_mean_difference": 0.022811516470818638,
+      "p_value": 9.99990000099999e-06,
+      "permutations": 100000,
+      "receiver_count": 32,
+      "rng_seed": 20260906
+    },
+    "standardized_paired_effect": 1.4145972534726383,
+    "unit": "receiver"
+  },
+  "EMB_STD_MINUS_T3A": {
+    "bootstrap": {
+      "ci95_lower": -0.010351082911036551,
+      "ci95_upper": -0.00011786424310592108,
+      "mean_difference": -0.005202221436930242,
+      "receiver_count": 32,
+      "replicates": 10000,
+      "rng_seed": 20260906
+    },
+    "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+    "holm_family": [],
+    "median": -0.005402382413613238,
+    "negative": 23,
+    "p_value_status": "EXPLORATORY_POST_HOC_UNADJUSTED",
+    "positive": 9,
+    "seed_handling": "five-seed mean within receiver",
+    "sign_flip": {
+      "method": "two-sided Monte Carlo receiver sign flip",
+      "observed_mean_difference": -0.005202221436930242,
+      "p_value": 0.05936940630593694,
+      "permutations": 100000,
+      "receiver_count": 32,
+      "rng_seed": 20260906
+    },
+    "standardized_paired_effect": -0.34567525574585123,
+    "unit": "receiver"
+  },
+  "SAR_GN_MINUS_P0": {
+    "bootstrap": {
+      "ci95_lower": -1.2680630590365671e-05,
+      "ci95_upper": 2.76832082433392e-05,
+      "mean_difference": 5.631621270527076e-06,
+      "receiver_count": 32,
+      "replicates": 10000,
+      "rng_seed": 20260906
+    },
+    "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+    "holm_family": [],
+    "median": 0.0,
+    "negative": 4,
+    "p_value_status": "EXPLORATORY_POST_HOC_UNADJUSTED",
+    "positive": 3,
+    "seed_handling": "five-seed mean within receiver",
+    "sign_flip": {
+      "method": "two-sided Monte Carlo receiver sign flip",
+      "observed_mean_difference": 5.631621270527076e-06,
+      "p_value": 0.6401935980640193,
+      "permutations": 100000,
+      "receiver_count": 32,
+      "rng_seed": 20260906
+    },
+    "standardized_paired_effect": 0.09558054635120722,
+    "unit": "receiver"
+  },
+  "SAR_GN_MINUS_T3A": {
+    "bootstrap": {
+      "ci95_lower": -0.0345282171211278,
+      "ci95_upper": -0.021932641739666924,
+      "mean_difference": -0.028008106286478353,
+      "receiver_count": 32,
+      "replicates": 10000,
+      "rng_seed": 20260906
+    },
+    "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+    "holm_family": [],
+    "median": -0.02483126061414742,
+    "negative": 31,
+    "p_value_status": "EXPLORATORY_POST_HOC_UNADJUSTED",
+    "positive": 1,
+    "seed_handling": "five-seed mean within receiver",
+    "sign_flip": {
+      "method": "two-sided Monte Carlo receiver sign flip",
+      "observed_mean_difference": -0.028008106286478353,
+      "p_value": 9.99990000099999e-06,
+      "permutations": 100000,
+      "receiver_count": 32,
+      "rng_seed": 20260906
+    },
+    "standardized_paired_effect": -1.5029966468044813,
+    "unit": "receiver"
+  },
+  "SUP_FT_FULL_128_MINUS_P0": {
+    "bootstrap": {
+      "ci95_lower": 0.0952700809488089,
+      "ci95_upper": 0.137719674794622,
+      "mean_difference": 0.11613236371800326,
+      "receiver_count": 32,
+      "replicates": 10000,
+      "rng_seed": 20260906
+    },
+    "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+    "holm_family": [],
+    "median": 0.10283784872941798,
+    "negative": 0,
+    "p_value_status": "EXPLORATORY_POST_HOC_UNADJUSTED",
+    "positive": 32,
+    "seed_handling": "five-seed mean within receiver",
+    "sign_flip": {
+      "method": "two-sided Monte Carlo receiver sign flip",
+      "observed_mean_difference": 0.11613236371800326,
+      "p_value": 9.99990000099999e-06,
+      "permutations": 100000,
+      "receiver_count": 32,
+      "rng_seed": 20260906
+    },
+    "standardized_paired_effect": 1.8537867253313962,
+    "unit": "receiver"
+  },
+  "SUP_FT_FULL_128_MINUS_T3A": {
+    "bootstrap": {
+      "ci95_lower": 0.07016793897329016,
+      "ci95_upper": 0.10678878293933987,
+      "mean_difference": 0.08811862581025438,
+      "receiver_count": 32,
+      "replicates": 10000,
+      "rng_seed": 20260906
+    },
+    "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+    "holm_family": [],
+    "median": 0.08064413910259521,
+    "negative": 1,
+    "p_value_status": "EXPLORATORY_POST_HOC_UNADJUSTED",
+    "positive": 31,
+    "seed_handling": "five-seed mean within receiver",
+    "sign_flip": {
+      "method": "two-sided Monte Carlo receiver sign flip",
+      "observed_mean_difference": 0.08811862581025438,
+      "p_value": 9.99990000099999e-06,
+      "permutations": 100000,
+      "receiver_count": 32,
+      "rng_seed": 20260906
+    },
+    "standardized_paired_effect": 1.6200666020152488,
+    "unit": "receiver"
+  }
+}

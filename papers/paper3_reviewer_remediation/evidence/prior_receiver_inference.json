@@ -1,0 +1,37 @@
+{
+  "T3A_MINUS_P0": {
+    "bootstrap": {
+      "ci95_lower": 0.022010842840553903,
+      "ci95_upper": 0.034661295520003,
+      "mean_difference": 0.028013737907748887,
+      "receiver_count": 32,
+      "replicates": 10000,
+      "rng_seed": 20260903
+    },
+    "negative_receivers": 1,
+    "positive_receivers": 31,
+    "receiver_delta_summary": {
+      "count": 32,
+      "max": 0.08503249079733288,
+      "mean": 0.028013737907748887,
+      "median": 0.02483126061414742,
+      "min": -0.008121872853626755,
+      "std": 0.01864279186078233
+    },
+    "sign_flip": {
+      "method": "two-sided Monte Carlo receiver sign flip",
+      "observed_mean_difference": 0.028013737907748887,
+      "p_value": 9.99990000099999e-06,
+      "permutations": 100000,
+      "receiver_count": 32,
+      "rng_seed": 20260903
+    },
+    "standardized_mean_difference": 1.5026578699663342
+  },
+  "comparison_family": [
+    "T3A_MINUS_P0"
+  ],
+  "holm_adjusted": {
+    "T3A_MINUS_P0": 9.99990000099999e-06
+  }
+}

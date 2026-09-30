@@ -1,0 +1,10 @@
+{
+  "evidence": "POST_HOC_BASELINE_COMPLETENESS",
+  "expected_records": 2400,
+  "git_sha": "028e4c770d65f25d8f85c913a267ad75788c0ba2",
+  "grid_sha256": "46e2a5be2ff1404328dd40176130ce4b084221b471bc47a442cd537c421233b8",
+  "method_tree_sha256": "0f8ec0c6fccbfd6470828473efbe0f9ea62a8fe5f4acd892d71d3fd6061628dd",
+  "preregistration_sha256": "24d303efefe25287021bdb1c7a72d8e79ad18bb711d58992e9d9e38e5d64f2ee",
+  "protocol_sha256": "440ce90afc8d89b951eb2ca07e0649fc124828b87fc0a2192e1da7c643e93dc9",
+  "utc": "2026-09-06T00:20:48.522134+00:00"
+}
