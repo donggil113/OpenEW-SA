@@ -33,6 +33,29 @@ SUBMISSION_FIGURES = {
     "reliability_source_temperature_3.pdf",
     "reliability_source_temperature_4.pdf",
 }
+METADATA_SENTINELS = (
+    "AUTHOR_1",
+    "AFFILIATION_1",
+    "ORCID_1",
+    "CORRESPONDING_AUTHOR",
+    "CORRESPONDING_EMAIL",
+    "FUNDING_STATEMENT_HUMAN_REQUIRED",
+    "COI_STATEMENT_HUMAN_REQUIRED",
+    "HUMAN_RELEASE_URL_REQUIRED",
+)
+SUBMISSION_PDF_FORBIDDEN = (
+    "openew-sa internal review",
+    "internal-review",
+    "human_required",
+    "placeholder",
+    "draft only",
+    "not submitted",
+    "pr #",
+    "closure",
+    "/mnt/",
+    "/home/",
+    "d:\\",
+)
 
 
 def replace_once(path: Path, old: str, new: str) -> None:
@@ -43,7 +66,91 @@ def replace_once(path: Path, old: str, new: str) -> None:
     path.write_text(source.replace(old, new))
 
 
-def prepare_submission_stage(stage: Path, figures: Path, evidence_manifest: Path) -> None:
+def replace_section(path: Path, start: str, end: str | None, replacement: str) -> None:
+    """Replace only a staged metadata/provenance section, never canonical science."""
+    source = path.read_text()
+    if source.count(start) != 1 or (end is not None and source.count(end) != 1):
+        raise RuntimeError(f"expected unique staged section markers in {path}")
+    first = source.index(start)
+    last = source.index(end, first) if end is not None else len(source)
+    if last <= first:
+        raise RuntimeError(f"invalid staged section order in {path}")
+    path.write_text(source[:first] + replacement + source[last:])
+
+
+def stage_submission_metadata(stage: Path) -> list[str]:
+    """Keep human fields in one source, but never typeset unresolved sentinels."""
+    path = stage / "shared" / "submission_metadata.tex"
+    source = path.read_text()
+    pending = [token for token in METADATA_SENTINELS if token in source]
+    for token in pending:
+        source = source.replace(token, "")
+    source = "\n".join(
+        line for line in source.splitlines() if not line.lstrip().startswith("%")
+    ) + "\n"
+    path.write_text(source)
+    for wrapper in ("main_tmlcn.tex", "main_access.tex", "supplementary.tex"):
+        replace_once(
+            stage / wrapper,
+            r"\input{shared/preamble}",
+            r"\input{shared/preamble}" + "\n" + r"\input{shared/submission_metadata}",
+        )
+    author_lines = [r"\SubmissionAuthors"]
+    for token, macro in (
+        ("AFFILIATION_1", r"\SubmissionAffiliations"),
+        ("ORCID_1", r"\SubmissionORCIDs"),
+        ("CORRESPONDING_AUTHOR", r"\SubmissionCorrespondingAuthor"),
+        ("CORRESPONDING_EMAIL", r"\SubmissionCorrespondingEmail"),
+    ):
+        if token not in pending:
+            author_lines.append(macro)
+    replace_once(
+        stage / "main_tmlcn.tex",
+        r"\author{\SubmissionAuthors}",
+        r"\author{" + r"\\".join(author_lines) + "}",
+    )
+    if "CORRESPONDING_EMAIL" not in pending:
+        replace_once(
+            stage / "main_access.tex",
+            r"\corresp{\SubmissionCorrespondingAuthor}",
+            r"\corresp{\SubmissionCorrespondingAuthor (\SubmissionCorrespondingEmail)}",
+        )
+    body = stage / "shared" / "body.tex"
+    replace_section(
+        body,
+        r"\subsection{Data and Code Availability}",
+        r"\section{Conclusion}",
+        r"\SubmissionDataCodeAvailability" + "\n\n",
+    )
+    acknowledgment = r"\section*{Acknowledgments}" + "\n" + r"\SubmissionAIDisclosure" + "\n"
+    if "FUNDING_STATEMENT_HUMAN_REQUIRED" not in pending:
+        acknowledgment += "\n" + r"\section*{Funding}" + "\n" + r"\SubmissionFunding" + "\n"
+    if "COI_STATEMENT_HUMAN_REQUIRED" not in pending:
+        acknowledgment += "\n" + r"\section*{Conflicts of Interest}" + "\n" + r"\SubmissionCOI" + "\n"
+    replace_section(
+        body,
+        r"\section*{Acknowledgments}",
+        None,
+        acknowledgment,
+    )
+    supplement = stage / "supplementary.tex"
+    replace_section(
+        supplement,
+        r"\section{Study provenance and analysis chronology}",
+        r"\section{Exploratory paired estimates}",
+        "\\section{Study provenance and analysis chronology}\n"
+        "The original receiver-context analysis preceded the disjoint-support, receiver-level analysis. "
+        "The baseline-completeness analysis was specified after the earlier target results were known, "
+        "although its own methods were fixed before execution. It is post-hoc relative to the earlier "
+        "analyses and does not constitute independent dataset confirmation.\n",
+    )
+    replace_once(supplement, "The closure state-machine tests", "Additional state-machine tests")
+    replace_once(supplement, "the legacy internal samples-per-second field", "the previously recorded samples-per-second field")
+    replace_once(supplement, "the versioned closure evidence report", "the companion evidence report")
+    return pending
+
+
+def prepare_submission_stage(stage: Path, figures: Path, evidence_manifest: Path) -> list[str]:
     """Remove internal-review identity from staged sources only."""
     if not figures.is_dir():
         raise RuntimeError(f"submission figure directory is missing: {figures}")
@@ -79,7 +186,7 @@ def prepare_submission_stage(stage: Path, figures: Path, evidence_manifest: Path
     replace_once(
         stage / "main_tmlcn.tex",
         r"\author{OpenEW-SA Internal Review\\Authors, affiliations, ORCIDs and corresponding author require human confirmation}",
-        r"\author{Authors, affiliations, ORCIDs and corresponding author require human confirmation}",
+        r"\author{\SubmissionAuthors}",
     )
     access = stage / "main_access.tex"
     replace_once(access, r"\input{shared/access_draft_layout}", r"\input{shared/access_submission_layout}")
@@ -87,7 +194,17 @@ def prepare_submission_stage(stage: Path, figures: Path, evidence_manifest: Path
     replace_once(
         access,
         r"\author{\uppercase{OpenEW-SA Internal Review}}",
-        r"\author{\uppercase{Authors require human confirmation}}",
+        r"\author{\uppercase{\SubmissionAuthors}}",
+    )
+    replace_once(
+        access,
+        r"\address{Authors and affiliations require human confirmation.}",
+        r"\address{\SubmissionAffiliations}",
+    )
+    replace_once(
+        access,
+        r"\corresp{Corresponding author and contact details require human confirmation.}",
+        r"\corresp{\SubmissionCorrespondingAuthor}",
     )
     replace_once(access, r"\tfootnote{\draftnotice}", "")
     replace_once(
@@ -98,7 +215,13 @@ def prepare_submission_stage(stage: Path, figures: Path, evidence_manifest: Path
     replace_once(
         stage / "supplementary.tex",
         r"\author{OpenEW-SA Internal Review}",
-        r"\author{Authors require human confirmation}",
+        r"\author{\SubmissionAuthors}",
+    )
+    replace_section(
+        access,
+        r"\section*{Author biographies}",
+        r"\EOD",
+        "",
     )
     replace_once(
         stage / "shared" / "preamble.tex",
@@ -106,6 +229,7 @@ def prepare_submission_stage(stage: Path, figures: Path, evidence_manifest: Path
         r"\newcommand{\draftnotice}{}",
     )
     (stage / "shared" / "access_draft_layout.tex").unlink()
+    pending = stage_submission_metadata(stage)
 
     for name in sorted(SUBMISSION_FIGURES):
         shutil.copyfile(figures / name, stage / "figures" / name)
@@ -115,6 +239,7 @@ def prepare_submission_stage(stage: Path, figures: Path, evidence_manifest: Path
         text = (stage / wrapper).read_text()
         if "OpenEW-SA Internal Review" in text or "Internal-review" in text:
             raise RuntimeError(f"internal-review identity remains in {wrapper}")
+    return pending
 
 
 def install_access_template(template: Path, stage: Path) -> None:
@@ -144,16 +269,24 @@ def build(args: argparse.Namespace) -> dict:
         raise RuntimeError("--submission-figures is required for submission builds")
     if args.audience == "internal" and args.submission_figures is not None:
         raise RuntimeError("--submission-figures is only valid for submission builds")
+    target = getattr(args, "target", "all")
+    if target == "access" and args.access_template is None:
+        raise RuntimeError("--access-template is required for Access builds")
     args.output.mkdir(parents=True, exist_ok=False)
     shutil.copytree(doc / "manuscript", stage)
     shutil.copyfile(doc / "references_verified.bib", stage / "references.bib")
+    pending_metadata = []
     if args.audience == "submission":
-        prepare_submission_stage(stage, args.submission_figures, doc / "evidence" / "source_manifest.json")
+        pending_metadata = prepare_submission_stage(
+            stage, args.submission_figures, doc / "evidence" / "source_manifest.json"
+        )
 
     targets = ["main_tmlcn", "supplementary"]
     if args.access_template:
         install_access_template(args.access_template, stage)
         targets.append("main_access")
+    if target != "all":
+        targets = [{"tmlcn": "main_tmlcn", "access": "main_access", "supplement": "supplementary"}[target]]
     for target in targets:
         result = subprocess.run(
             ["latexmk", "-pdf", "-interaction=nonstopmode", "-halt-on-error", target + ".tex"],
@@ -176,8 +309,9 @@ def build(args: argparse.Namespace) -> dict:
             if extracted.returncode:
                 raise RuntimeError("could not inspect submission PDF text: " + target)
             lower = extracted.stdout.casefold()
-            if "openew-sa internal review" in lower or "internal-review" in lower:
-                raise RuntimeError("internal-review identity leaked into submission PDF: " + target)
+            forbidden = [phrase for phrase in SUBMISSION_PDF_FORBIDDEN if phrase in lower]
+            if forbidden:
+                raise RuntimeError(f"internal/placeholder text leaked into submission PDF {target}: {forbidden}")
             if target == "main_access" and "volume 11, 2023" in lower:
                 raise RuntimeError("example Access publication metadata leaked into submission PDF")
     manifest = {
@@ -190,6 +324,9 @@ def build(args: argparse.Namespace) -> dict:
         "submission_figure_replacements": sorted(SUBMISSION_FIGURES)
         if args.audience == "submission"
         else [],
+        "human_metadata_pending": pending_metadata,
+        "human_approval_required": True,
+        "ready_for_human_submission": False,
     }
     (args.output / "build_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return manifest
@@ -201,6 +338,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--access-template", type=Path)
     parser.add_argument("--audience", choices=("internal", "submission"), default="internal")
+    parser.add_argument("--target", choices=("all", "tmlcn", "access", "supplement"), default="all")
     parser.add_argument("--submission-figures", type=Path)
     print(json.dumps(build(parser.parse_args())))
 
